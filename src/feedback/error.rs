@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub struct ErrorFeedback {
     pub message: String,
 }
@@ -8,6 +9,7 @@ impl  ErrorFeedback {
         eprintln!("{msg:?}");
     }
 }
+
 pub fn path_not_found(path: &str) -> ErrorFeedback{
     ErrorFeedback{
         message: format!("Path '{path}' not found")

@@ -1,5 +1,7 @@
 use std::path::{Path, PathBuf};
 use crate::feedback::error::{file_not_found, path_not_found, ErrorFeedback};
+use crate::bin::{constants};
+
 
 pub enum AstMode {
     Binary,
@@ -49,6 +51,21 @@ fn exists_main_file(root_dir: &Path) -> Result<AstOperation, ErrorFeedback>{
             let err_msg = format!("main.app or main.applit in {root_path}");
             
             Err(file_not_found(&err_msg))
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn exists_of_root_dir_is_true() {
+        let expected_path = PathBuf::from(constants::ROOT_DIR);
+        
+        match exists_root_dir(constants::ROOT_DIR) {
+            Ok(actual_path) => assert_eq!(actual_path, expected_path),
+            Err(_) => panic!("Expected Ok, but got Err"),
         }
     }
 }
