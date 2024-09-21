@@ -2,6 +2,8 @@
 
 pub mod tokenizer;
 pub mod feedback;
+pub  mod bin;
+
 /*
 pub fn add(left: u64, right: u64) -> u64 {
     left + right

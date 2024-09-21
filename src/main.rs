@@ -1,10 +1,8 @@
 use applit::tokenizer;
-
-
-const ROOT_DIR: &str = "/Users/marcelarmada-castellon/Documents/ArmadaCore/Test/applit";
+use applit::bin::{constants};
 
 fn main(){
-    match tokenizer::ast::create(ROOT_DIR) {
+    match tokenizer::ast::create(constants::ROOT_DIR) {
         Ok(ast) => println!("{:?}", ast),
         Err(error) => error.print(),
     }
