@@ -10,7 +10,7 @@ pub enum Token {
 
 pub fn initialize(ast_operation: AstOperation) -> Result<Vec<Token>, ErrorFeedback> {
     match ast_operation.mode {
-        AstMode::App => nodes::new(ast_operation),
+        AstMode::App => nodes::new(&ast_operation.file_path),
         AstMode::AppLit => todo!("read binary file and return [Ast]"),
     }
 }
