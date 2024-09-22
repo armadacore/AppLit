@@ -39,6 +39,12 @@ pub fn file_not_found(file: &str) -> ErrorFeedback{
     }
 }
 
+pub fn unknown_token(token: &str) -> ErrorFeedback{
+    ErrorFeedback{
+        message: format!("Unknown token '{token}'")
+    }
+}
+
 /// The [`super::error::panic`] function has to call, when ever a state would break the application self
 /// 
 /// # Parameters

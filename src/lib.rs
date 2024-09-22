@@ -1,4 +1,5 @@
 #![allow(unused_variables)]
+#![allow(dead_code)]
 
 /// Literal tokenizer
 pub mod tokenizer;

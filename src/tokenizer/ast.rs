@@ -1,10 +1,12 @@
 use std::path::{Path, PathBuf};
 use crate::bin::constants;
 use crate::feedback::error::{file_not_found, path_not_found, ErrorFeedback};
+use crate::tokenizer::tokens::{initialize, Token};
 
 /// Define in which mode has the parser to run.
 ///
 /// There are different between source-code (raw) and binary (already parsed).
+#[derive(Debug)]
 pub enum AstMode {
     /// The source-code is already parsed and stored as binary file
     AppLit,
@@ -14,11 +16,12 @@ pub enum AstMode {
 
 /// Hold the information in which mode [`AstMode`] has to switch
 /// and where the main file are located.
+#[derive(Debug)]
 pub struct AstOperation {
     /// Represents the mode [`AstMode`]
     pub mode: AstMode,
     /// Where is the main file located
-    pub main_path: PathBuf,
+    pub file_path: PathBuf,
 }
 
 /// Try to look up in the given root dir for main file.
@@ -31,14 +34,14 @@ pub struct AstOperation {
 /// 
 /// # Returns
 /// * `Result<Ast, ErrorFeedback>` - `Ast` representation of tokenized source-code, [`ErrorFeedback`] the error which has occurred
-pub fn look_up(root_dir: &str) -> Result<String, ErrorFeedback>{
-    let root_path_exists = exists_root_dir(root_dir)?;
-    let main_file_exists = exists_main_file(&root_path_exists)?;
-    
-    Ok(String::from(root_dir))
+pub fn look_up(root_dir: &str) -> Result<Vec<Token>, ErrorFeedback>{
+    let root_path_exists = exists_dir(root_dir)?;
+    let main_file_exists = exists_file(&root_path_exists)?;
+
+    initialize(main_file_exists)
 }
 
-fn exists_root_dir(root_dir: &str) -> Result<PathBuf, ErrorFeedback>{
+fn exists_dir(root_dir: &str) -> Result<PathBuf, ErrorFeedback>{
     let path = Path::new(root_dir).to_owned();
 
     if path.is_dir() {
@@ -48,12 +51,12 @@ fn exists_root_dir(root_dir: &str) -> Result<PathBuf, ErrorFeedback>{
     }
 }
 
-fn exists_main_file(root_dir: &Path) -> Result<AstOperation, ErrorFeedback>{
+fn exists_file(root_dir: &Path) -> Result<AstOperation, ErrorFeedback>{
     let main_app_file = root_dir.join(constants::MAIN_APP);
     if main_app_file.is_file() {
        return Ok(AstOperation{
             mode: AstMode::App,
-            main_path: main_app_file,
+            file_path: main_app_file,
         })
     }
 
@@ -61,7 +64,7 @@ fn exists_main_file(root_dir: &Path) -> Result<AstOperation, ErrorFeedback>{
     if main_applit_file.is_file() {
         return Ok(AstOperation {
             mode: AstMode::AppLit,
-            main_path: main_app_file,
+            file_path: main_app_file,
         })
     }
 
@@ -83,7 +86,7 @@ mod tests {
     fn exists_of_root_dir_is_true() {
         let expected_path = PathBuf::from(mock_constants::ROOT_DIR);
 
-        match exists_root_dir(mock_constants::ROOT_DIR) {
+        match exists_dir(mock_constants::ROOT_DIR) {
             Ok(actual_path) => assert_eq!(actual_path, expected_path),
             Err(_) => panic!("Expected Ok, but got Err"),
         }
@@ -94,7 +97,7 @@ mod tests {
         let check_path = "/path/to/somewhere/else";
         let expected_error_message = format!("Path '{check_path}' not found");
 
-        match exists_root_dir(check_path) {
+        match exists_dir(check_path) {
             Ok(_) => error::panic("Expected Err, but got Ok"),
             Err(err) => assert_eq!(err.message, expected_error_message, "Error message seems to be wrong"),
         }
@@ -105,8 +108,8 @@ mod tests {
         let root_path = PathBuf::from(mock_constants::ROOT_DIR);
         let expected_path = PathBuf::from(mock_constants::ROOT_DIR).join("main.app");
 
-        match exists_main_file(&root_path) {
-            Ok(ast) => assert_eq!(ast.main_path, expected_path),
+        match exists_file(&root_path) {
+            Ok(ast) => assert_eq!(ast.file_path, expected_path),
             Err(_) => panic!("Expected Ok, but got Err"),
         }
     }
@@ -119,7 +122,7 @@ mod tests {
         let main_applit = constants::MAIN_APPLIT;
         let expected_error_message = format!("File '{main_app} or {main_applit} in {check_path}' not found");
 
-        match exists_main_file(&root_path) {
+        match exists_file(&root_path) {
             Ok(_) => error::panic("Expected Err, but got Ok"),
             Err(err) => assert_eq!(err.message, expected_error_message, "Error message seems to be wrong"),
         }
