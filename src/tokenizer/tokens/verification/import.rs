@@ -12,7 +12,7 @@ pub fn check(t2a: &mut TokenToAst) -> bool {
         return false;
     }
     
-    if let Some(token) = t2a.current_token(){
+    if let Some(ref token) = t2a.token {
         if token == "import"{
             let mut declaration = ImportDeclaration{
                 specifier: vec![],
@@ -20,7 +20,7 @@ pub fn check(t2a: &mut TokenToAst) -> bool {
             };
 
             while let Some(token) = t2a.next() {
-                let mut current_token = String::from(token);
+                let mut current_token = token;
                 
                 if current_token == "{"{
                     continue;

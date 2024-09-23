@@ -1,3 +1,8 @@
-import { math, foo, bar } from '/abc/foo/bar';
+import {
+    math, foo, bar
+} from '/abc/foo/bar';
 import {pi} from 'applit';
 foobar
+
+
+import {sin} from 'applit';
