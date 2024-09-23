@@ -4,6 +4,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Lines};
 use std::path::Path;
 use std::str::SplitWhitespace;
+use std::vec;
 
 pub mod import;
 pub mod function;
@@ -14,10 +15,7 @@ pub fn new(file_path: &Path) -> Result<Vec<Token>, ErrorFeedback> {
 
     while let Some(Ok(line)) = lines.next() {
         for token in read_tokens(&line) {
-            match check_token(token) { 
-                Some(declaration) => ast.push(declaration),
-                None => return Err(unknown_token(token)),
-            };
+            if check_token(&mut ast, token).is_none() { return Err(unknown_token(token)) };
         }
     }
 
@@ -35,16 +33,13 @@ fn read_tokens(line: &str) -> SplitWhitespace{
     line.split_whitespace()
 }
 
-fn check_token(token: &str) -> Option<Token>{
-    if import::check(token) {
-        return Some(Token::Import(import::Declaration{
-            specifier: String::from("foobar"),
-            from: String::from("foobar"),
-        }));
+fn check_token(ast: &mut Vec<Token>, token: &str) -> Option<()>{
+    if import::check(ast, token) {
+        return Some(());
     }
 
     if function::check() {
-        return None;
+        return Some(());
     }
     
     None

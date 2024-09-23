@@ -5,7 +5,8 @@ pub mod nodes;
 
 #[derive(Debug)]
 pub enum Token {
-    Import(nodes::import::Declaration),
+    Import(nodes::import::ImportDeclaration),
+    Function(nodes::function::Declaration),
 }
 
 pub fn initialize(ast_operation: AstOperation) -> Result<Vec<Token>, ErrorFeedback> {

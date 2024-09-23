@@ -45,6 +45,12 @@ pub fn unknown_token(token: &str) -> ErrorFeedback{
     }
 }
 
+pub fn token_not_implemented(token: &str) -> ErrorFeedback{
+    ErrorFeedback{
+        message: format!("Seems like the token '{token}' isn't implemented")
+    }
+}
+
 /// The [`super::error::panic`] function has to call, when ever a state would break the application self
 /// 
 /// # Parameters
