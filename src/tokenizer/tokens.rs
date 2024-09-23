@@ -1,17 +1,17 @@
 use crate::feedback::error::ErrorFeedback;
 use crate::tokenizer::ast::{AstMode, AstOperation};
 
-pub mod nodes;
+pub mod verification;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Token {
-    Import(nodes::import::ImportDeclaration),
-    Function(nodes::function::Declaration),
+    Import(verification::import::ImportDeclaration),
+    Function(verification::function::Declaration),
 }
 
 pub fn initialize(ast_operation: AstOperation) -> Result<Vec<Token>, ErrorFeedback> {
     match ast_operation.mode {
-        AstMode::App => nodes::new(&ast_operation.file_path),
+        AstMode::App => verification::new(&ast_operation.file_path),
         AstMode::AppLit => todo!("read binary file and return [Ast]"),
     }
 }

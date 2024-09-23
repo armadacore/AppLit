@@ -1,2 +1,3 @@
-import {math, foo, bar} from 'abc/foo/bar';
-import {pi} from '$applit';
+import { math, foo, bar } from '/abc/foo/bar';
+import {pi} from 'applit';
+foobar

@@ -8,7 +8,7 @@ pub struct ErrorFeedback {
 }
 
 /// Default implementation of [`ErrorFeedback`]
-impl  ErrorFeedback {
+impl ErrorFeedback {
     /// Print error message into console
     pub fn print(&self){
         let msg = &self.message;
