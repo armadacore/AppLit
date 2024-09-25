@@ -1,6 +1,5 @@
 use crate::bin::constants;
-use crate::tokenizer::lexer::TokenToAst;
-use crate::tokenizer::tokens::Token;
+use crate::core::execute::lexer::LexerStack;
 
 #[derive(Debug, Clone)]
 pub struct ImportDeclaration {
@@ -13,22 +12,22 @@ pub struct ImportDeclaration {
 
 }
 
-pub fn check(t2a: &mut TokenToAst<Token>) -> bool {
-    if let Some(ref token) = t2a.get_token() {
+pub fn check(stack: &mut LexerStack<super::ModuleToken>) -> bool {
+    if let Some(ref token) = stack.get_token() {
         if token == constants::IMPORT {
             let mut declaration = ImportDeclaration{
-                pos: t2a.get_pos(),
+                pos: stack.get_pos(),
                 end: 0,
-                line_start: t2a.get_line_number(),
+                line_start: stack.get_line_number(),
                 line_end: 0,
                 specifier: vec![],
                 from: None
             };
 
-            loop_tokens(&mut declaration, t2a);
-            declaration.end = t2a.get_end();
-            declaration.line_end = t2a.get_line_number();
-            t2a.ast_add(Token::Import(declaration));
+            loop_tokens(&mut declaration, stack);
+            declaration.end = stack.get_end();
+            declaration.line_end = stack.get_line_number();
+            stack.ast_add(super::ModuleToken::Import(declaration));
 
             return true;
         }
@@ -37,14 +36,15 @@ pub fn check(t2a: &mut TokenToAst<Token>) -> bool {
     false
 }
 
-fn loop_tokens(declaration: &mut ImportDeclaration, t2a: &mut TokenToAst<Token>){
-    while let Some(token) = t2a.next() {
+fn loop_tokens(declaration: &mut ImportDeclaration, stack: &mut LexerStack<super::ModuleToken>){
+    
+    while let Some(token) = stack.next() {
         let mut current_token = token;
 
         match current_token.as_str() {
             constants::EMPTY | constants::START_CURLY_BRACES | constants::END_CURLY_BRACES => continue,
             constants::FROM => {
-                if let Some(from) = t2a.next(){
+                if let Some(from) = stack.next(){
                     let cleaned = from.replace(constants::SINGLE_QUOTES, "").replace(constants::SEMICOLON, "");
                     declaration.from = Some(cleaned);
                 }

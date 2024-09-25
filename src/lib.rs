@@ -5,13 +5,10 @@
 pub mod feedback;
 
 /// Crate environment variables
-pub  mod bin;
+pub mod bin;
 
-mod tokenizer;
+mod core;
 
-pub fn execute_applit(root_dir: &str){
-    match tokenizer::ast::look_up(root_dir) {
-        Ok(ast) => println!("{:?}", ast),
-        Err(error) => error.print(),
-    }
+pub fn execute_main(root_dir: &str){
+    if let Err(error) = core::execute::main(root_dir) { error.print() }
 }
