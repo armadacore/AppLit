@@ -1,5 +1,5 @@
 use crate::bin::constants;
-use crate::tokenizer::tokens::verification::TokenToAst;
+use crate::tokenizer::tokens::lexer::TokenToAst;
 use crate::tokenizer::tokens::Token;
 
 #[derive(Debug, Clone)]
