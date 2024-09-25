@@ -1,5 +1,5 @@
 use crate::bin::constants;
-use crate::tokenizer::tokens::lexer::TokenToAst;
+use crate::tokenizer::lexer::TokenToAst;
 use crate::tokenizer::tokens::Token;
 
 #[derive(Debug, Clone)]
@@ -13,31 +13,31 @@ pub struct ImportDeclaration {
 
 }
 
-pub fn check(t2a: &mut TokenToAst) -> bool {
-    if let Some(ref token) = t2a.token {
+pub fn check(t2a: &mut TokenToAst<Token>) -> bool {
+    if let Some(ref token) = t2a.get_token() {
         if token == constants::IMPORT {
             let mut declaration = ImportDeclaration{
-                pos: t2a.pos,
+                pos: t2a.get_pos(),
                 end: 0,
-                line_start: t2a.line_number,
+                line_start: t2a.get_line_number(),
                 line_end: 0,
                 specifier: vec![],
                 from: None
             };
 
             loop_tokens(&mut declaration, t2a);
-            declaration.end = t2a.end;
-            declaration.line_end = t2a.line_number;
-            t2a.ast.push(Token::Import(declaration));
-            
+            declaration.end = t2a.get_end();
+            declaration.line_end = t2a.get_line_number();
+            t2a.ast_add(Token::Import(declaration));
+
             return true;
         }
     }
-    
+
     false
 }
 
-fn loop_tokens(declaration: &mut ImportDeclaration, t2a: &mut TokenToAst){
+fn loop_tokens(declaration: &mut ImportDeclaration, t2a: &mut TokenToAst<Token>){
     while let Some(token) = t2a.next() {
         let mut current_token = token;
 

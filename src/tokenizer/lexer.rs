@@ -1,48 +1,12 @@
-pub mod import;
-pub mod function;
 use crate::feedback::error::ErrorFeedback;
-use crate::tokenizer::tokens::Token;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Error};
 use std::path::Path;
 use std::vec;
-
-pub fn new(file_path: &Path) -> Result<Vec<Token>, ErrorFeedback> {
-    let file = File::open(file_path).unwrap();
-    let reader = BufReader::new(file);
-    let lines = reader
-        .lines()
-        .collect::<Result<Vec<String>, Error>>().unwrap_or_else(|_| vec![]);
-    let tokens: Vec<String> = lines.iter()
-        .flat_map(|l| l.split(|c: char| c.is_whitespace())
-            .map(|s| s.to_string()))
-        .collect();
-    let mut t2a = TokenToAst{
-        lines,
-        line: None,
-        pos: 0,
-        end: 0,
-        line_number: 0,
-        tokens: vec![],
-        token: None,
-        ast: vec![]
-    };
-
-    transform_token_into_ast(&mut t2a);
-
-    Ok(t2a.ast)
-}
-
-fn transform_token_into_ast(t2a: &mut TokenToAst){
-    if let Some(token) = t2a.next(){
-        if import::check(t2a) { return transform_token_into_ast(t2a); }
-        if function::check() { return transform_token_into_ast(t2a); }
-        transform_token_into_ast(t2a);
-    }
-}
+use std::fmt::Debug;
 
 #[derive(Debug)]
-pub struct TokenToAst {
+pub struct TokenToAst<T> {
     lines: Vec<String>,
     line: Option<String>,
     pos: usize,
@@ -50,10 +14,30 @@ pub struct TokenToAst {
     line_number: usize,
     tokens: Vec<String>,
     token: Option<String>,
-    ast: Vec<Token>,
+    ast: Vec<T>,
 }
 
-impl TokenToAst {
+impl<T: Debug> TokenToAst<T> {
+    pub fn get_pos(&self) -> usize{
+        self.pos
+    }
+    
+    pub fn get_end(&self) -> usize{
+        self.end
+    }
+    
+    pub fn get_line_number(&self) -> usize{
+        self.line_number
+    } 
+    
+    pub fn get_token(&self) -> Option<String>{
+        self.token.clone()
+    }
+    
+    pub fn ast_add(&mut self, value: T) {
+        self.ast.push(value);
+    }
+    
     pub fn next(&mut self) -> Option<String>{
         if self.tokens.is_empty(){
             adjust_next_line(self);
@@ -72,7 +56,7 @@ impl TokenToAst {
     }
 }
 
-fn adjust_next_line(t2a: &mut TokenToAst){
+fn adjust_next_line<T: Debug>(t2a: &mut TokenToAst<T>) {
     t2a.line = if t2a.lines.is_empty(){
         None
     } else {
@@ -80,13 +64,13 @@ fn adjust_next_line(t2a: &mut TokenToAst){
     }
 }
 
-fn adjust_line_number(t2a: &mut TokenToAst){
+fn adjust_line_number<T: Debug>(t2a: &mut TokenToAst<T>) {
     if t2a.line.is_some(){
         t2a.line_number += 1;
     }
 }
 
-fn adjust_tokens(t2a: &mut TokenToAst) {
+fn adjust_tokens<T: Debug>(t2a: &mut TokenToAst<T>) {
     if let Some(ref line) = t2a.line{
         t2a.tokens = line.split(|c: char| c.is_whitespace())
             .map(|s| s.to_string())
@@ -94,7 +78,7 @@ fn adjust_tokens(t2a: &mut TokenToAst) {
     }
 }
 
-fn adjust_pos(t2a: &mut TokenToAst) {
+fn adjust_pos<T: Debug>(t2a: &mut TokenToAst<T>) {
     t2a.pos = if t2a.end > 0 {
         if let Some(token) = &t2a.token{
             get_calc_position(t2a.pos, token.len())   
@@ -106,7 +90,7 @@ fn adjust_pos(t2a: &mut TokenToAst) {
     };
 }
 
-fn adjust_end(t2a: &mut TokenToAst){
+fn adjust_end<T: Debug>(t2a: &mut TokenToAst<T>) {
     t2a.end = if let Some(token) = &t2a.token{
         get_calc_position(t2a.end, token.len())
     } else {
@@ -124,4 +108,32 @@ fn get_calc_position(position: usize, token_len: usize) -> usize{
     }
     
     position
+}
+
+pub fn new<T: Debug, F>(file_path: &Path, mut callback: F) -> Result<Vec<T>, ErrorFeedback>
+where F: FnMut(&mut TokenToAst<T>){
+    let file = File::open(file_path).unwrap();
+    let reader = BufReader::new(file);
+    let lines = reader
+        .lines()
+        .collect::<Result<Vec<String>, Error>>().unwrap_or_else(|_| vec![]);
+    let tokens: Vec<String> = lines.iter()
+        .flat_map(|l| l.split(|c: char| c.is_whitespace())
+            .map(|s| s.to_string()))
+        .collect();
+    let mut t2a:TokenToAst<T> = TokenToAst{
+        lines,
+        line: None,
+        pos: 0,
+        end: 0,
+        line_number: 0,
+        tokens: vec![],
+        token: None,
+        ast: vec![],
+    };
+
+    while let Some(token) = &t2a.next() {
+        callback(&mut t2a);   
+    }
+    Ok(t2a.ast)
 }

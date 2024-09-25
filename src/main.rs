@@ -1,9 +1,7 @@
-use applit::tokenizer;
 use applit::bin::{mock_constants};
+use applit::{execute_applit};
 
+// main.rs still exists to test library
 fn main(){
-    match tokenizer::ast::look_up(mock_constants::ROOT_DIR) {
-        Ok(ast) => println!("{:?}", ast),
-        Err(error) => error.print(),
-    }
+    execute_applit(mock_constants::ROOT_DIR)
 }
