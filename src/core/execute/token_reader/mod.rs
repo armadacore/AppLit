@@ -10,7 +10,6 @@ mod next;
 #[derive(Debug)]
 pub struct TokenReaderStack<T> {
     lines: Lines<BufReader<File>>,
-    // lines: Vec<String>,
     line: Option<String>,
     pos: usize,
     end: usize,
