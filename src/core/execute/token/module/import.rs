@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use crate::bin::constants;
 use crate::core::execute::token_reader::TokenReaderStack;
 
@@ -16,6 +17,19 @@ pub struct ImportDeclaration {
 }
 
 pub fn try_declaration(stack: &mut TokenReaderStack<super::ModuleDeclaration>) -> bool {
+    try_to_declare(stack, |declaration|{
+        super::ModuleDeclaration::Import(declaration)
+    })
+}
+
+pub fn try_declaration_with<T: Debug, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
+where F: Fn(ImportDeclaration) -> T {
+    try_to_declare(stack, add)
+}
+
+pub fn try_to_declare<T: Debug, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
+where F: Fn(ImportDeclaration) -> T
+{
     if let Some(token) = &stack.get_token() {
         if token == IMPORT_TOKEN {
             let mut declaration = ImportDeclaration{
@@ -30,7 +44,7 @@ pub fn try_declaration(stack: &mut TokenReaderStack<super::ModuleDeclaration>) -
             loop_tokens(&mut declaration, stack);
             declaration.end = stack.get_end();
             declaration.line_end = stack.get_line_number();
-            stack.ast_add(super::ModuleDeclaration::Import(declaration));
+            stack.ast_add(add(declaration));
 
             return true;
         }
@@ -39,7 +53,7 @@ pub fn try_declaration(stack: &mut TokenReaderStack<super::ModuleDeclaration>) -
     false
 }
 
-fn loop_tokens(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<super::ModuleDeclaration>){
+fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>){
     while let Some(token) = stack.next() {
         let mut current_token = token;
 

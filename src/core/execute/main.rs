@@ -19,8 +19,7 @@ pub fn new(root_dir: &str) -> Result<(), ErrorFeedback>{
     let root_path_exists = exists_dir(root_dir)?;
     let exo = get_main_file_execute_operation(&root_path_exists)?;
     let result = match exo.mode {
-        // TODO switch from tokenizer::module::module_declaration to tokenizer::main::declaration
-        MainOperationMode::App => token::module::declaration(&exo.file_path),
+        MainOperationMode::App => token::main::declaration(&exo.file_path),
         MainOperationMode::AppLit => todo!("read binary file and return [Ast]"),
     }?;
 
