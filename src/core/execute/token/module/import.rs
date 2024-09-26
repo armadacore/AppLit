@@ -1,5 +1,9 @@
 use crate::bin::constants;
-use crate::core::execute::lexer::LexerStack;
+use crate::core::execute::token_reader::TokenReaderStack;
+
+const IMPORT_TOKEN: &str = "import";
+
+const FROM_TOKEN: &str = "from";
 
 #[derive(Debug, Clone)]
 pub struct ImportDeclaration {
@@ -9,12 +13,11 @@ pub struct ImportDeclaration {
     pub line_end: usize,
     pub specifier: Vec<String>,
     pub from: Option<String>,
-
 }
 
-pub fn check(stack: &mut LexerStack<super::ModuleToken>) -> bool {
-    if let Some(ref token) = stack.get_token() {
-        if token == constants::IMPORT {
+pub fn try_declaration(stack: &mut TokenReaderStack<super::ModuleDeclaration>) -> bool {
+    if let Some(token) = &stack.get_token() {
+        if token == IMPORT_TOKEN {
             let mut declaration = ImportDeclaration{
                 pos: stack.get_pos(),
                 end: 0,
@@ -27,7 +30,7 @@ pub fn check(stack: &mut LexerStack<super::ModuleToken>) -> bool {
             loop_tokens(&mut declaration, stack);
             declaration.end = stack.get_end();
             declaration.line_end = stack.get_line_number();
-            stack.ast_add(super::ModuleToken::Import(declaration));
+            stack.ast_add(super::ModuleDeclaration::Import(declaration));
 
             return true;
         }
@@ -36,30 +39,29 @@ pub fn check(stack: &mut LexerStack<super::ModuleToken>) -> bool {
     false
 }
 
-fn loop_tokens(declaration: &mut ImportDeclaration, stack: &mut LexerStack<super::ModuleToken>){
-    
+fn loop_tokens(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<super::ModuleDeclaration>){
     while let Some(token) = stack.next() {
         let mut current_token = token;
 
         match current_token.as_str() {
-            constants::EMPTY | constants::START_CURLY_BRACES | constants::END_CURLY_BRACES => continue,
-            constants::FROM => {
+            constants::EMPTY | constants::START_CURLY_BRACES_TOKEN | constants::END_CURLY_BRACES_TOKEN => continue,
+            FROM_TOKEN => {
                 if let Some(from) = stack.next(){
-                    let cleaned = from.replace(constants::SINGLE_QUOTES, "").replace(constants::SEMICOLON, "");
+                    let cleaned = from.replace(constants::SINGLE_QUOTES_TOKEN, "").replace(constants::SEMICOLON_TOKEN, "");
                     declaration.from = Some(cleaned);
                 }
                 break;
             },
             _ => {
-                if current_token.starts_with(constants::START_CURLY_BRACES){
+                if current_token.starts_with(constants::START_CURLY_BRACES_TOKEN){
                     current_token.remove(0).to_string();
                 }
 
-                if current_token.ends_with(constants::COMMA){
+                if current_token.ends_with(constants::COMMA_TOKEN){
                     current_token.pop();
                 }
 
-                if current_token.ends_with(constants::END_CURLY_BRACES){
+                if current_token.ends_with(constants::END_CURLY_BRACES_TOKEN){
                     current_token.pop();
                 }
             }

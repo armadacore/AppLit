@@ -2,6 +2,6 @@
 pub struct Declaration {
     pub specifier: String,
 }
-pub fn check() -> bool{
+pub fn try_declaration() -> bool{
     false
 }

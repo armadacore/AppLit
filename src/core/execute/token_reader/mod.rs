@@ -8,7 +8,7 @@ use std::fmt::Debug;
 //TokenStack
 
 #[derive(Debug)]
-pub struct LexerStack<T> {
+pub struct TokenReaderStack<T> {
     lines: Vec<String>,
     line: Option<String>,
     pos: usize,
@@ -19,7 +19,7 @@ pub struct LexerStack<T> {
     ast: Vec<T>,
 }
 
-impl<T: Debug> LexerStack<T> {
+impl<T: Debug> TokenReaderStack<T> {
     pub fn get_pos(&self) -> usize{
         self.pos
     }
@@ -58,7 +58,7 @@ impl<T: Debug> LexerStack<T> {
     }
 }
 
-fn adjust_next_line<T: Debug>(stack: &mut LexerStack<T>) {
+fn adjust_next_line<T: Debug>(stack: &mut TokenReaderStack<T>) {
     stack.line = if stack.lines.is_empty(){
         None
     } else {
@@ -66,13 +66,13 @@ fn adjust_next_line<T: Debug>(stack: &mut LexerStack<T>) {
     }
 }
 
-fn adjust_line_number<T: Debug>(stack: &mut LexerStack<T>) {
+fn adjust_line_number<T: Debug>(stack: &mut TokenReaderStack<T>) {
     if stack.line.is_some(){
         stack.line_number += 1;
     }
 }
 
-fn adjust_tokens<T: Debug>(stack: &mut LexerStack<T>) {
+fn adjust_tokens<T: Debug>(stack: &mut TokenReaderStack<T>) {
     if let Some(ref line) = stack.line{
         stack.tokens = line.split(|c: char| c.is_whitespace())
             .map(|s| s.to_string())
@@ -80,7 +80,7 @@ fn adjust_tokens<T: Debug>(stack: &mut LexerStack<T>) {
     }
 }
 
-fn adjust_pos<T: Debug>(stack: &mut LexerStack<T>) {
+fn adjust_pos<T: Debug>(stack: &mut TokenReaderStack<T>) {
     stack.pos = if stack.end > 0 {
         if let Some(token) = &stack.token{
             get_calc_position(stack.pos, token.len())
@@ -92,7 +92,7 @@ fn adjust_pos<T: Debug>(stack: &mut LexerStack<T>) {
     };
 }
 
-fn adjust_end<T: Debug>(stack: &mut LexerStack<T>) {
+fn adjust_end<T: Debug>(stack: &mut TokenReaderStack<T>) {
     stack.end = if let Some(token) = &stack.token{
         get_calc_position(stack.end, token.len())
     } else {
@@ -113,7 +113,7 @@ fn get_calc_position(position: usize, token_len: usize) -> usize{
 }
 
 pub fn new<T: Debug, F>(file_path: &Path, mut callback: F) -> Result<Vec<T>, ErrorFeedback>
-where F: FnMut(&mut LexerStack<T>){
+where F: FnMut(&mut TokenReaderStack<T>){
     let file = File::open(file_path).unwrap();
     let reader = BufReader::new(file);
     let lines = reader
@@ -123,7 +123,7 @@ where F: FnMut(&mut LexerStack<T>){
         .flat_map(|l| l.split(|c: char| c.is_whitespace())
             .map(|s| s.to_string()))
         .collect();
-    let mut stack: LexerStack<T> = LexerStack {
+    let mut stack: TokenReaderStack<T> = TokenReaderStack {
         lines,
         line: None,
         pos: 0,
