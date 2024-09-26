@@ -1,6 +1,6 @@
 use crate::feedback::error::ErrorFeedback;
 use std::fs::File;
-use std::io::{BufRead, BufReader, Error};
+use std::io::{BufRead, BufReader, Lines};
 use std::path::Path;
 use std::vec;
 use std::fmt::Debug;
@@ -9,7 +9,8 @@ mod next;
 
 #[derive(Debug)]
 pub struct TokenReaderStack<T> {
-    lines: Vec<String>,
+    lines: Lines<BufReader<File>>,
+    // lines: Vec<String>,
     line: Option<String>,
     pos: usize,
     end: usize,
@@ -65,15 +66,8 @@ fn new<T: Debug, F>(file_path: &Path, mut callback: F) -> Result<Vec<T>, ErrorFe
 where F: FnMut(&mut TokenReaderStack<T>){
     let file = File::open(file_path).unwrap();
     let reader = BufReader::new(file);
-    let lines = reader
-        .lines()
-        .collect::<Result<Vec<String>, Error>>().unwrap_or_else(|_| vec![]);
-    let tokens: Vec<String> = lines.iter()
-        .flat_map(|l| l.split(|c: char| c.is_whitespace())
-            .map(|s| s.to_string()))
-        .collect();
     let mut stack: TokenReaderStack<T> = TokenReaderStack {
-        lines,
+        lines: reader.lines(),
         line: None,
         pos: 0,
         end: 0,

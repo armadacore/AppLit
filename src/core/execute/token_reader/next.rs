@@ -19,10 +19,10 @@ pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<String>{
 }
 
 fn adjust_next_line<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    stack.line = if stack.lines.is_empty(){
-        None
+    stack.line = if let Some(Ok(token)) = stack.lines.next(){
+        Some(token)
     } else {
-        Some(stack.lines.remove(0))
+        None
     }
 }
 
