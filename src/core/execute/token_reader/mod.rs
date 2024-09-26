@@ -5,6 +5,8 @@ use std::path::Path;
 use std::vec;
 use std::fmt::Debug;
 
+mod next;
+
 #[derive(Debug)]
 pub struct TokenReaderStack<T> {
     lines: Vec<String>,
@@ -38,76 +40,7 @@ impl<T: Debug> TokenReaderStack<T> {
         self.ast.push(value);
     }
 
-    pub fn next(&mut self) -> Option<String>{
-        if self.tokens.is_empty(){
-            adjust_next_line(self);
-            adjust_line_number(self);
-            adjust_tokens(self);
-        }
-
-        self.token = if self.tokens.is_empty(){
-            None
-        } else {
-            Some(self.tokens.remove(0))
-        };
-        adjust_pos(self);
-        adjust_end(self);
-        self.token.clone()
-    }
-}
-
-fn adjust_next_line<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    stack.line = if stack.lines.is_empty(){
-        None
-    } else {
-        Some(stack.lines.remove(0))
-    }
-}
-
-fn adjust_line_number<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    if stack.line.is_some(){
-        stack.line_number += 1;
-    }
-}
-
-fn adjust_tokens<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    if let Some(ref line) = stack.line{
-        stack.tokens = line.split(|c: char| c.is_whitespace())
-            .map(|s| s.to_string())
-            .collect();
-    }
-}
-
-fn adjust_pos<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    stack.pos = if stack.end > 0 {
-        if let Some(token) = &stack.token{
-            get_calc_position(stack.pos, token.len())
-        } else {
-            stack.pos
-        }
-    } else {
-        stack.pos
-    };
-}
-
-fn adjust_end<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    stack.end = if let Some(token) = &stack.token{
-        get_calc_position(stack.end, token.len())
-    } else {
-        stack.end
-    };
-}
-
-fn get_calc_position(position: usize, token_len: usize) -> usize{
-    let mut position= position;
-
-    if position == 0{
-        position += token_len;
-    } else {
-        position += token_len + 1;
-    }
-
-    position
+    pub fn next(&mut self) -> Option<String>{ next::token(self) }
 }
 
 pub fn run<T: Debug, F>(file_path: &Path, callback: F) -> Result<Vec<T>, ErrorFeedback>
