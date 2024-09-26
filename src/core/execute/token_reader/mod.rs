@@ -5,8 +5,6 @@ use std::path::Path;
 use std::vec;
 use std::fmt::Debug;
 
-//TokenStack
-
 #[derive(Debug)]
 pub struct TokenReaderStack<T> {
     lines: Vec<String>,
@@ -112,7 +110,25 @@ fn get_calc_position(position: usize, token_len: usize) -> usize{
     position
 }
 
-pub fn new<T: Debug, F>(file_path: &Path, mut callback: F) -> Result<Vec<T>, ErrorFeedback>
+pub fn run<T: Debug, F>(file_path: &Path, callback: F) -> Result<Vec<T>, ErrorFeedback>
+where F: FnMut(&mut TokenReaderStack<T>) {
+    new(file_path, callback)
+}
+
+pub fn run_tokens<T: Debug, F>(file_path: &Path, tokens: &mut [F]) -> Result<Vec<T>, ErrorFeedback> 
+where F: FnMut(&mut TokenReaderStack<T>) -> bool{
+    new(file_path, |stack|{
+        if let Some(token) = stack.get_token(){
+            for cb in tokens.iter_mut(){
+                if cb(stack) {
+                    break;
+                }
+            }
+        }
+    })
+}
+
+fn new<T: Debug, F>(file_path: &Path, mut callback: F) -> Result<Vec<T>, ErrorFeedback>
 where F: FnMut(&mut TokenReaderStack<T>){
     let file = File::open(file_path).unwrap();
     let reader = BufReader::new(file);
@@ -137,5 +153,6 @@ where F: FnMut(&mut TokenReaderStack<T>){
     while let Some(token) = &stack.next() {
         callback(&mut stack);
     }
+    
     Ok(stack.ast)
 }

@@ -1,6 +1,7 @@
-use std::path::Path;
+use crate::core::execute::token::DeclarationResult;
 use crate::core::execute::token_reader;
-use crate::feedback::error::ErrorFeedback;
+use std::fmt::Debug;
+use std::path::Path;
 
 mod function;
 pub mod import;
@@ -10,12 +11,11 @@ pub enum ModuleDeclaration {
     Import(import::ImportDeclaration),
     Function(function::Declaration),
 }
-
-pub fn declaration(file_path: &Path) -> Result<Vec<ModuleDeclaration>, ErrorFeedback> {
-    token_reader::new(file_path, |stack| {
+pub fn declaration(file_path: &Path) -> DeclarationResult<ModuleDeclaration> {
+    token_reader::run(file_path, |stack| {
         if let Some(token) = stack.get_token(){
             if import::try_declaration(stack) { return }
-            if function::try_declaration() {  }
+            if function::try_declaration(stack) {  }
         }
     })
 }

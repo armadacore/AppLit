@@ -4,3 +4,4 @@ import {
     bar
 } from '/abc/foo/bar';
 import {pi} from 'applit';
+import {blub} from 'applit';
