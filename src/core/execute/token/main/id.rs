@@ -1,4 +1,4 @@
-use crate::core::execute::token_reader::TokenReaderStack;
+use crate::core::execute::token_reader::{TokenReaderLocation, TokenReaderStack};
 
 const ID_TOKEN: &str = "@id";
 
@@ -17,11 +17,8 @@ pub struct IdElementDeclaration{
 }
 
 pub struct IdDeclaration {
-    pub pos: usize,
-    pub end: usize,
-    pub line_start: usize,
-    pub line_end: usize,
-    pub elements: Vec<IdElementDeclaration> 
+    pub location: TokenReaderLocation,
+    pub nodes: Vec<IdElementDeclaration> 
 }
 
 pub fn try_declaration(stack: &mut TokenReaderStack<super::MainDeclaration>) -> bool {

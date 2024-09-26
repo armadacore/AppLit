@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 use crate::bin::constants;
-use crate::core::execute::token_reader::TokenReaderStack;
+use crate::core::execute::token_reader::{TokenReaderLocation, TokenReaderNodes, TokenReaderStack};
 
 const IMPORT_TOKEN: &str = "import";
 
@@ -8,12 +8,9 @@ const FROM_TOKEN: &str = "from";
 
 #[derive(Debug, Clone)]
 pub struct ImportDeclaration {
-    pub pos: usize,
-    pub end: usize,
-    pub line_start: usize,
-    pub line_end: usize,
-    pub specifier: Vec<String>,
-    pub from: Option<String>,
+    pub location: TokenReaderLocation,
+    pub nodes: TokenReaderNodes<String>,
+    pub reference: Option<String>,
 }
 
 pub fn try_declaration(stack: &mut TokenReaderStack<super::ModuleDeclaration>) -> bool {
@@ -33,17 +30,13 @@ where F: Fn(ImportDeclaration) -> T
     if let Some(token) = &stack.get_token() {
         if token == IMPORT_TOKEN {
             let mut declaration = ImportDeclaration{
-                pos: stack.get_pos(),
-                end: 0,
-                line_start: stack.get_line_number(),
-                line_end: 0,
-                specifier: vec![],
-                from: None
+                location: stack.get_location(),
+                nodes: vec![],
+                reference: None
             };
 
             loop_tokens(&mut declaration, stack);
-            declaration.end = stack.get_end();
-            declaration.line_end = stack.get_line_number();
+            stack.update_location(&mut declaration.location);
             stack.ast_add(add(declaration));
 
             return true;
@@ -62,7 +55,7 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
             FROM_TOKEN => {
                 if let Some(from) = stack.next(){
                     let cleaned = from.replace(constants::SINGLE_QUOTES_TOKEN, "").replace(constants::SEMICOLON_TOKEN, "");
-                    declaration.from = Some(cleaned);
+                    declaration.reference = Some(cleaned);
                 }
                 break;
             },
@@ -81,6 +74,6 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
             }
         };
 
-        declaration.specifier.push(current_token);
+        declaration.nodes.push(current_token);
     }
 }
