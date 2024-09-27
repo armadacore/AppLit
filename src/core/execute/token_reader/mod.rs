@@ -8,6 +8,7 @@ use std::vec;
 mod next;
 
 mod next_literal;
+pub mod token_utils;
 
 pub type TokenReaderNodes<T> = Vec<T>;
 
@@ -76,7 +77,7 @@ impl<T: Debug> TokenReaderStack<T> {
 }
 
 pub fn run<T: Debug, F>(file_path: &Path, callback: F) -> Result<Vec<T>, ErrorFeedback>
-where F: FnMut(&mut TokenReaderStack<T>) {
+where F: FnMut(&mut TokenReaderStack<T>) -> bool {
     new(file_path, callback)
 }
 
@@ -85,16 +86,16 @@ where F: FnMut(&mut TokenReaderStack<T>) -> bool{
     new(file_path, |stack|{
         if let Some(token) = stack.get_token(){
             for cb in tokens.iter_mut(){
-                if cb(stack) {
-                    break;
-                }
+                if cb(stack) { return true; }
             }
         }
+        
+        false
     })
 }
 
 fn new<T: Debug, F>(file_path: &Path, mut callback: F) -> Result<Vec<T>, ErrorFeedback>
-where F: FnMut(&mut TokenReaderStack<T>){
+where F: FnMut(&mut TokenReaderStack<T>) -> bool {
     let file = File::open(file_path).unwrap();
     let reader = BufReader::new(file);
     let mut stack: TokenReaderStack<T> = TokenReaderStack {
@@ -109,7 +110,11 @@ where F: FnMut(&mut TokenReaderStack<T>){
     };
 
     while let Some(token) = &stack.next() {
-        callback(&mut stack);
+        if callback(&mut stack) {
+            // code
+        } else {
+            // code
+        }
     }
 
     Ok(stack.ast)

@@ -7,8 +7,8 @@ use crate::core::execute::token_reader::{
     TokenReaderNodes, 
     TokenReaderStack
 };
-use crate::core::execute::token_utils::declaration_node::push_next_literal_token;
-use crate::core::execute::token_utils::on_surrounded;
+use crate::core::execute::token_reader::token_utils::declaration_node::push_next_literal_token;
+use crate::core::execute::token_reader::token_utils::on_surrounded;
 
 const IMPORT_TOKEN: &str = "import";
 
@@ -44,7 +44,7 @@ where F: Fn(ImportDeclaration) -> T {
     try_to_declare(stack, add)
 }
 
-pub fn try_to_declare<T: Debug, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
+fn try_to_declare<T: Debug, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
 where F: Fn(ImportDeclaration) -> T {
     if let Some(token) = &stack.get_token() {
         if token == IMPORT_TOKEN {
