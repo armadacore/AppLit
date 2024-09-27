@@ -39,3 +39,4 @@ where F: FnMut(Vec<TokenReaderNextLiteral>) {
         false
     }
 }
+

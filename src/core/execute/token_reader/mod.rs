@@ -1,4 +1,4 @@
-use crate::feedback::error::ErrorFeedback;
+use crate::feedback::error::{ErrorFeedback};
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Lines};
@@ -8,6 +8,8 @@ use std::vec;
 mod next;
 
 mod next_literal;
+
+mod syntax_error;
 
 pub mod token_utils;
 
@@ -22,10 +24,11 @@ pub struct TokenReaderStack<T> {
     line_number: usize,
     tokens: Vec<String>,
     token: Option<String>,
+    syntax_error: Vec<syntax_error::SyntaxErrorDeclaration>,
     ast: Vec<T>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TokenReaderLocation {
     pub start: usize,
     pub end: isize,
@@ -35,6 +38,7 @@ pub struct TokenReaderLocation {
 
 #[derive(Debug, Clone)]
 pub struct TokenReaderNextLiteral {
+    pub location: TokenReaderLocation,
     pub prev_token: Option<String>,
     pub token: String,
 }
@@ -75,6 +79,10 @@ impl<T: Debug> TokenReaderStack<T> {
         location.end = self.get_end_pos() as isize;
         location.line_end = self.get_line_number() as isize;
     }
+    
+    pub fn syntax_error(&mut self, location: TokenReaderLocation, kind: &str) {
+        syntax_error::declaration_report(self, location, kind)
+    }
 }
 
 pub fn run<T: Debug, F>(file_path: &Path, callback: F) -> Result<Vec<T>, ErrorFeedback>
@@ -89,11 +97,11 @@ where F: FnMut(&mut TokenReaderStack<T>) -> bool {
         if let Some(token) = stack.get_token(){
             for cb in tokens.iter_mut(){
                 token_classified = cb(stack);
-                
+
                 if token_classified { continue; }
             }
         }
-        
+
         token_classified
     })
 }
@@ -110,14 +118,19 @@ where F: FnMut(&mut TokenReaderStack<T>) -> bool {
         line_number: 0,
         tokens: vec![],
         token: None,
+        syntax_error: vec![],
         ast: vec![],
     };
 
     while let Some(token) = &stack.next() {
         if !callback(&mut stack){
-            println!("Unknown: {:?}", stack.get_token().unwrap_or("nischt".to_string()));
+            syntax_error::report(&mut stack)
         }
     }
 
+    // for res in stack.syntax_error{
+    //     println!("Error: {:?}", res.kind);
+    // }
+    
     Ok(stack.ast)
 }

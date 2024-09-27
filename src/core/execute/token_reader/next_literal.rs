@@ -18,6 +18,7 @@ pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<TokenReaderNex
     while let Some(token) = stack.next() {
         if !ignore_tokens.contains(&token.as_str()) {
             return Some(TokenReaderNextLiteral{
+                location: stack.get_location(),
                 prev_token,
                 token
             });

@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 #[derive(Debug)]
 pub enum MainOperationMode {
     AppLit,
-    App
+    App,
 }
 
 #[derive(Debug)]

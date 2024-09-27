@@ -8,6 +8,7 @@ use crate::core::execute::token_reader::{
     TokenReaderStack
 };
 use crate::core::execute::token_reader::token_utils::declaration_node::push_next_literal_token;
+use crate::core::execute::token_reader::token_utils::location;
 use crate::core::execute::token_reader::token_utils::on_surrounded;
 
 const IMPORT_TOKEN: &str = "import";
@@ -56,6 +57,11 @@ where F: Fn(ImportDeclaration) -> T {
 
             loop_tokens(&mut declaration, stack);
             stack.update_location_end(&mut declaration.location);
+            
+            if declaration.reference.is_none() {
+                stack.syntax_error(stack.get_location(), "Missing reference")
+            }
+            
             stack.add_declaration(add(declaration));
 
             return true;
@@ -72,7 +78,8 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
     });
 
     while let Some(import_next_literal) = stack.next_literal() {
-        if on_curly_braces(&import_next_literal) { continue; }
+        on_curly_braces(&import_next_literal);
+        
         if import_next_literal.token == FROM_TOKEN {
             if let Some(next_literal) = stack.next_literal() {
                 let location = stack.get_location();
@@ -86,5 +93,7 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
         }
     }
 
-    push_next_literal_token(stack, declaration, import_identifiers.borrow());
+    if !push_next_literal_token(stack, declaration, import_identifiers.borrow()) {
+        stack.syntax_error(location::from_to(import_identifiers.borrow()), "Missing import identifier");
+    }
 }
