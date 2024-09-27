@@ -1,7 +1,6 @@
-import {
-    math,
-    foo,
-    bar
-} from '/abc/foo/bar';
-#import {pi} from 'applit';
-#import {blub} from 'applit';
+import {pi} from 'applit';
+import {si} from 'applit';
+import {fo} from 'applit';
+import {pi} from 'applit';
+import {si} from 'applit';
+import {fo} from 'applit';

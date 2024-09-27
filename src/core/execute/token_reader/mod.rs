@@ -13,7 +13,7 @@ pub type TokenReaderNodes<T> = Vec<T>;
 pub struct TokenReaderStack<T> {
     lines: Lines<BufReader<File>>,
     line: Option<String>,
-    pos: usize,
+    start: usize,
     end: usize,
     line_number: usize,
     tokens: Vec<String>,
@@ -21,22 +21,20 @@ pub struct TokenReaderStack<T> {
     ast: Vec<T>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct TokenReaderLocation {
-    pub pos: usize,
+    pub start: usize,
     pub end: isize,
     pub line_start: usize,
     pub line_end: isize,
 }
 
 impl<T: Debug> TokenReaderStack<T> {
-    pub fn get_pos(&self) -> usize{
-        self.pos
+    pub fn get_start_pos(&self) -> usize{
+        self.start
     }
 
-    pub fn get_end(&self) -> usize{
-        self.end
-    }
+    pub fn get_end_pos(&self) -> usize{ self.end }
 
     pub fn get_line_number(&self) -> usize{
         self.line_number
@@ -54,7 +52,7 @@ impl<T: Debug> TokenReaderStack<T> {
 
     pub fn get_location(&self) -> TokenReaderLocation{
         TokenReaderLocation{
-            pos: self.get_pos(),
+            start: self.get_start_pos(),
             end: -1,
             line_start: self.get_line_number(),
             line_end: -1,
@@ -62,7 +60,7 @@ impl<T: Debug> TokenReaderStack<T> {
     }
 
     pub fn update_location(&self, location: &mut TokenReaderLocation) {
-        location.end = self.get_end() as isize;
+        location.end = self.get_end_pos() as isize;
         location.line_end = self.get_line_number() as isize;
     }
 }
@@ -92,7 +90,7 @@ where F: FnMut(&mut TokenReaderStack<T>){
     let mut stack: TokenReaderStack<T> = TokenReaderStack {
         lines: reader.lines(),
         line: None,
-        pos: 0,
+        start: 0,
         end: 0,
         line_number: 0,
         tokens: vec![],
@@ -100,7 +98,7 @@ where F: FnMut(&mut TokenReaderStack<T>){
         ast: vec![],
     };
 
-    while let Some(token) = &stack.next() {
+    while let Some(token) = &stack.next() { 
         callback(&mut stack);
     }
 

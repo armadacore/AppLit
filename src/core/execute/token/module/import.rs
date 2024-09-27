@@ -6,11 +6,17 @@ const IMPORT_TOKEN: &str = "import";
 
 const FROM_TOKEN: &str = "from";
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct ImportDeclaration {
     pub location: TokenReaderLocation,
-    pub nodes: TokenReaderNodes<String>,
+    pub nodes: TokenReaderNodes<ImportSpecifier>,
     pub reference: Option<String>,
+}
+
+#[derive(Debug)]
+pub struct ImportSpecifier {
+    pub location: TokenReaderLocation,
+    pub identifier: String
 }
 
 pub fn try_declaration(stack: &mut TokenReaderStack<super::ModuleDeclaration>) -> bool {
@@ -25,8 +31,7 @@ where F: Fn(ImportDeclaration) -> T {
 }
 
 pub fn try_to_declare<T: Debug, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
-where F: Fn(ImportDeclaration) -> T
-{
+where F: Fn(ImportDeclaration) -> T {
     if let Some(token) = &stack.get_token() {
         if token == IMPORT_TOKEN {
             let mut declaration = ImportDeclaration{
@@ -49,6 +54,7 @@ where F: Fn(ImportDeclaration) -> T
 fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>){
     while let Some(token) = stack.next() {
         let mut current_token = token;
+        let mut location = stack.get_location();
 
         match current_token.as_str() {
             constants::EMPTY | constants::START_CURLY_BRACES_TOKEN | constants::END_CURLY_BRACES_TOKEN => continue,
@@ -60,20 +66,16 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
                 break;
             },
             _ => {
-                if current_token.starts_with(constants::START_CURLY_BRACES_TOKEN){
-                    current_token.remove(0).to_string();
-                }
-
-                if current_token.ends_with(constants::COMMA_TOKEN){
-                    current_token.pop();
-                }
-
-                if current_token.ends_with(constants::END_CURLY_BRACES_TOKEN){
-                    current_token.pop();
-                }
+                if current_token.starts_with(constants::START_CURLY_BRACES_TOKEN){ current_token.remove(0).to_string(); }
+                if current_token.ends_with(constants::COMMA_TOKEN){ current_token.pop(); }
+                if current_token.ends_with(constants::END_CURLY_BRACES_TOKEN){ current_token.pop(); }
             }
         };
 
-        declaration.nodes.push(current_token);
+        stack.update_location(&mut location);
+        declaration.nodes.push(ImportSpecifier{
+            location,
+            identifier: current_token
+        });
     }
 }

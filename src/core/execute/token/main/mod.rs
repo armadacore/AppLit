@@ -24,7 +24,7 @@ pub fn declaration(file_path: &Path) -> DeclarationResult<MainDeclaration>{
         import_try_declaration,
         id::try_declaration
     ];
-    
+
     token_reader::run_tokens(file_path, &mut tokens)
 }
 

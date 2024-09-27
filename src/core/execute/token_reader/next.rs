@@ -4,31 +4,28 @@ use crate::core::execute::token_reader::TokenReaderStack;
 pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<String>{
     if stack.tokens.is_empty(){
         adjust_next_line(stack);
-        adjust_line_number(stack);
         adjust_tokens(stack);
     }
 
     stack.token = if stack.tokens.is_empty(){
         None
     } else {
-        Some(stack.tokens.remove(0))
+        let new_token = stack.tokens.remove(0);
+
+        adjust_pos(stack);
+        adjust_end(stack, &new_token);
+        Some(new_token)
     };
-    adjust_pos(stack);
-    adjust_end(stack);
     stack.token.clone()
 }
 
 fn adjust_next_line<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    stack.line = if let Some(Ok(token)) = stack.lines.next(){
-        Some(token)
+    stack.line = if let Some(Ok(line)) = stack.lines.next(){
+        stack.line_number += 1;
+
+        Some(line)
     } else {
         None
-    }
-}
-
-fn adjust_line_number<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    if stack.line.is_some(){
-        stack.line_number += 1;
     }
 }
 
@@ -41,33 +38,18 @@ fn adjust_tokens<T: Debug>(stack: &mut TokenReaderStack<T>) {
 }
 
 fn adjust_pos<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    stack.pos = if stack.end > 0 {
-        if let Some(token) = &stack.token{
-            get_calc_position(stack.pos, token.len())
-        } else {
-            stack.pos
-        }
-    } else {
-        stack.pos
-    };
-}
-
-fn adjust_end<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    stack.end = if let Some(token) = &stack.token{
-        get_calc_position(stack.end, token.len())
-    } else {
-        stack.end
-    };
-}
-
-fn get_calc_position(position: usize, token_len: usize) -> usize{
-    let mut position= position;
-
-    if position == 0{
-        position += token_len;
-    } else {
-        position += token_len + 1;
+    if stack.end > 0 {
+        let end = stack.end;
+        let len = if let Some(token) = &stack.token{ token.len() } else { 0 };
+        let result = if end == len { end + 1} else { end };
+        stack.start = result;
     }
+}
 
-    position
+fn adjust_end<T: Debug>(stack: &mut TokenReaderStack<T>, new_token: &str) {
+    stack.end += if stack.end == 0 {
+        new_token.len()
+    } else {
+        new_token.len() + 1
+    };
 }

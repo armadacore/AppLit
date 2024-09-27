@@ -23,7 +23,9 @@ pub fn new(root_dir: &str) -> Result<(), ErrorFeedback>{
         MainOperationMode::AppLit => todo!("read binary file and return [Ast]"),
     }?;
 
-    println!("Result: {result:?}");
+    for res in result{
+        println!("Result: {res:?}");
+    }
 
     Ok(())
 }
