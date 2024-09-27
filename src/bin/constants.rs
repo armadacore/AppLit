@@ -6,6 +6,8 @@ pub const MAIN_APPLIT_FILE: &str = "main.applit";
 
 pub const EMPTY: &str = "";
 
+pub const SPACE: &str = " ";
+
 pub const COMMA_TOKEN: &str = ",";
 
 pub const SEMICOLON_TOKEN: &str = ";";

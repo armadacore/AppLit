@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use regex::Regex;
 use crate::core::execute::token_reader::TokenReaderStack;
 
 pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<String>{
@@ -31,25 +32,15 @@ fn adjust_next_line<T: Debug>(stack: &mut TokenReaderStack<T>) {
 
 fn adjust_tokens<T: Debug>(stack: &mut TokenReaderStack<T>) {
     if let Some(ref line) = stack.line{
-        stack.tokens = line.split(|c: char| c.is_whitespace())
-            .map(|s| s.to_string())
-            .collect();
+        let regexp = Regex::new(r"(\w+|[{:}',;]|\s)").unwrap();
+        stack.tokens = regexp.find_iter(line).map(|res| res.as_str().to_string()).collect();
     }
 }
 
 fn adjust_pos<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    if stack.end > 0 {
-        let end = stack.end;
-        let len = if let Some(token) = &stack.token{ token.len() } else { 0 };
-        let result = if end == len { end + 1} else { end };
-        stack.start = result;
-    }
+    stack.start = stack.end;
 }
 
 fn adjust_end<T: Debug>(stack: &mut TokenReaderStack<T>, new_token: &str) {
-    stack.end += if stack.end == 0 {
-        new_token.len()
-    } else {
-        new_token.len() + 1
-    };
+    stack.end += new_token.len();
 }

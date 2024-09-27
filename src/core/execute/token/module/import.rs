@@ -10,11 +10,17 @@ const FROM_TOKEN: &str = "from";
 pub struct ImportDeclaration {
     pub location: TokenReaderLocation,
     pub nodes: TokenReaderNodes<ImportSpecifier>,
-    pub reference: Option<String>,
+    pub reference: Option<ImportReference>,
 }
 
 #[derive(Debug)]
 pub struct ImportSpecifier {
+    pub location: TokenReaderLocation,
+    pub identifier: String
+}
+
+#[derive(Debug)]
+pub struct ImportReference {
     pub location: TokenReaderLocation,
     pub identifier: String
 }
@@ -39,10 +45,10 @@ where F: Fn(ImportDeclaration) -> T {
                 nodes: vec![],
                 reference: None
             };
-
+            
             loop_tokens(&mut declaration, stack);
-            stack.update_location(&mut declaration.location);
-            stack.ast_add(add(declaration));
+            stack.update_location_end(&mut declaration.location);
+            stack.add_declaration(add(declaration));
 
             return true;
         }
@@ -53,21 +59,29 @@ where F: Fn(ImportDeclaration) -> T {
 
 fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>){
     while let Some(token) = stack.next() {
-        let cleaned = stack.get_clean_token(token);
-
-        match cleaned.token.as_str() {
-            constants::EMPTY | constants::START_CURLY_BRACES_TOKEN | constants::END_CURLY_BRACES_TOKEN => continue,
+        match token.as_str() {
+            constants::EMPTY |
+            constants::SPACE |
+            constants::START_CURLY_BRACES_TOKEN | 
+            constants::COMMA_TOKEN |
+            constants::END_CURLY_BRACES_TOKEN
+            => continue,
+            constants::SEMICOLON_TOKEN => break,
             FROM_TOKEN => {
-                if let Some(from) = stack.next(){
-                    let cleaned = from.replace(constants::SINGLE_QUOTES_TOKEN, "").replace(constants::SEMICOLON_TOKEN, "");
-                    declaration.reference = Some(cleaned);
+                if let Some(identifier) = stack.next_literal() {
+                    let location = stack.get_location();
+                    
+                    declaration.reference = Some(ImportReference {
+                        location,
+                        identifier,
+                    });
                 }
-                break;
+                continue;
             },
             _ => {
                 declaration.nodes.push(ImportSpecifier{
-                    location: cleaned.location,
-                    identifier: cleaned.token
+                    location: stack.get_location(),
+                    identifier: token
                 });
             }
         };

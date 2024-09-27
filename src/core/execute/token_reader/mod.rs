@@ -4,9 +4,9 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Lines};
 use std::path::Path;
 use std::vec;
+use crate::bin::constants;
 
 mod next;
-mod clean_token;
 
 pub type TokenReaderNodes<T> = Vec<T>;
 
@@ -45,32 +45,50 @@ impl<T: Debug> TokenReaderStack<T> {
     pub fn get_line_number(&self) -> usize{
         self.line_number
     }
-
+    
     pub fn get_token(&self) -> Option<String>{
         self.token.clone()
     }
 
-    pub fn ast_add(&mut self, value: T) {
+    pub fn add_declaration(&mut self, value: T) {
         self.ast.push(value);
     }
 
     pub fn next(&mut self) -> Option<String>{ next::token(self) }
+    
+    pub fn next_literal(&mut self) -> Option<String>{
+        let ignore_tokens = [
+            constants::EMPTY,
+            constants::SPACE,
+            constants::START_CURLY_BRACES_TOKEN,
+            constants::SINGLE_QUOTES_TOKEN,
+            constants::COMMA_TOKEN,
+            constants::END_CURLY_BRACES_TOKEN,
+            constants::SEMICOLON_TOKEN
+        ];
+
+        while let Some(token) = self.next() {
+            if !ignore_tokens.contains(&token.as_str()) {
+                return Some(token);
+            }
+        }
+        
+        None
+    }
 
     pub fn get_location(&self) -> TokenReaderLocation{
         TokenReaderLocation{
             start: self.get_start_pos(),
-            end: -1,
+            end: self.get_end_pos() as isize,
             line_start: self.get_line_number(),
-            line_end: -1,
+            line_end: self.get_line_number() as isize,
         }
     }
 
-    pub fn update_location(&self, location: &mut TokenReaderLocation) {
+    pub fn update_location_end(&self, location: &mut TokenReaderLocation) {
         location.end = self.get_end_pos() as isize;
         location.line_end = self.get_line_number() as isize;
     }
-
-    pub fn get_clean_token(&self, current_token: String) -> TokenReaderCleanToken { clean_token::clean_it(self, current_token) }
 }
 
 pub fn run<T: Debug, F>(file_path: &Path, callback: F) -> Result<Vec<T>, ErrorFeedback>
