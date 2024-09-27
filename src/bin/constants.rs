@@ -16,4 +16,6 @@ pub const SINGLE_QUOTES_TOKEN: &str = "'";
 
 pub const START_CURLY_BRACES_TOKEN: &str = "{";
 
+pub const COLON_TOKEN: &str = ":";
+
 pub const END_CURLY_BRACES_TOKEN: &str = "}";

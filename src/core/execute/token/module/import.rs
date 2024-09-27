@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 use crate::bin::constants;
-use crate::core::execute::token_reader::{TokenReaderLocation, TokenReaderNodes, TokenReaderStack};
+// use crate::bin::constants;
+use crate::core::execute::token_reader::{TokenReaderLocation, TokenReaderNextLiteral, TokenReaderNodes, TokenReaderStack};
 
 const IMPORT_TOKEN: &str = "import";
 
@@ -9,12 +10,12 @@ const FROM_TOKEN: &str = "from";
 #[derive(Debug)]
 pub struct ImportDeclaration {
     pub location: TokenReaderLocation,
-    pub nodes: TokenReaderNodes<ImportSpecifier>,
+    pub nodes: TokenReaderNodes<ImportIdentifier>,
     pub reference: Option<ImportReference>,
 }
 
 #[derive(Debug)]
-pub struct ImportSpecifier {
+pub struct ImportIdentifier {
     pub location: TokenReaderLocation,
     pub identifier: String
 }
@@ -45,7 +46,7 @@ where F: Fn(ImportDeclaration) -> T {
                 nodes: vec![],
                 reference: None
             };
-            
+
             loop_tokens(&mut declaration, stack);
             stack.update_location_end(&mut declaration.location);
             stack.add_declaration(add(declaration));
@@ -58,32 +59,42 @@ where F: Fn(ImportDeclaration) -> T {
 }
 
 fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>){
-    while let Some(token) = stack.next() {
-        match token.as_str() {
-            constants::EMPTY |
-            constants::SPACE |
-            constants::START_CURLY_BRACES_TOKEN | 
-            constants::COMMA_TOKEN |
-            constants::END_CURLY_BRACES_TOKEN
-            => continue,
-            constants::SEMICOLON_TOKEN => break,
-            FROM_TOKEN => {
-                if let Some(identifier) = stack.next_literal() {
-                    let location = stack.get_location();
-                    
-                    declaration.reference = Some(ImportReference {
-                        location,
-                        identifier,
-                    });
-                }
-                continue;
-            },
-            _ => {
-                declaration.nodes.push(ImportSpecifier{
-                    location: stack.get_location(),
-                    identifier: token
+    let mut start_curly_braces = false;
+    let mut end_curly_braces = false;
+    let mut nodes: TokenReaderNodes<ImportIdentifier> = vec![];
+
+    while let Some(TokenReaderNextLiteral{prev_token, token}) = stack.next_literal() {
+        if let Some(staring_curly_braces) = &prev_token{
+            if staring_curly_braces == constants::START_CURLY_BRACES_TOKEN {
+                start_curly_braces = true;
+            }
+        }
+
+        if let Some(ending_curly_braces) = &prev_token{
+            if ending_curly_braces == constants::END_CURLY_BRACES_TOKEN {
+                end_curly_braces = true;
+            }
+        }
+
+        if token == FROM_TOKEN {
+            if let Some(next_literal) = stack.next_literal() {
+                let location = stack.get_location();
+
+                declaration.reference = Some(ImportReference {
+                    location,
+                    identifier: next_literal.token,
                 });
             }
-        };
+            continue;
+        }
+
+        nodes.push(ImportIdentifier {
+            location: stack.get_location(),
+            identifier: token
+        });
+    }
+
+    if start_curly_braces && end_curly_braces{
+        declaration.nodes = nodes;
     }
 }

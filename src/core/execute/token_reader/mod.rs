@@ -4,9 +4,10 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Lines};
 use std::path::Path;
 use std::vec;
-use crate::bin::constants;
 
 mod next;
+
+mod next_literal;
 
 pub type TokenReaderNodes<T> = Vec<T>;
 
@@ -30,9 +31,10 @@ pub struct TokenReaderLocation {
     pub line_end: isize,
 }
 
-pub struct TokenReaderCleanToken {
+#[derive(Debug)]
+pub struct TokenReaderNextLiteral {
+    pub prev_token: Option<String>,
     pub token: String,
-    pub location: TokenReaderLocation
 }
 
 impl<T: Debug> TokenReaderStack<T> {
@@ -45,7 +47,7 @@ impl<T: Debug> TokenReaderStack<T> {
     pub fn get_line_number(&self) -> usize{
         self.line_number
     }
-    
+
     pub fn get_token(&self) -> Option<String>{
         self.token.clone()
     }
@@ -55,25 +57,9 @@ impl<T: Debug> TokenReaderStack<T> {
     }
 
     pub fn next(&mut self) -> Option<String>{ next::token(self) }
-    
-    pub fn next_literal(&mut self) -> Option<String>{
-        let ignore_tokens = [
-            constants::EMPTY,
-            constants::SPACE,
-            constants::START_CURLY_BRACES_TOKEN,
-            constants::SINGLE_QUOTES_TOKEN,
-            constants::COMMA_TOKEN,
-            constants::END_CURLY_BRACES_TOKEN,
-            constants::SEMICOLON_TOKEN
-        ];
 
-        while let Some(token) = self.next() {
-            if !ignore_tokens.contains(&token.as_str()) {
-                return Some(token);
-            }
-        }
-        
-        None
+    pub fn next_literal(&mut self) -> Option<TokenReaderNextLiteral>{
+        next_literal::token(self)
     }
 
     pub fn get_location(&self) -> TokenReaderLocation{
