@@ -1,7 +1,14 @@
+use std::cell::RefCell;
 use std::fmt::Debug;
-use crate::bin::constants;
-// use crate::bin::constants;
-use crate::core::execute::token_reader::{TokenReaderLocation, TokenReaderNextLiteral, TokenReaderNodes, TokenReaderStack};
+use std::rc::Rc;
+use crate::core::execute::token_reader::{
+    TokenReaderLocation, 
+    TokenReaderNextLiteral, 
+    TokenReaderNodes, 
+    TokenReaderStack
+};
+use crate::core::execute::token_utils::declaration_node::push_next_literal_token;
+use crate::core::execute::token_utils::on_surrounded;
 
 const IMPORT_TOKEN: &str = "import";
 
@@ -59,27 +66,17 @@ where F: Fn(ImportDeclaration) -> T {
 }
 
 fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>){
-    let mut start_curly_braces = false;
-    let mut end_curly_braces = false;
-    let mut nodes: TokenReaderNodes<ImportIdentifier> = vec![];
+    let import_identifiers: Rc<RefCell<Vec<TokenReaderNextLiteral>>> = Rc::new(RefCell::new(vec![]));
+    let mut on_curly_braces = on_surrounded::curly_braces(|next_literals| {
+        *import_identifiers.borrow_mut() = next_literals.to_vec();
+    });
 
-    while let Some(TokenReaderNextLiteral{prev_token, token}) = stack.next_literal() {
-        if let Some(staring_curly_braces) = &prev_token{
-            if staring_curly_braces == constants::START_CURLY_BRACES_TOKEN {
-                start_curly_braces = true;
-            }
-        }
-
-        if let Some(ending_curly_braces) = &prev_token{
-            if ending_curly_braces == constants::END_CURLY_BRACES_TOKEN {
-                end_curly_braces = true;
-            }
-        }
-
-        if token == FROM_TOKEN {
+    while let Some(import_next_literal) = stack.next_literal() {
+        if on_curly_braces(&import_next_literal) { continue; }
+        if import_next_literal.token == FROM_TOKEN {
             if let Some(next_literal) = stack.next_literal() {
                 let location = stack.get_location();
-
+        
                 declaration.reference = Some(ImportReference {
                     location,
                     identifier: next_literal.token,
@@ -87,14 +84,7 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
             }
             continue;
         }
-
-        nodes.push(ImportIdentifier {
-            location: stack.get_location(),
-            identifier: token
-        });
     }
 
-    if start_curly_braces && end_curly_braces{
-        declaration.nodes = nodes;
-    }
+    push_next_literal_token(stack, declaration, import_identifiers.borrow());
 }

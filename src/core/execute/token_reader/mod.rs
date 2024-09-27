@@ -31,7 +31,7 @@ pub struct TokenReaderLocation {
     pub line_end: isize,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct TokenReaderNextLiteral {
     pub prev_token: Option<String>,
     pub token: String,
@@ -58,9 +58,7 @@ impl<T: Debug> TokenReaderStack<T> {
 
     pub fn next(&mut self) -> Option<String>{ next::token(self) }
 
-    pub fn next_literal(&mut self) -> Option<TokenReaderNextLiteral>{
-        next_literal::token(self)
-    }
+    pub fn next_literal(&mut self) -> Option<TokenReaderNextLiteral>{ next_literal::token(self) }
 
     pub fn get_location(&self) -> TokenReaderLocation{
         TokenReaderLocation{
