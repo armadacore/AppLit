@@ -11,6 +11,7 @@ pub enum ModuleDeclaration {
     Import(import::ImportDeclaration),
     Function(function::Declaration),
 }
+
 pub fn declaration(file_path: &Path) -> DeclarationResult<ModuleDeclaration> {
     token_reader::run(file_path, |stack| {
         if let Some(token) = stack.get_token(){

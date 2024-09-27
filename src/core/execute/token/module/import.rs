@@ -2,9 +2,9 @@ use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
 use crate::core::execute::token_reader::{
-    TokenReaderLocation, 
-    TokenReaderNextLiteral, 
-    TokenReaderNodes, 
+    TokenReaderLocation,
+    TokenReaderNextLiteral,
+    TokenReaderNodes,
     TokenReaderStack
 };
 use crate::core::execute::token_reader::token_utils::declaration_node::push_next_literal_token;
@@ -76,7 +76,7 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
         if import_next_literal.token == FROM_TOKEN {
             if let Some(next_literal) = stack.next_literal() {
                 let location = stack.get_location();
-        
+
                 declaration.reference = Some(ImportReference {
                     location,
                     identifier: next_literal.token,

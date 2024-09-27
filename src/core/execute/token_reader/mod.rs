@@ -8,6 +8,7 @@ use std::vec;
 mod next;
 
 mod next_literal;
+
 pub mod token_utils;
 
 pub type TokenReaderNodes<T> = Vec<T>;
@@ -82,15 +83,18 @@ where F: FnMut(&mut TokenReaderStack<T>) -> bool {
 }
 
 pub fn run_tokens<T: Debug, F>(file_path: &Path, tokens: &mut [F]) -> Result<Vec<T>, ErrorFeedback>
-where F: FnMut(&mut TokenReaderStack<T>) -> bool{
+where F: FnMut(&mut TokenReaderStack<T>) -> bool {
     new(file_path, |stack|{
+        let mut token_classified = false;
         if let Some(token) = stack.get_token(){
             for cb in tokens.iter_mut(){
-                if cb(stack) { return true; }
+                token_classified = cb(stack);
+                
+                if token_classified { continue; }
             }
         }
         
-        false
+        token_classified
     })
 }
 
@@ -110,10 +114,8 @@ where F: FnMut(&mut TokenReaderStack<T>) -> bool {
     };
 
     while let Some(token) = &stack.next() {
-        if callback(&mut stack) {
-            // code
-        } else {
-            // code
+        if !callback(&mut stack){
+            println!("Unknown: {:?}", stack.get_token().unwrap_or("nischt".to_string()));
         }
     }
 
