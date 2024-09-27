@@ -1,11 +1,12 @@
 use crate::feedback::error::ErrorFeedback;
+use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Lines};
 use std::path::Path;
 use std::vec;
-use std::fmt::Debug;
 
 mod next;
+mod clean_token;
 
 pub type TokenReaderNodes<T> = Vec<T>;
 
@@ -27,6 +28,11 @@ pub struct TokenReaderLocation {
     pub end: isize,
     pub line_start: usize,
     pub line_end: isize,
+}
+
+pub struct TokenReaderCleanToken {
+    pub token: String,
+    pub location: TokenReaderLocation
 }
 
 impl<T: Debug> TokenReaderStack<T> {
@@ -63,6 +69,8 @@ impl<T: Debug> TokenReaderStack<T> {
         location.end = self.get_end_pos() as isize;
         location.line_end = self.get_line_number() as isize;
     }
+
+    pub fn get_clean_token(&self, current_token: String) -> TokenReaderCleanToken { clean_token::clean_it(self, current_token) }
 }
 
 pub fn run<T: Debug, F>(file_path: &Path, callback: F) -> Result<Vec<T>, ErrorFeedback>
@@ -98,7 +106,7 @@ where F: FnMut(&mut TokenReaderStack<T>){
         ast: vec![],
     };
 
-    while let Some(token) = &stack.next() { 
+    while let Some(token) = &stack.next() {
         callback(&mut stack);
     }
 

@@ -53,10 +53,9 @@ where F: Fn(ImportDeclaration) -> T {
 
 fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>){
     while let Some(token) = stack.next() {
-        let mut current_token = token;
-        let mut location = stack.get_location();
+        let cleaned = stack.get_clean_token(token);
 
-        match current_token.as_str() {
+        match cleaned.token.as_str() {
             constants::EMPTY | constants::START_CURLY_BRACES_TOKEN | constants::END_CURLY_BRACES_TOKEN => continue,
             FROM_TOKEN => {
                 if let Some(from) = stack.next(){
@@ -66,16 +65,11 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
                 break;
             },
             _ => {
-                if current_token.starts_with(constants::START_CURLY_BRACES_TOKEN){ current_token.remove(0).to_string(); }
-                if current_token.ends_with(constants::COMMA_TOKEN){ current_token.pop(); }
-                if current_token.ends_with(constants::END_CURLY_BRACES_TOKEN){ current_token.pop(); }
+                declaration.nodes.push(ImportSpecifier{
+                    location: cleaned.location,
+                    identifier: cleaned.token
+                });
             }
         };
-
-        stack.update_location(&mut location);
-        declaration.nodes.push(ImportSpecifier{
-            location,
-            identifier: current_token
-        });
     }
 }
