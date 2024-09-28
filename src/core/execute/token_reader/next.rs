@@ -1,3 +1,4 @@
+use crate::bin::constants;
 use crate::core::execute::token_reader::TokenReaderStack;
 use crate::feedback::error::ErrorCause;
 use regex::Regex;
@@ -41,7 +42,16 @@ fn adjust_next_line<T: Debug>(stack: &mut TokenReaderStack<T>) {
 
 fn adjust_tokens<T: Debug>(stack: &mut TokenReaderStack<T>) {
     if let Some(ref line) = stack.line {
-        let regexp = Regex::new(r"(\w+|[{:}',;]|\s)").unwrap();
+        let regex_tokens = [
+            constants::START_CURLY_BRACES_TOKEN,
+            constants::COLON_TOKEN,
+            constants::END_CURLY_BRACES_TOKEN,
+            constants::SINGLE_QUOTES_TOKEN,
+            constants::COMMA_TOKEN,
+            constants::SEMICOLON_TOKEN,
+        ];
+        let regex_pattern = format!("\\w+|[{}]|\\s", regex_tokens.join(""));
+        let regexp = Regex::new(&regex_pattern).unwrap();
         stack.tokens = regexp
             .find_iter(line)
             .map(|res| res.as_str().to_string())
