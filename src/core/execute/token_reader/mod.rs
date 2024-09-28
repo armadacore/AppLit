@@ -72,20 +72,6 @@ impl<T: Debug> TokenReaderStack<T> {
         next_literal::token(self)
     }
 
-    pub fn get_location(&self) -> TokenReaderLocation {
-        TokenReaderLocation {
-            start: self.get_start_pos(),
-            end: self.get_end_pos() as isize,
-            line_start: self.get_line_number(),
-            line_end: self.get_line_number() as isize,
-        }
-    }
-
-    pub fn update_location_end(&self, location: &mut TokenReaderLocation) {
-        location.end = self.get_end_pos() as isize;
-        location.line_end = self.get_line_number() as isize;
-    }
-
     pub fn syntax_error(&mut self, location: TokenReaderLocation, kind: &str) {
         syntax_error::declaration_report(self, location, kind)
     }

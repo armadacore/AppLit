@@ -1,5 +1,6 @@
-use crate::core::execute::token_reader::{TokenReaderLocation, TokenReaderNextLiteral};
+use crate::core::execute::token_reader::{TokenReaderLocation, TokenReaderNextLiteral, TokenReaderStack};
 use std::cell::Ref;
+use std::fmt::Debug;
 
 pub fn from_to(nodes: Ref<Vec<TokenReaderNextLiteral>>) -> TokenReaderLocation {
     let mut location = nodes
@@ -18,4 +19,18 @@ pub fn from_to(nodes: Ref<Vec<TokenReaderNextLiteral>>) -> TokenReaderLocation {
     }
 
     location
+}
+
+pub fn get_location<T: Debug>(stack: &TokenReaderStack<T>) -> TokenReaderLocation{
+    TokenReaderLocation {
+        start: stack.get_start_pos(),
+        end: stack.get_end_pos() as isize,
+        line_start: stack.get_line_number(),
+        line_end: stack.get_line_number() as isize,
+    }
+}
+
+pub fn update_location_end<T: Debug>(stack: &TokenReaderStack<T>, location: &mut TokenReaderLocation) {
+    location.end = stack.get_end_pos() as isize;
+    location.line_end = stack.get_line_number() as isize;
 }

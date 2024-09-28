@@ -6,6 +6,7 @@ use crate::core::execute::token_reader::{
 use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
+use crate::core::execute::token_reader::token_utils::location::{get_location, update_location_end};
 
 const IMPORT_TOKEN: &str = "import";
 
@@ -54,7 +55,7 @@ where
     if let Some(token) = &stack.get_token() {
         if token == IMPORT_TOKEN {
             let mut declaration = ImportDeclaration {
-                location: stack.get_location(),
+                location: get_location(stack),
                 nodes: vec![],
                 reference: None,
             };
@@ -86,13 +87,13 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
         on_single_quotes(&import_next_literal);
     }
 
-    stack.update_location_end(&mut declaration.location);
+    update_location_end(stack, &mut declaration.location);
 
     let import_identifiers_ref = import_identifiers.borrow();
     if !import_identifiers_ref.is_empty() {
         import_identifiers_ref.iter().for_each(|next_literal_item| {
             declaration.nodes.push(ImportIdentifier {
-                location: stack.get_location(),
+                location: get_location(stack),
                 identifier: next_literal_item.token.clone(),
             });
         });
@@ -111,6 +112,6 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
     }
 
     if declaration.reference.is_none() {
-        stack.syntax_error(stack.get_location(), MISSING_REFERENCE)
+        stack.syntax_error(get_location(stack), MISSING_REFERENCE)
     }
 }

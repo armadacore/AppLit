@@ -1,4 +1,7 @@
 use crate::bin::constants;
+use crate::core::execute::token_reader::token_utils::location::{
+    get_location, update_location_end,
+};
 use crate::core::execute::token_reader::{TokenReaderLocation, TokenReaderStack};
 use std::fmt::Debug;
 
@@ -20,13 +23,13 @@ const UNKNOWN: &str = "Unknown token";
 
 pub fn report<T: Debug>(stack: &mut TokenReaderStack<T>) {
     if let Some(token) = &stack.get_token() {
-        let mut location = stack.get_location();
+        let mut location = get_location(stack);
         let kind = SyntaxErrorKind::Unknown(UNKNOWN.into());
 
         if token != constants::SEMICOLON_TOKEN {
             while let Some(toke) = stack.next() {
                 if token == constants::SEMICOLON_TOKEN {
-                    stack.update_location_end(&mut location);
+                    update_location_end(stack, &mut location);
                     break;
                 }
             }
