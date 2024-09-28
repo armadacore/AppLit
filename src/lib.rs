@@ -9,6 +9,8 @@ pub mod bin;
 
 mod core;
 
-pub fn execute_main(root_dir: &str){
-    if let Err(error) = core::execute::main(root_dir) { eprintln!("{:?}", error); }
+pub fn execute_main(root_dir: &str) {
+    if let Err(error) = core::execute::main(root_dir) {
+        eprintln!("{:?}", error);
+    }
 }

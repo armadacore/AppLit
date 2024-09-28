@@ -4,6 +4,6 @@ use crate::core::execute::token_reader::TokenReaderStack;
 pub struct Declaration {
     pub specifier: String,
 }
-pub fn try_declaration(stack: &mut TokenReaderStack<super::ModuleDeclaration>) -> bool{
+pub fn try_declaration(stack: &mut TokenReaderStack<super::ModuleDeclaration>) -> bool {
     false
 }

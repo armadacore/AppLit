@@ -14,11 +14,15 @@ pub enum ModuleDeclaration {
 
 pub fn declaration(file_path: &Path) -> DeclarationResult<ModuleDeclaration> {
     token_reader::run(file_path, |stack| {
-        if let Some(token) = stack.get_token(){
-            if import::try_declaration(stack) { return true; }
-            if function::try_declaration(stack) { return true; }
+        if let Some(token) = stack.get_token() {
+            if import::try_declaration(stack) {
+                return true;
+            }
+            if function::try_declaration(stack) {
+                return true;
+            }
         }
-        
+
         false
     })
 }

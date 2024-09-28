@@ -10,7 +10,7 @@ pub enum SyntaxErrorKind {
 }
 
 #[derive(Debug)]
-pub struct SyntaxErrorDeclaration{
+pub struct SyntaxErrorDeclaration {
     pub location: TokenReaderLocation,
     pub kind: SyntaxErrorKind,
 }
@@ -19,31 +19,34 @@ const MISSING: &str = "Missing semicolon. Expected ';' at the end of the stateme
 const UNKNOWN: &str = "Unknown token";
 
 pub fn report<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    if let Some(token) = &stack.get_token(){
+    if let Some(token) = &stack.get_token() {
         let mut location = stack.get_location();
         let kind = SyntaxErrorKind::Unknown(UNKNOWN.into());
 
         if token != constants::SEMICOLON_TOKEN {
-            while let Some(toke) =  stack.next() {
+            while let Some(toke) = stack.next() {
                 if token == constants::SEMICOLON_TOKEN {
                     stack.update_location_end(&mut location);
                     break;
                 }
             }
 
-            stack.syntax_error.push(SyntaxErrorDeclaration{
-                location,
-                kind,
-            });
+            stack
+                .syntax_error
+                .push(SyntaxErrorDeclaration { location, kind });
         }
     }
 }
 
-pub fn declaration_report<T: Debug>(stack: &mut TokenReaderStack<T>, location: TokenReaderLocation, kind: &str){
-    if let Some(token) = &stack.get_token(){
-        stack.syntax_error.push(SyntaxErrorDeclaration{
+pub fn declaration_report<T: Debug>(
+    stack: &mut TokenReaderStack<T>,
+    location: TokenReaderLocation,
+    kind: &str,
+) {
+    if let Some(token) = &stack.get_token() {
+        stack.syntax_error.push(SyntaxErrorDeclaration {
             location,
             kind: SyntaxErrorKind::Declaration(kind.into()),
         });
     }
-} 
+}

@@ -1,15 +1,15 @@
-use std::fmt::Debug;
-use regex::Regex;
 use crate::core::execute::token_reader::TokenReaderStack;
-use crate::feedback::error::ErrorFeedback;
+use crate::feedback::error::ErrorCause;
+use regex::Regex;
+use std::fmt::Debug;
 
-pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<String>{
-    if stack.tokens.is_empty(){
+pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<String> {
+    if stack.tokens.is_empty() {
         adjust_next_line(stack);
         adjust_tokens(stack);
     }
 
-    stack.token = if stack.tokens.is_empty(){
+    stack.token = if stack.tokens.is_empty() {
         None
     } else {
         let new_token = stack.tokens.remove(0);
@@ -22,30 +22,30 @@ pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<String>{
 }
 
 fn adjust_next_line<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    stack.line = match  stack.lines.next() {
+    stack.line = match stack.lines.next() {
         None => None,
-        Some(line_result) => {
-            match line_result { 
-                Err(error) => panic!("{:?}", ErrorFeedback::from(&error)),
-                Ok(line) => {
-                    stack.line_number += 1;
+        Some(line_result) => match line_result {
+            Err(error) => panic!("{}", ErrorCause::Unhandled(Box::new(error))),
+            Ok(line) => {
+                stack.line_number += 1;
 
-                    if line.is_empty() {
-                        return adjust_next_line(stack);
-                    }
-
-                    Some(line)
+                if line.is_empty() {
+                    return adjust_next_line(stack);
                 }
+
+                Some(line)
             }
-            
-        }
+        },
     };
 }
 
 fn adjust_tokens<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    if let Some(ref line) = stack.line{
+    if let Some(ref line) = stack.line {
         let regexp = Regex::new(r"(\w+|[{:}',;]|\s)").unwrap();
-        stack.tokens = regexp.find_iter(line).map(|res| res.as_str().to_string()).collect();
+        stack.tokens = regexp
+            .find_iter(line)
+            .map(|res| res.as_str().to_string())
+            .collect();
     }
 }
 

@@ -1,4 +1,4 @@
-use crate::feedback::error::{ErrorFeedback};
+use crate::feedback::error::ErrorCause;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Lines};
@@ -44,17 +44,19 @@ pub struct TokenReaderNextLiteral {
 }
 
 impl<T: Debug> TokenReaderStack<T> {
-    pub fn get_start_pos(&self) -> usize{
+    pub fn get_start_pos(&self) -> usize {
         self.start
     }
 
-    pub fn get_end_pos(&self) -> usize{ self.end }
+    pub fn get_end_pos(&self) -> usize {
+        self.end
+    }
 
-    pub fn get_line_number(&self) -> usize{
+    pub fn get_line_number(&self) -> usize {
         self.line_number
     }
 
-    pub fn get_token(&self) -> Option<String>{
+    pub fn get_token(&self) -> Option<String> {
         self.token.clone()
     }
 
@@ -62,12 +64,16 @@ impl<T: Debug> TokenReaderStack<T> {
         self.ast.push(value);
     }
 
-    pub fn next(&mut self) -> Option<String>{ next::token(self) }
+    pub fn next(&mut self) -> Option<String> {
+        next::token(self)
+    }
 
-    pub fn next_literal(&mut self) -> Option<TokenReaderNextLiteral>{ next_literal::token(self) }
+    pub fn next_literal(&mut self) -> Option<TokenReaderNextLiteral> {
+        next_literal::token(self)
+    }
 
-    pub fn get_location(&self) -> TokenReaderLocation{
-        TokenReaderLocation{
+    pub fn get_location(&self) -> TokenReaderLocation {
+        TokenReaderLocation {
             start: self.get_start_pos(),
             end: self.get_end_pos() as isize,
             line_start: self.get_line_number(),
@@ -79,26 +85,32 @@ impl<T: Debug> TokenReaderStack<T> {
         location.end = self.get_end_pos() as isize;
         location.line_end = self.get_line_number() as isize;
     }
-    
+
     pub fn syntax_error(&mut self, location: TokenReaderLocation, kind: &str) {
         syntax_error::declaration_report(self, location, kind)
     }
 }
 
-pub fn run<T: Debug, F>(file_path: &Path, callback: F) -> Result<Vec<T>, ErrorFeedback>
-where F: FnMut(&mut TokenReaderStack<T>) -> bool {
+pub fn run<T: Debug, F>(file_path: &Path, callback: F) -> Result<Vec<T>, ErrorCause>
+where
+    F: FnMut(&mut TokenReaderStack<T>) -> bool,
+{
     new(file_path, callback)
 }
 
-pub fn run_tokens<T: Debug, F>(file_path: &Path, tokens: &mut [F]) -> Result<Vec<T>, ErrorFeedback>
-where F: FnMut(&mut TokenReaderStack<T>) -> bool {
-    new(file_path, |stack|{
+pub fn run_tokens<T: Debug, F>(file_path: &Path, tokens: &mut [F]) -> Result<Vec<T>, ErrorCause>
+where
+    F: FnMut(&mut TokenReaderStack<T>) -> bool,
+{
+    new(file_path, |stack| {
         let mut token_classified = false;
-        if let Some(token) = stack.get_token(){
-            for cb in tokens.iter_mut(){
+        if let Some(token) = stack.get_token() {
+            for cb in tokens.iter_mut() {
                 token_classified = cb(stack);
 
-                if token_classified { continue; }
+                if token_classified {
+                    continue;
+                }
             }
         }
 
@@ -106,8 +118,10 @@ where F: FnMut(&mut TokenReaderStack<T>) -> bool {
     })
 }
 
-fn new<T: Debug, F>(file_path: &Path, mut callback: F) -> Result<Vec<T>, ErrorFeedback>
-where F: FnMut(&mut TokenReaderStack<T>) -> bool {
+fn new<T: Debug, F>(file_path: &Path, mut callback: F) -> Result<Vec<T>, ErrorCause>
+where
+    F: FnMut(&mut TokenReaderStack<T>) -> bool,
+{
     let file = File::open(file_path).unwrap();
     let reader = BufReader::new(file);
     let mut stack: TokenReaderStack<T> = TokenReaderStack {
@@ -123,7 +137,7 @@ where F: FnMut(&mut TokenReaderStack<T>) -> bool {
     };
 
     while let Some(token) = &stack.next() {
-        if !callback(&mut stack){
+        if !callback(&mut stack) {
             syntax_error::report(&mut stack)
         }
     }
@@ -131,6 +145,6 @@ where F: FnMut(&mut TokenReaderStack<T>) -> bool {
     // for res in stack.syntax_error{
     //     println!("Error: {:?}", res.kind);
     // }
-    
+
     Ok(stack.ast)
 }

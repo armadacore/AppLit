@@ -1,6 +1,6 @@
-use std::fmt::Debug;
 use crate::bin::constants;
-use crate::core::execute::token_reader::{TokenReaderStack, TokenReaderNextLiteral};
+use crate::core::execute::token_reader::{TokenReaderNextLiteral, TokenReaderStack};
+use std::fmt::Debug;
 
 pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<TokenReaderNextLiteral> {
     let ignore_tokens = [
@@ -11,16 +11,16 @@ pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<TokenReaderNex
         constants::COLON_TOKEN,
         constants::COMMA_TOKEN,
         constants::END_CURLY_BRACES_TOKEN,
-        constants::SEMICOLON_TOKEN
+        constants::SEMICOLON_TOKEN,
     ];
 
     let mut prev_token = None;
     while let Some(token) = stack.next() {
         if !ignore_tokens.contains(&token.as_str()) {
-            return Some(TokenReaderNextLiteral{
+            return Some(TokenReaderNextLiteral {
                 location: stack.get_location(),
                 prev_token,
-                token
+                token,
             });
         }
 

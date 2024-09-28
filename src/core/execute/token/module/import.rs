@@ -1,14 +1,11 @@
+use crate::core::execute::token_reader::token_utils::location;
+use crate::core::execute::token_reader::token_utils::on_surrounded;
+use crate::core::execute::token_reader::{
+    TokenReaderLocation, TokenReaderNextLiteral, TokenReaderNodes, TokenReaderStack,
+};
 use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
-use crate::core::execute::token_reader::{
-    TokenReaderLocation,
-    TokenReaderNextLiteral,
-    TokenReaderNodes,
-    TokenReaderStack
-};
-use crate::core::execute::token_reader::token_utils::location;
-use crate::core::execute::token_reader::token_utils::on_surrounded;
 
 const IMPORT_TOKEN: &str = "import";
 
@@ -28,34 +25,38 @@ pub struct ImportDeclaration {
 #[derive(Debug)]
 pub struct ImportIdentifier {
     pub location: TokenReaderLocation,
-    pub identifier: String
+    pub identifier: String,
 }
 
 #[derive(Debug)]
 pub struct ImportReference {
     pub location: TokenReaderLocation,
-    pub identifier: String
+    pub identifier: String,
 }
 
 pub fn try_declaration(stack: &mut TokenReaderStack<super::ModuleDeclaration>) -> bool {
-    try_to_declare(stack, |declaration|{
+    try_to_declare(stack, |declaration| {
         super::ModuleDeclaration::Import(declaration)
     })
 }
 
 pub fn try_declaration_with<T: Debug, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
-where F: Fn(ImportDeclaration) -> T {
+where
+    F: Fn(ImportDeclaration) -> T,
+{
     try_to_declare(stack, add)
 }
 
 fn try_to_declare<T: Debug, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
-where F: Fn(ImportDeclaration) -> T {
+where
+    F: Fn(ImportDeclaration) -> T,
+{
     if let Some(token) = &stack.get_token() {
-       if token == IMPORT_TOKEN {
-            let mut declaration = ImportDeclaration{
+        if token == IMPORT_TOKEN {
+            let mut declaration = ImportDeclaration {
                 location: stack.get_location(),
                 nodes: vec![],
-                reference: None
+                reference: None,
             };
 
             loop_tokens(&mut declaration, stack);
@@ -68,12 +69,14 @@ where F: Fn(ImportDeclaration) -> T {
     false
 }
 
-fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>){
-    let import_identifiers: Rc<RefCell<Vec<TokenReaderNextLiteral>>> = Rc::new(RefCell::new(vec![]));
+fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>) {
+    let import_identifiers: Rc<RefCell<Vec<TokenReaderNextLiteral>>> =
+        Rc::new(RefCell::new(vec![]));
     let mut on_curly_braces = on_surrounded::curly_braces(|next_literal| {
         (*import_identifiers.borrow_mut()).push(next_literal);
     });
-    let reference_identifiers: Rc<RefCell<Vec<TokenReaderNextLiteral>>> = Rc::new(RefCell::new(vec![]));
+    let reference_identifiers: Rc<RefCell<Vec<TokenReaderNextLiteral>>> =
+        Rc::new(RefCell::new(vec![]));
     let mut on_single_quotes = on_surrounded::single_quotes(|next_literal| {
         (*reference_identifiers.borrow_mut()).push(next_literal);
     });
@@ -90,7 +93,7 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
         import_identifiers_ref.iter().for_each(|next_literal_item| {
             declaration.nodes.push(ImportIdentifier {
                 location: stack.get_location(),
-                identifier: next_literal_item.token.clone()
+                identifier: next_literal_item.token.clone(),
             });
         });
     } else {
@@ -98,15 +101,15 @@ fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenR
     }
 
     let reference_identifier_ref = reference_identifiers.borrow();
-    if !reference_identifier_ref.is_empty(){
+    if !reference_identifier_ref.is_empty() {
         if let Some(reference) = reference_identifier_ref.first() {
-            declaration.reference = Some(ImportReference{
+            declaration.reference = Some(ImportReference {
                 location: reference.location.clone(),
-                identifier: reference.token.clone()
+                identifier: reference.token.clone(),
             })
         }
     }
-    
+
     if declaration.reference.is_none() {
         stack.syntax_error(stack.get_location(), MISSING_REFERENCE)
     }

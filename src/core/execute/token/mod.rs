@@ -1,7 +1,7 @@
-use crate::feedback::error::ErrorFeedback;
+use crate::feedback::error::ErrorCause;
 
 pub mod main;
 
 pub mod module;
 
-pub type DeclarationResult<T> = Result<Vec<T>, ErrorFeedback>;
+pub type DeclarationResult<T> = Result<Vec<T>, ErrorCause>;
