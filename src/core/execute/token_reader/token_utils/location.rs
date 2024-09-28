@@ -3,7 +3,7 @@ use crate::core::execute::token_reader::{TokenReaderLocation, TokenReaderNextLit
 use crate::feedback::error;
 
 pub fn from_to(nodes: Ref<Vec<TokenReaderNextLiteral>>) -> TokenReaderLocation{
-    let mut location = nodes.first().expect("bla bla").location.clone();
+    let mut location = nodes.first().expect("TokenReaderLocation not found").location.clone();
     
     if nodes.len() > 1 {
         if let Some(last) = nodes.last() {
