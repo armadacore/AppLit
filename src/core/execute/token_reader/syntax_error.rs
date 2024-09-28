@@ -16,12 +16,12 @@ pub struct SyntaxErrorDeclaration{
 }
 
 const MISSING: &str = "Missing semicolon. Expected ';' at the end of the statement.";
-const UNKNWON: &str = "Unknown token";
+const UNKNOWN: &str = "Unknown token";
 
 pub fn report<T: Debug>(stack: &mut TokenReaderStack<T>) {
     if let Some(token) = &stack.get_token(){
         let mut location = stack.get_location();
-        let kind = SyntaxErrorKind::Unknown(UNKNWON.into());
+        let kind = SyntaxErrorKind::Unknown(UNKNOWN.into());
 
         if token != constants::SEMICOLON_TOKEN {
             while let Some(toke) =  stack.next() {

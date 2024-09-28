@@ -51,7 +51,7 @@ where F: Fn(ImportDeclaration) -> T {
 fn try_to_declare<T: Debug, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
 where F: Fn(ImportDeclaration) -> T {
     if let Some(token) = &stack.get_token() {
-        if token == IMPORT_TOKEN {
+       if token == IMPORT_TOKEN {
             let mut declaration = ImportDeclaration{
                 location: stack.get_location(),
                 nodes: vec![],

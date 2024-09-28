@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 use regex::Regex;
 use crate::core::execute::token_reader::TokenReaderStack;
+use crate::feedback::error::ErrorFeedback;
 
 pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<String>{
     if stack.tokens.is_empty(){
@@ -21,17 +22,24 @@ pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<String>{
 }
 
 fn adjust_next_line<T: Debug>(stack: &mut TokenReaderStack<T>) {
-    stack.line = if let Some(Ok(line)) = stack.lines.next(){
-        stack.line_number += 1;
-    
-        if line.is_empty() {
-            return adjust_next_line(stack);
+    stack.line = match  stack.lines.next() {
+        None => None,
+        Some(line_result) => {
+            match line_result { 
+                Err(error) => panic!("{:?}", ErrorFeedback::from(&error)),
+                Ok(line) => {
+                    stack.line_number += 1;
+
+                    if line.is_empty() {
+                        return adjust_next_line(stack);
+                    }
+
+                    Some(line)
+                }
+            }
+            
         }
-    
-        Some(line)
-    } else {
-        None
-    }
+    };
 }
 
 fn adjust_tokens<T: Debug>(stack: &mut TokenReaderStack<T>) {

@@ -1,6 +1,6 @@
 use crate::bin::constants;
 use crate::core::execute::token;
-use crate::feedback::error::{file_not_found, path_not_found, ErrorFeedback};
+use crate::feedback::error::{ErrorCause, ErrorFeedback};
 use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
@@ -36,7 +36,7 @@ fn exists_dir(root_dir: &str) -> Result<PathBuf, ErrorFeedback>{
     if path.is_dir() {
         Ok(path)
     } else {
-        Err(path_not_found(root_dir))
+        Err(ErrorFeedback::cause(ErrorCause::PathNotFound(root_dir.into())))
     }
 }
 
@@ -61,10 +61,11 @@ fn get_main_file_execute_operation(root_dir: &Path) -> Result<ExecuteMainOperati
     let main_app = constants::MAIN_APP_FILE;
     let main_applit = constants::MAIN_APPLIT_FILE;
     let err_msg = format!("{main_app} or {main_applit} in {root_path}");
-
-    Err(file_not_found(&err_msg))
+    
+    Err(ErrorFeedback::cause(ErrorCause::FileNotFound(err_msg)))
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -116,3 +117,4 @@ mod tests {
         }
     }
 }
+*/

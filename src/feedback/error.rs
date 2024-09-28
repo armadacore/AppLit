@@ -1,50 +1,52 @@
-/// Define the error `Struct` feedback for each implemented error
+use std::{fmt, error::Error};
+
+#[derive(Debug)]
+pub enum ErrorCause {
+    Unhandled(String),
+    PathNotFound(String),
+    FileNotFound(String),
+    UnknownToken(String),
+    TokenNotImplemented(String),
+}
+
+impl fmt::Display for ErrorCause {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ErrorCause::Unhandled(msg) => write!(f, "Unhandled error: {}", msg),
+            ErrorCause::PathNotFound(path) => write!(f, "Path not found: {}", path),
+            ErrorCause::FileNotFound(file) => write!(f, "File not found: {}", file),
+            ErrorCause::UnknownToken(token) => write!(f, "Unknown token: {}", token),
+            ErrorCause::TokenNotImplemented(token) => write!(f, "Token not implemented: {}", token),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct ErrorFeedback {
-    /// The origin message for certain error
-    pub message: String,
+    cause: ErrorCause, 
 }
 
-/// Default implementation of [`ErrorFeedback`]
+impl fmt::Display for ErrorFeedback {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f,"{}",self.cause)
+    }
+}
+
+impl Error for ErrorFeedback {}
 impl ErrorFeedback {
-    /// Print error message into console
-    pub fn print(&self){
-        let msg = &self.message;
-        eprintln!("{msg:?}");
+    pub fn new(message: &str) -> Self {
+        ErrorFeedback {
+            cause: ErrorCause::Unhandled(message.into())
+        }
     }
-}
-
-/// When ever a given path isn't found, would [`path_not_found`] call.
-/// Usual is [`path_not_found`] to check if a directory or file still exists.
-/// 
-/// # Parameters
-/// 
-/// * `path: &str` - The path what isn't found
-pub fn path_not_found(path: &str) -> ErrorFeedback{
-    ErrorFeedback{
-        message: format!("Path '{path}' not found")
+    
+    pub fn from(error: &dyn Error) -> Self {
+        ErrorFeedback {
+            cause: ErrorCause::Unhandled(error.to_string())
+        }
     }
-}
-
-/// Calling [`file_not_found`] has to call when explicit file source isn't found
-/// 
-/// # Parameters
-/// 
-/// * `file: &str` - The file path what isn't found.
-pub fn file_not_found(file: &str) -> ErrorFeedback{
-    ErrorFeedback{
-        message: format!("File '{file}' not found")
-    }
-}
-
-pub fn unknown_token(token: &str) -> ErrorFeedback{
-    ErrorFeedback{
-        message: format!("Unknown token '{token}'")
-    }
-}
-
-pub fn token_not_implemented(token: &str) -> ErrorFeedback{
-    ErrorFeedback{
-        message: format!("Seems like the token '{token}' isn't implemented")
+    
+    pub fn cause(cause: ErrorCause) -> Self {
+        ErrorFeedback { cause }
     }
 }
