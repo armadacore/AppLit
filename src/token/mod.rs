@@ -7,7 +7,7 @@ mod declaration;
 
 mod utils;
 
-pub mod reader;
+mod reader;
 
 pub fn main_declaration(file_path: &Path) -> DeclarationResult<MainDeclaration>{
     declaration::main::token(file_path)
