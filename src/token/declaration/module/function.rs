@@ -1,4 +1,4 @@
-use crate::core::execute::token_reader::TokenReaderStack;
+use crate::token::reader::TokenReaderStack;
 
 #[derive(Debug, Clone)]
 pub struct Declaration {

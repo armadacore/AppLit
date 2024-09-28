@@ -7,6 +7,8 @@ pub mod feedback;
 /// Crate environment variables
 pub mod bin;
 
+pub mod token;
+
 mod core;
 
 pub fn execute_main(root_dir: &str) {

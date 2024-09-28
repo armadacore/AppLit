@@ -1,5 +1,5 @@
-use crate::core::execute::token::DeclarationResult;
-use crate::core::execute::token_reader;
+use crate::token::declaration::DeclarationResult;
+use crate::token::reader;
 use std::fmt::Debug;
 use std::path::Path;
 
@@ -12,8 +12,8 @@ pub enum ModuleDeclaration {
     Function(function::Declaration),
 }
 
-pub fn declaration(file_path: &Path) -> DeclarationResult<ModuleDeclaration> {
-    token_reader::run(file_path, |stack| {
+pub fn token(file_path: &Path) -> DeclarationResult<ModuleDeclaration> {
+    reader::run(file_path, |stack| {
         if let Some(token) = stack.get_token() {
             if import::try_declaration(stack) {
                 return true;

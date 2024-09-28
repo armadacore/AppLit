@@ -1,6 +1,6 @@
 use crate::bin::constants;
-use crate::core::execute::token;
 use crate::feedback::error::ErrorCause;
+use crate::token;
 use std::path::{Path, PathBuf};
 
 #[derive(Debug)]
@@ -19,7 +19,7 @@ pub fn new(root_dir: &str) -> Result<(), ErrorCause> {
     let root_path_exists = exists_dir(root_dir)?;
     let exo = get_main_file_execute_operation(&root_path_exists)?;
     let result = match exo.mode {
-        MainOperationMode::App => token::main::declaration(&exo.file_path),
+        MainOperationMode::App => token::main_declaration(&exo.file_path),
         MainOperationMode::AppLit => todo!("read binary file and return [Ast]"),
     }?;
 

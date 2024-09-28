@@ -1,6 +1,6 @@
-use crate::core::execute::token_reader::{TokenReaderLocation, TokenReaderNextLiteral, TokenReaderStack};
 use std::cell::Ref;
 use std::fmt::Debug;
+use crate::token::reader::{TokenReaderLocation, TokenReaderNextLiteral, TokenReaderStack};
 
 pub fn from_to(nodes: Ref<Vec<TokenReaderNextLiteral>>) -> TokenReaderLocation {
     let mut location = nodes

@@ -1,5 +1,5 @@
 use crate::bin::constants;
-use crate::core::execute::token_reader::TokenReaderNextLiteral;
+use crate::token::reader::TokenReaderNextLiteral;
 
 pub fn curly_braces<F>(mut callback: F) -> impl FnMut(&TokenReaderNextLiteral)
 where

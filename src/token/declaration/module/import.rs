@@ -1,12 +1,12 @@
-use crate::core::execute::token_reader::token_utils::location;
-use crate::core::execute::token_reader::token_utils::on_surrounded;
-use crate::core::execute::token_reader::{
+use crate::token::reader::{
     TokenReaderLocation, TokenReaderNextLiteral, TokenReaderNodes, TokenReaderStack,
 };
+use crate::token::utils::location;
+use crate::token::utils::location::{get_location, update_location_end};
+use crate::token::utils::on_surrounded;
 use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
-use crate::core::execute::token_reader::token_utils::location::{get_location, update_location_end};
 
 const IMPORT_TOKEN: &str = "import";
 

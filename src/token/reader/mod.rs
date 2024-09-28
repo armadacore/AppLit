@@ -11,8 +11,6 @@ mod next_literal;
 
 mod syntax_error;
 
-pub mod token_utils;
-
 pub type TokenReaderNodes<T> = Vec<T>;
 
 #[derive(Debug)]
