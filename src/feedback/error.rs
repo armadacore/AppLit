@@ -1,5 +1,3 @@
-use ansi_term::Colour;
-
 /// Define the error `Struct` feedback for each implemented error
 #[derive(Debug)]
 pub struct ErrorFeedback {
@@ -49,15 +47,4 @@ pub fn token_not_implemented(token: &str) -> ErrorFeedback{
     ErrorFeedback{
         message: format!("Seems like the token '{token}' isn't implemented")
     }
-}
-
-/// The [`super::error::panic`] function has to call, when ever a state would break the application self
-/// 
-/// # Parameters
-/// 
-/// * `message: &str` - The message output into console.
-pub fn panic(message: &str){
-    let error_style = Colour::Red.bold().paint("ERROR");
-
-    panic!("{} => {}", error_style, message);
 }

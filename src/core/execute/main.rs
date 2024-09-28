@@ -69,7 +69,6 @@ fn get_main_file_execute_operation(root_dir: &Path) -> Result<ExecuteMainOperati
 mod tests {
     use super::*;
     use crate::bin::mock_constants;
-    use crate::feedback::error;
 
     #[test]
     fn exists_of_root_dir_is_true() {
@@ -87,7 +86,7 @@ mod tests {
         let expected_error_message = format!("Path '{check_path}' not found");
 
         match exists_dir(check_path) {
-            Ok(_) => error::panic("Expected Err, but got Ok"),
+            Ok(_) => panic!("Expected Err, but got Ok"),
             Err(err) => assert_eq!(err.message, expected_error_message, "Error message seems to be wrong"),
         }
     }
@@ -112,7 +111,7 @@ mod tests {
         let expected_error_message = format!("File '{main_app} or {main_applit} in {check_path}' not found");
 
         match get_main_file_execute_operation(&root_path) {
-            Ok(_) => error::panic("Expected Err, but got Ok"),
+            Ok(_) => panic!("Expected Err, but got Ok"),
             Err(err) => assert_eq!(err.message, expected_error_message, "Error message seems to be wrong"),
         }
     }

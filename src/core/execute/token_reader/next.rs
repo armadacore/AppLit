@@ -21,13 +21,15 @@ pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<String>{
 }
 
 fn adjust_next_line<T: Debug>(stack: &mut TokenReaderStack<T>) {
+    let next = stack.lines.next();
+    
     stack.line = if let Some(Ok(line)) = stack.lines.next(){
         stack.line_number += 1;
-
+    
         if line.is_empty() {
             return adjust_next_line(stack);
         }
-
+    
         Some(line)
     } else {
         None
