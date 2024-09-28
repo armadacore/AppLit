@@ -1,8 +1,6 @@
 use crate::bin::constants;
-use crate::token::utils::location::{
-    get_location, update_location_end,
-};
 use crate::token::reader::{TokenReaderLocation, TokenReaderStack};
+use crate::token::utils::location::{get_location, update_location_end};
 use std::fmt::Debug;
 
 #[derive(Debug)]

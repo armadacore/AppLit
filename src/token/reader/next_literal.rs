@@ -1,7 +1,7 @@
 use crate::bin::constants;
 use crate::token::reader::{TokenReaderNextLiteral, TokenReaderStack};
-use std::fmt::Debug;
 use crate::token::utils::location::get_location;
+use std::fmt::Debug;
 
 pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<TokenReaderNextLiteral> {
     let ignore_tokens = [

@@ -1,6 +1,6 @@
 use crate::bin::constants;
-use crate::token::reader::TokenReaderStack;
 use crate::feedback::error::ErrorCause;
+use crate::token::reader::TokenReaderStack;
 use regex::Regex;
 use std::fmt::Debug;
 
