@@ -1,4 +1,4 @@
-use crate::feedback::error::ErrorCause;
+use crate::core::feedback::error::ErrorCause;
 
 pub mod main;
 

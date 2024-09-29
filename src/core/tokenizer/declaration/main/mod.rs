@@ -1,7 +1,7 @@
-use crate::token::declaration::module::import;
-use crate::token::declaration::DeclarationResult;
-use crate::token::reader;
-use crate::token::reader::TokenReaderStack;
+use crate::core::tokenizer::declaration::module::import;
+use crate::core::tokenizer::declaration::DeclarationResult;
+use crate::core::tokenizer::reader;
+use crate::core::tokenizer::reader::TokenReaderStack;
 use std::fmt::Debug;
 use std::path::Path;
 

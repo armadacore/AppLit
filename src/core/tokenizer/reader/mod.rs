@@ -1,4 +1,4 @@
-use crate::feedback::error::ErrorCause;
+use crate::core::feedback::error::ErrorCause;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Lines};
@@ -125,10 +125,6 @@ where
             syntax_error::report(&mut stack)
         }
     }
-
-    // for res in stack.syntax_error{
-    //     println!("Error: {:?}", res.kind);
-    // }
 
     Ok(stack.ast)
 }

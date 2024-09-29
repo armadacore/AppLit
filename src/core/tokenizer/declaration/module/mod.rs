@@ -1,5 +1,5 @@
-use crate::token::declaration::DeclarationResult;
-use crate::token::reader;
+use crate::core::tokenizer::declaration::DeclarationResult;
+use crate::core::tokenizer::reader;
 use std::fmt::Debug;
 use std::path::Path;
 

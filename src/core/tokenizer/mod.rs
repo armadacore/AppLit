@@ -1,6 +1,6 @@
-use crate::token::declaration::main::MainDeclaration;
-use crate::token::declaration::module::ModuleDeclaration;
-use crate::token::declaration::DeclarationResult;
+use crate::core::tokenizer::declaration::main::MainDeclaration;
+use crate::core::tokenizer::declaration::module::ModuleDeclaration;
+use crate::core::tokenizer::declaration::DeclarationResult;
 use std::path::Path;
 
 mod declaration;

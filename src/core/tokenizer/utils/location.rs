@@ -1,4 +1,4 @@
-use crate::token::reader::{TokenReaderLocation, TokenReaderNextLiteral, TokenReaderStack};
+use crate::core::tokenizer::reader::{TokenReaderLocation, TokenReaderNextLiteral, TokenReaderStack};
 use std::cell::Ref;
 use std::fmt::Debug;
 

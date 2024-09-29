@@ -1,4 +1,4 @@
-use crate::token::reader::{TokenReaderLocation, TokenReaderStack};
+use crate::core::tokenizer::reader::{TokenReaderLocation, TokenReaderStack};
 
 const ID_TOKEN: &str = "@id";
 

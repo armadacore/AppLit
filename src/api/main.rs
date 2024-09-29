@@ -1,33 +1,28 @@
 use crate::bin::constants;
-use crate::feedback::error::ErrorCause;
-use crate::token;
+use crate::core::{tokenizer, feedback::error::ErrorCause};
 use std::path::{Path, PathBuf};
-
-#[derive(Debug)]
-pub enum MainOperationMode {
-    AppLit,
-    App,
-}
-
-#[derive(Debug)]
-pub struct ExecuteMainOperation {
-    pub mode: MainOperationMode,
-    pub file_path: PathBuf,
-}
 
 pub fn new(root_dir: &str) -> Result<(), ErrorCause> {
     let root_path_exists = exists_dir(root_dir)?;
     let exo = get_main_file_execute_operation(&root_path_exists)?;
     let result = match exo.mode {
-        MainOperationMode::App => token::main_declaration(&exo.file_path),
+        MainOperationMode::App => tokenizer::main_declaration(&exo.file_path),
         MainOperationMode::AppLit => todo!("read binary file and return [Ast]"),
     }?;
 
-    for res in result {
-        println!("Result: {res:?}");
-    }
-
     Ok(())
+}
+
+#[derive(Debug)]
+enum MainOperationMode {
+    AppLit,
+    App,
+}
+
+#[derive(Debug)]
+struct ExecuteMainOperation {
+    pub mode: MainOperationMode,
+    pub file_path: PathBuf,
 }
 
 fn exists_dir(root_dir: &str) -> Result<PathBuf, ErrorCause> {

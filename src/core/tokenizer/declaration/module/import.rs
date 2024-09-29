@@ -1,9 +1,9 @@
-use crate::token::reader::{
+use crate::core::tokenizer::reader::{
     TokenReaderLocation, TokenReaderNextLiteral, TokenReaderNodes, TokenReaderStack,
 };
-use crate::token::utils::location;
-use crate::token::utils::location::{get_location, update_location_end};
-use crate::token::utils::on_surrounded;
+use crate::core::tokenizer::utils::location;
+use crate::core::tokenizer::utils::location::{get_location, update_location_end};
+use crate::core::tokenizer::utils::on_surrounded;
 use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
