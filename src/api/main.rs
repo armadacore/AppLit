@@ -9,6 +9,11 @@ pub fn new(root_dir: &str) -> Result<(), ErrorCause> {
         MainOperationMode::App => tokenizer::main_declaration(&exo.file_path),
         MainOperationMode::AppLit => todo!("read binary file and return [Ast]"),
     }?;
+    
+    for item in result.get_declaration(){
+        println!("{:?}", item);
+        println!();
+    }
 
     Ok(())
 }

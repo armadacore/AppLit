@@ -14,7 +14,7 @@ mod syntax_error;
 pub type TokenReaderNodes<T> = Vec<T>;
 
 #[derive(Debug)]
-pub struct TokenReaderStack<T> {
+pub struct TokenReaderStack<T: Debug + Clone> {
     lines: Lines<BufReader<File>>,
     line: Option<String>,
     start: usize,
@@ -22,16 +22,16 @@ pub struct TokenReaderStack<T> {
     line_number: usize,
     tokens: Vec<String>,
     token: Option<String>,
-    syntax_error: Vec<syntax_error::SyntaxErrorDeclaration>,
+    error: Vec<ErrorCause>,
     ast: Vec<T>,
 }
 
 #[derive(Debug, Clone)]
 pub struct TokenReaderLocation {
     pub start: usize,
-    pub end: isize,
+    pub end: usize,
     pub line_start: usize,
-    pub line_end: isize,
+    pub line_end: usize,
 }
 
 #[derive(Debug, Clone)]
@@ -41,7 +41,7 @@ pub struct TokenReaderNextLiteral {
     pub token: String,
 }
 
-impl<T: Debug> TokenReaderStack<T> {
+impl<T: Debug + Clone> TokenReaderStack<T> {
     pub fn get_start_pos(&self) -> usize {
         self.start
     }
@@ -58,8 +58,12 @@ impl<T: Debug> TokenReaderStack<T> {
         self.token.clone()
     }
 
-    pub fn add_declaration(&mut self, value: T) {
+    pub fn push_declaration(&mut self, value: T) {
         self.ast.push(value);
+    }
+
+    pub fn get_declaration(&self) -> Vec<T> {
+        self.ast.clone()
     }
 
     pub fn next(&mut self) -> Option<String> {
@@ -75,14 +79,20 @@ impl<T: Debug> TokenReaderStack<T> {
     }
 }
 
-pub fn run<T: Debug, F>(file_path: &Path, callback: F) -> Result<Vec<T>, ErrorCause>
+pub fn run<T: Debug + Clone, F>(
+    file_path: &Path,
+    callback: F,
+) -> Result<TokenReaderStack<T>, ErrorCause>
 where
     F: FnMut(&mut TokenReaderStack<T>) -> bool,
 {
     new(file_path, callback)
 }
 
-pub fn run_tokens<T: Debug, F>(file_path: &Path, tokens: &mut [F]) -> Result<Vec<T>, ErrorCause>
+pub fn run_tokens<T: Debug + Clone, F>(
+    file_path: &Path,
+    tokens: &mut [F],
+) -> Result<TokenReaderStack<T>, ErrorCause>
 where
     F: FnMut(&mut TokenReaderStack<T>) -> bool,
 {
@@ -102,7 +112,10 @@ where
     })
 }
 
-fn new<T: Debug, F>(file_path: &Path, mut callback: F) -> Result<Vec<T>, ErrorCause>
+fn new<T: Debug + Clone, F>(
+    file_path: &Path,
+    mut callback: F,
+) -> Result<TokenReaderStack<T>, ErrorCause>
 where
     F: FnMut(&mut TokenReaderStack<T>) -> bool,
 {
@@ -116,7 +129,7 @@ where
         line_number: 0,
         tokens: vec![],
         token: None,
-        syntax_error: vec![],
+        error: vec![],
         ast: vec![],
     };
 
@@ -126,5 +139,5 @@ where
         }
     }
 
-    Ok(stack.ast)
+    Ok(stack)
 }

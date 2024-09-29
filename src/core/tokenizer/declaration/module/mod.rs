@@ -6,7 +6,7 @@ use std::path::Path;
 mod function;
 pub mod import;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum ModuleDeclaration {
     Import(import::ImportDeclaration),
     Function(function::Declaration),

@@ -7,7 +7,7 @@ use std::path::Path;
 
 mod id;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum MainDeclaration {
     Import(import::ImportDeclaration),
     Id(String),
@@ -20,11 +20,11 @@ pub enum MainDeclaration {
 }
 
 pub fn token(file_path: &Path) -> DeclarationResult<MainDeclaration> {
-    let mut tokens = vec![try_import_declaration, id::try_declaration];
+    let mut tokens = vec![import_try_declaration, id::try_declaration];
 
     reader::run_tokens(file_path, &mut tokens)
 }
 
-fn try_import_declaration(stack: &mut TokenReaderStack<MainDeclaration>) -> bool {
+fn import_try_declaration(stack: &mut TokenReaderStack<MainDeclaration>) -> bool {
     import::try_declaration_with(stack, MainDeclaration::Import)
 }

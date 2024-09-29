@@ -3,7 +3,7 @@ use crate::core::tokenizer::reader::{TokenReaderNextLiteral, TokenReaderStack};
 use crate::core::tokenizer::utils::location::get_location;
 use std::fmt::Debug;
 
-pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<TokenReaderNextLiteral> {
+pub fn token<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) -> Option<TokenReaderNextLiteral> {
     let ignore_tokens = [
         constants::EMPTY,
         constants::SPACE,

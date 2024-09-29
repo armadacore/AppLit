@@ -16,20 +16,20 @@ const MISSING_IMPORT: &str = "Missing import identifier";
 
 const MISSING_REFERENCE: &str = "Missing import reference";
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ImportDeclaration {
     pub location: TokenReaderLocation,
     pub nodes: TokenReaderNodes<ImportIdentifier>,
     pub reference: Option<ImportReference>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ImportIdentifier {
     pub location: TokenReaderLocation,
     pub identifier: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ImportReference {
     pub location: TokenReaderLocation,
     pub identifier: String,
@@ -41,14 +41,14 @@ pub fn try_declaration(stack: &mut TokenReaderStack<super::ModuleDeclaration>) -
     })
 }
 
-pub fn try_declaration_with<T: Debug, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
+pub fn try_declaration_with<T: Debug + Clone, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
 where
     F: Fn(ImportDeclaration) -> T,
 {
     try_to_declare(stack, add)
 }
 
-fn try_to_declare<T: Debug, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
+fn try_to_declare<T: Debug + Clone, F>(stack: &mut TokenReaderStack<T>, add: F) -> bool
 where
     F: Fn(ImportDeclaration) -> T,
 {
@@ -61,7 +61,7 @@ where
             };
 
             loop_tokens(&mut declaration, stack);
-            stack.add_declaration(add(declaration));
+            stack.push_declaration(add(declaration));
 
             return true;
         }
@@ -70,7 +70,7 @@ where
     false
 }
 
-fn loop_tokens<T: Debug>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>) {
+fn loop_tokens<T: Debug + Clone>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>) {
     let import_identifiers: Rc<RefCell<Vec<TokenReaderNextLiteral>>> =
         Rc::new(RefCell::new(vec![]));
     let mut on_curly_braces = on_surrounded::curly_braces(|next_literal| {

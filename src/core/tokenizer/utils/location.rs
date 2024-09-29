@@ -21,19 +21,19 @@ pub fn from_to(nodes: Ref<Vec<TokenReaderNextLiteral>>) -> TokenReaderLocation {
     location
 }
 
-pub fn get_location<T: Debug>(stack: &TokenReaderStack<T>) -> TokenReaderLocation {
+pub fn get_location<T: Debug + Clone>(stack: &TokenReaderStack<T>) -> TokenReaderLocation {
     TokenReaderLocation {
         start: stack.get_start_pos(),
-        end: stack.get_end_pos() as isize,
+        end: stack.get_end_pos(),
         line_start: stack.get_line_number(),
-        line_end: stack.get_line_number() as isize,
+        line_end: stack.get_line_number(),
     }
 }
 
-pub fn update_location_end<T: Debug>(
+pub fn update_location_end<T: Debug + Clone>(
     stack: &TokenReaderStack<T>,
     location: &mut TokenReaderLocation,
 ) {
-    location.end = stack.get_end_pos() as isize;
-    location.line_end = stack.get_line_number() as isize;
+    location.end = stack.get_end_pos();
+    location.line_end = stack.get_line_number();
 }

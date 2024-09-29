@@ -4,7 +4,7 @@ use crate::core::tokenizer::reader::TokenReaderStack;
 use regex::Regex;
 use std::fmt::Debug;
 
-pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<String> {
+pub fn token<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) -> Option<String> {
     if stack.tokens.is_empty() {
         adjust_next_line(stack);
         adjust_tokens(stack);
@@ -22,7 +22,7 @@ pub fn token<T: Debug>(stack: &mut TokenReaderStack<T>) -> Option<String> {
     stack.token.clone()
 }
 
-fn adjust_next_line<T: Debug>(stack: &mut TokenReaderStack<T>) {
+fn adjust_next_line<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) {
     stack.line = match stack.lines.next() {
         None => None,
         Some(line_result) => match line_result {
@@ -40,7 +40,7 @@ fn adjust_next_line<T: Debug>(stack: &mut TokenReaderStack<T>) {
     };
 }
 
-fn adjust_tokens<T: Debug>(stack: &mut TokenReaderStack<T>) {
+fn adjust_tokens<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) {
     if let Some(ref line) = stack.line {
         let regex_tokens = [
             constants::START_CURLY_BRACES_TOKEN,
@@ -59,10 +59,10 @@ fn adjust_tokens<T: Debug>(stack: &mut TokenReaderStack<T>) {
     }
 }
 
-fn adjust_pos<T: Debug>(stack: &mut TokenReaderStack<T>) {
+fn adjust_pos<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) {
     stack.start = stack.end;
 }
 
-fn adjust_end<T: Debug>(stack: &mut TokenReaderStack<T>, new_token: &str) {
+fn adjust_end<T: Debug + Clone>(stack: &mut TokenReaderStack<T>, new_token: &str) {
     stack.end += new_token.len();
 }
