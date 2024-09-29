@@ -34,7 +34,7 @@ pub fn declaration_report<T: Debug + Clone>(
 }
 
 fn push_error<T: Debug + Clone>(stack: &mut TokenReaderStack<T>, location: TokenReaderLocation, cause: &str) {
-    stack.error.push(ErrorCause::SyntaxError(SyntaxErrorCause {
+    stack.errors.push(ErrorCause::SyntaxError(SyntaxErrorCause {
         location: SyntaxErrorLocation {
             start: location.start,
             end: location.end,

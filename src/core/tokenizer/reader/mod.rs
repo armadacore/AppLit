@@ -22,8 +22,8 @@ pub struct TokenReaderStack<T: Debug + Clone> {
     line_number: usize,
     tokens: Vec<String>,
     token: Option<String>,
-    error: Vec<ErrorCause>,
-    ast: Vec<T>,
+    errors: Vec<ErrorCause>,
+    declarations: Vec<T>,
 }
 
 #[derive(Debug, Clone)]
@@ -59,11 +59,11 @@ impl<T: Debug + Clone> TokenReaderStack<T> {
     }
 
     pub fn push_declaration(&mut self, value: T) {
-        self.ast.push(value);
+        self.declarations.push(value);
     }
 
     pub fn get_declaration(&self) -> Vec<T> {
-        self.ast.clone()
+        self.declarations.clone()
     }
 
     pub fn next(&mut self) -> Option<String> {
@@ -129,8 +129,8 @@ where
         line_number: 0,
         tokens: vec![],
         token: None,
-        error: vec![],
-        ast: vec![],
+        errors: vec![],
+        declarations: vec![],
     };
 
     while let Some(token) = &stack.next() {
