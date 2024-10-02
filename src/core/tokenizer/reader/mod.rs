@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use crate::core::feedback::error::ErrorCause;
 use std::fmt::Debug;
 use std::fs::File;
@@ -23,6 +24,7 @@ pub struct TokenReaderStack<T: Debug + Clone> {
     tokens: Vec<String>,
     token: Option<String>,
     errors: Vec<ErrorCause>,
+    references: HashMap<String, HashMap<String, String>>,
     declarations: Vec<T>,
 }
 
@@ -130,6 +132,7 @@ where
         tokens: vec![],
         token: None,
         errors: vec![],
+        references: HashMap::new(),
         declarations: vec![],
     };
 
