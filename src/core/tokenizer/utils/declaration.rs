@@ -3,7 +3,7 @@ use std::fmt::Debug;
 
 pub fn structure_validation<T: Debug + Clone, F>(
     stack: &mut TokenReaderStack<T>,
-    structure: &mut Vec<F>,
+    structure: &mut [F],
 ) -> bool
 where
     F: FnMut(TokenReaderSnapshot) -> bool,
