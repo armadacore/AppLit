@@ -10,10 +10,7 @@ pub fn new(root_dir: &str) -> Result<(), ErrorCause> {
         MainOperationMode::AppLit => todo!("read binary file and return [Ast]"),
     }?;
     
-    for item in result.get_declaration(){
-        println!("{:?}", item);
-        println!();
-    }
+    println!("api/main.rs: {:#?}", result);
 
     Ok(())
 }

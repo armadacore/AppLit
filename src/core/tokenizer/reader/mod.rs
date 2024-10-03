@@ -105,7 +105,7 @@ where
         if let Some(token) = stack.get_token() {
             for cb in tokens.iter_mut() {
                 token_classified = cb(stack);
-
+                
                 if token_classified {
                     continue;
                 }
@@ -143,6 +143,6 @@ where
             syntax_error::report(&mut stack)
         }
     }
-
+    
     Ok(stack)
 }
