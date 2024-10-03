@@ -1,5 +1,3 @@
-pub mod surrounded_by;
+pub mod declaration;
 
 pub mod location;
-
-pub mod declaration;
