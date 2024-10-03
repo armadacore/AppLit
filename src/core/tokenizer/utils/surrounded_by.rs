@@ -1,8 +1,6 @@
 use crate::bin::constants;
 use crate::core::tokenizer::reader::{TokenReaderSnapshot};
 
-// TODO umbennen -> on_surrounded_by
-
 pub fn curly_braces<F>(mut callback: F) -> impl FnMut(TokenReaderSnapshot) -> bool
 where
     F: FnMut(TokenReaderSnapshot),

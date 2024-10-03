@@ -1,5 +1,7 @@
-use crate::core::tokenizer::reader::{TokenReaderLocation, TokenReaderNodes, TokenReaderSnapshot, TokenReaderStack};
-use crate::core::tokenizer::utils::{declaration, location, on_surrounded_by};
+use crate::core::tokenizer::reader::{
+    TokenReaderLocation, TokenReaderNodes, TokenReaderSnapshot, TokenReaderStack,
+};
+use crate::core::tokenizer::utils::{declaration, location, surrounded_by};
 use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
@@ -66,23 +68,25 @@ where
     false
 }
 
-fn loop_tokens<T: Debug + Clone>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>) {
-    let import_identifiers: Rc<RefCell<Vec<TokenReaderSnapshot>>> =
-        Rc::new(RefCell::new(vec![]));
-    let on_curly_braces = on_surrounded_by::curly_braces(|snapshot| {
-        (*import_identifiers.borrow_mut()).push(snapshot);
-    });
+fn loop_tokens<T: Debug + Clone>(
+    declaration: &mut ImportDeclaration,
+    stack: &mut TokenReaderStack<T>,
+) {
+    let import_identifiers: Rc<RefCell<Vec<TokenReaderSnapshot>>> = Rc::new(RefCell::new(vec![]));
     let reference_identifiers: Rc<RefCell<Vec<TokenReaderSnapshot>>> =
         Rc::new(RefCell::new(vec![]));
-    let on_single_quotes = on_surrounded_by::single_quotes(|snapshot| {
+
+    let on_curly_braces = surrounded_by::curly_braces(|snapshot| {
+        (*import_identifiers.borrow_mut()).push(snapshot);
+    });
+
+    let on_single_quotes = surrounded_by::single_quotes(|snapshot| {
         (*reference_identifiers.borrow_mut()).push(snapshot);
     });
 
-    let mut structure: Vec<Box<dyn FnMut(TokenReaderSnapshot) -> bool>> = vec![
-        Box::new(on_curly_braces),
-        Box::new(on_single_quotes),
-    ];
-    
+    let mut structure: Vec<Box<dyn FnMut(TokenReaderSnapshot) -> bool>> =
+        vec![Box::new(on_curly_braces), Box::new(on_single_quotes)];
+
     if declaration::structure_validation(stack, &mut structure) {
         location::update_location_end(stack, &mut declaration.location);
 
