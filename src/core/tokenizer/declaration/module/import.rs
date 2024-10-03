@@ -1,9 +1,5 @@
-use crate::core::tokenizer::reader::{
-    TokenReaderLocation, TokenReaderNextLiteral, TokenReaderNodes, TokenReaderStack,
-};
-use crate::core::tokenizer::utils::location;
-use crate::core::tokenizer::utils::location::{get_location, update_location_end};
-use crate::core::tokenizer::utils::on_surrounded;
+use crate::core::tokenizer::reader::{TokenReaderLocation, TokenReaderNodes, TokenReaderSnapshot, TokenReaderStack};
+use crate::core::tokenizer::utils::{declaration, location, on_surrounded_by};
 use std::cell::RefCell;
 use std::fmt::Debug;
 use std::rc::Rc;
@@ -55,7 +51,7 @@ where
     if let Some(token) = &stack.get_token() {
         if token == IMPORT_TOKEN {
             let mut declaration = ImportDeclaration {
-                location: get_location(stack),
+                location: location::get_location(stack),
                 nodes: vec![],
                 reference: None,
             };
@@ -71,47 +67,54 @@ where
 }
 
 fn loop_tokens<T: Debug + Clone>(declaration: &mut ImportDeclaration, stack: &mut TokenReaderStack<T>) {
-    let import_identifiers: Rc<RefCell<Vec<TokenReaderNextLiteral>>> =
+    let import_identifiers: Rc<RefCell<Vec<TokenReaderSnapshot>>> =
         Rc::new(RefCell::new(vec![]));
-    let mut on_curly_braces = on_surrounded::curly_braces(|next_literal| {
-        (*import_identifiers.borrow_mut()).push(next_literal);
+    let on_curly_braces = on_surrounded_by::curly_braces(|snapshot| {
+        (*import_identifiers.borrow_mut()).push(snapshot);
     });
-    let reference_identifiers: Rc<RefCell<Vec<TokenReaderNextLiteral>>> =
+    let reference_identifiers: Rc<RefCell<Vec<TokenReaderSnapshot>>> =
         Rc::new(RefCell::new(vec![]));
-    let mut on_single_quotes = on_surrounded::single_quotes(|next_literal| {
-        (*reference_identifiers.borrow_mut()).push(next_literal);
+    let on_single_quotes = on_surrounded_by::single_quotes(|snapshot| {
+        (*reference_identifiers.borrow_mut()).push(snapshot);
     });
 
-    while let Some(import_next_literal) = stack.next_literal() {
-        on_curly_braces(&import_next_literal);
-        on_single_quotes(&import_next_literal);
-    }
+    let mut structure: Vec<Box<dyn FnMut(TokenReaderSnapshot) -> bool>> = vec![
+        Box::new(on_curly_braces),
+        Box::new(on_single_quotes),
+    ];
+    
+    if declaration::structure_validation(stack, &mut structure) {
+        location::update_location_end(stack, &mut declaration.location);
 
-    update_location_end(stack, &mut declaration.location);
-
-    let import_identifiers_ref = import_identifiers.borrow();
-    if !import_identifiers_ref.is_empty() {
-        import_identifiers_ref.iter().for_each(|next_literal_item| {
-            declaration.nodes.push(ImportIdentifier {
-                location: get_location(stack),
-                identifier: next_literal_item.token.clone(),
+        let import_identifiers_ref = import_identifiers.borrow();
+        if !import_identifiers_ref.is_empty() {
+            import_identifiers_ref.iter().for_each(|next_literal_item| {
+                if next_literal_item.token.is_some() {
+                    declaration.nodes.push(ImportIdentifier {
+                        location: location::get_location(stack),
+                        identifier: next_literal_item.token.clone().unwrap(),
+                    });
+                }
             });
-        });
-    } else {
-        stack.syntax_error(location::from_to(import_identifiers_ref), MISSING_IMPORT);
-    }
-
-    let reference_identifier_ref = reference_identifiers.borrow();
-    if !reference_identifier_ref.is_empty() {
-        if let Some(reference) = reference_identifier_ref.first() {
-            declaration.reference = Some(ImportReference {
-                location: reference.location.clone(),
-                identifier: reference.token.clone(),
-            })
+        } else {
+            stack.syntax_error(location::from_to(import_identifiers_ref), MISSING_IMPORT);
         }
-    }
 
-    if declaration.reference.is_none() {
-        stack.syntax_error(get_location(stack), MISSING_REFERENCE)
+        let reference_identifier_ref = reference_identifiers.borrow();
+        if !reference_identifier_ref.is_empty() {
+            if let Some(reference) = reference_identifier_ref.first() {
+                let location = reference.location.clone();
+                let identifier = reference.token.clone().unwrap();
+
+                declaration.reference = Some(ImportReference {
+                    location,
+                    identifier,
+                })
+            }
+        }
+
+        if declaration.reference.is_none() {
+            stack.syntax_error(location::get_location(stack), MISSING_REFERENCE)
+        }
     }
 }

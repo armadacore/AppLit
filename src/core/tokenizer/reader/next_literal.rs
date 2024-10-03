@@ -1,9 +1,9 @@
 use crate::bin::constants;
-use crate::core::tokenizer::reader::{TokenReaderNextLiteral, TokenReaderStack};
+use crate::core::tokenizer::reader::{TokenReaderSnapshot, TokenReaderStack};
 use crate::core::tokenizer::utils::location::get_location;
 use std::fmt::Debug;
 
-pub fn token<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) -> Option<TokenReaderNextLiteral> {
+pub fn token<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) -> Option<TokenReaderSnapshot> {
     let ignore_tokens = [
         constants::EMPTY,
         constants::SPACE,
@@ -16,12 +16,15 @@ pub fn token<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) -> Option<TokenR
     ];
 
     let mut prev_token = None;
-    while let Some(token) = stack.next() {
+
+    while let Some(snapshot) = stack.next() {
+        let token = snapshot.token.expect("Token can't be none");
+
         if !ignore_tokens.contains(&token.as_str()) {
-            return Some(TokenReaderNextLiteral {
+            return Some(TokenReaderSnapshot {
                 location: get_location(stack),
                 prev_token,
-                token,
+                token: Some(token),
             });
         }
 

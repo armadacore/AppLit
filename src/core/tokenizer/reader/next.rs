@@ -1,10 +1,11 @@
 use crate::bin::constants;
 use crate::core::feedback::error::ErrorCause;
-use crate::core::tokenizer::reader::TokenReaderStack;
+use crate::core::tokenizer::reader::{TokenReaderSnapshot, TokenReaderStack};
 use regex::Regex;
 use std::fmt::Debug;
+use crate::core::tokenizer::utils::location::get_location;
 
-pub fn token<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) -> Option<String> {
+pub fn token<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) -> Option<TokenReaderSnapshot> {
     if stack.tokens.is_empty() {
         adjust_next_line(stack);
         adjust_tokens(stack);
@@ -19,7 +20,12 @@ pub fn token<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) -> Option<String
         adjust_end(stack, &new_token);
         Some(new_token)
     };
-    stack.token.clone()
+    
+    Some(TokenReaderSnapshot {
+        location: get_location(stack),
+        prev_token: None,
+        token: stack.token.clone()
+    })
 }
 
 fn adjust_next_line<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) {

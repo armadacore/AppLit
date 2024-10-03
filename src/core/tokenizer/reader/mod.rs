@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use crate::core::feedback::error::ErrorCause;
+use std::collections::HashMap;
 use std::fmt::Debug;
 use std::fs::File;
 use std::io::{BufRead, BufReader, Lines};
@@ -37,10 +37,10 @@ pub struct TokenReaderLocation {
 }
 
 #[derive(Debug, Clone)]
-pub struct TokenReaderNextLiteral {
+pub struct TokenReaderSnapshot {
     pub location: TokenReaderLocation,
     pub prev_token: Option<String>,
-    pub token: String,
+    pub token: Option<String>,
 }
 
 impl<T: Debug + Clone> TokenReaderStack<T> {
@@ -68,11 +68,11 @@ impl<T: Debug + Clone> TokenReaderStack<T> {
         self.declarations.clone()
     }
 
-    pub fn next(&mut self) -> Option<String> {
+    pub fn next(&mut self) -> Option<TokenReaderSnapshot> {
         next::token(self)
     }
 
-    pub fn next_literal(&mut self) -> Option<TokenReaderNextLiteral> {
+    pub fn next_literal(&mut self) -> Option<TokenReaderSnapshot> {
         next_literal::token(self)
     }
 
@@ -80,6 +80,8 @@ impl<T: Debug + Clone> TokenReaderStack<T> {
         syntax_error::declaration_report(self, location, kind)
     }
 }
+
+
 
 pub fn run<T: Debug + Clone, F>(
     file_path: &Path,

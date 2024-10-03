@@ -1,13 +1,12 @@
-use crate::core::tokenizer::reader::{TokenReaderLocation, TokenReaderNextLiteral, TokenReaderStack};
+use crate::core::tokenizer::reader::{TokenReaderLocation, TokenReaderSnapshot, TokenReaderStack};
 use std::cell::Ref;
 use std::fmt::Debug;
 
-pub fn from_to(nodes: Ref<Vec<TokenReaderNextLiteral>>) -> TokenReaderLocation {
+pub fn from_to(nodes: Ref<Vec<TokenReaderSnapshot>>) -> TokenReaderLocation {
     let mut location = nodes
         .first()
         .expect("TokenReaderLocation not found")
-        .location
-        .clone();
+        .location.clone();
 
     if nodes.len() > 1 {
         if let Some(last) = nodes.last() {
