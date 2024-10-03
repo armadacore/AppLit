@@ -21,11 +21,16 @@ pub fn token<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) -> Option<TokenR
         Some(new_token)
     };
     
-    Some(TokenReaderSnapshot {
-        location: get_location(stack),
-        prev_token: None,
-        token: stack.token.clone()
-    })
+    match &stack.token { 
+        Some(token) => {
+            Some(TokenReaderSnapshot {
+                location: get_location(stack),
+                prev_token: None,
+                token: stack.token.clone()
+            })
+        },
+        None => None
+    }
 }
 
 fn adjust_next_line<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) {
