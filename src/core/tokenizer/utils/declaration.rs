@@ -18,10 +18,11 @@ pub enum DeclarationResult {
 pub enum DeclarationState {
     AlreadyFound,
     Found,
+    Search
 }
 
 pub struct DeclarationValidation {
-    stack: Vec<Box<dyn FnMut(TokenReaderSnapshot) -> bool>>,
+    stack: Vec<Box<dyn FnMut(TokenReaderSnapshot) -> DeclarationState>>,
 }
 
 impl DeclarationValidation {
@@ -78,12 +79,18 @@ fn loop_over<T: Debug + Clone>(
         let mut cb_count = 0;
 
         for stack_cb in declaration.stack.iter_mut() {
-            result = stack_cb(snapshot.clone());
+            match stack_cb(snapshot.clone()) { 
+                DeclarationState::Found => {
+                    result = true; 
+                },
+                DeclarationState::Search => result = false,
+                _ => ()
+            }
+
             cb_count += 1;
         }
         
         if result && cb_count == cb_len {
-            println!("hier");
             return true;
         }
 

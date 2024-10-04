@@ -1,6 +1,6 @@
 use crate::bin::constants;
 use crate::core::tokenizer::reader::{TokenReaderSnapshot};
-use super::DeclarationValidation;
+use super::{DeclarationState, DeclarationValidation};
 
 pub fn validate<F>(declaration: &mut DeclarationValidation, mut callback: F)
 where
@@ -13,7 +13,7 @@ where
 
     declaration.stack.push(Box::new(move |snapshot|{
         if can_skip {
-            return true;
+            return DeclarationState::Found;
         }
 
         let token = snapshot.token.clone().unwrap_or_default();
@@ -32,12 +32,13 @@ where
             can_skip = true;
             start_single_quote = false;
             end_single_quote = false;
+            return DeclarationState::Found;
         }
 
         if start_single_quote && !ignore_tokens.contains(&token.as_str()) {
             callback(snapshot.clone());
         }
 
-        can_skip
+        DeclarationState::Search
     }));
 }

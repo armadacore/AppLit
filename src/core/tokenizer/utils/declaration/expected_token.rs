@@ -1,6 +1,6 @@
 use std::rc::Rc;
 use crate::core::tokenizer::reader::{TokenReaderSnapshot};
-use super::DeclarationValidation;
+use super::{DeclarationState, DeclarationValidation};
 
 pub fn validate<F>(declaration: &mut DeclarationValidation, token: &str, mut callback: F)
 where
@@ -14,20 +14,21 @@ where
         
         if can_skip {
             if is_equal(&snapshot, &token_clone) {
-                return false
+                return DeclarationState::AlreadyFound
             }
             
-            return true;
+            return DeclarationState::Found;
         }
 
         if let Some(snapshot_token) = &snapshot.token {
             if is_equal(&snapshot, &token_clone) {
                 can_skip = true;
                 callback(snapshot);
+                return DeclarationState::Found;
             }
         }
 
-        can_skip
+        DeclarationState::Search
     }));
 }
 
