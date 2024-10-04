@@ -1,3 +1,4 @@
+use crate::bin::constants;
 use crate::core::feedback::error::ErrorCause;
 use std::collections::HashMap;
 use std::fmt::Debug;
@@ -74,8 +75,6 @@ impl<T: Debug + Clone> TokenReaderStack<T> {
     }
 }
 
-
-
 pub fn run<T: Debug + Clone, F>(
     file_path: &Path,
     callback: F,
@@ -98,7 +97,7 @@ where
         if let Some(token) = stack.get_token() {
             for cb in tokens.iter_mut() {
                 token_classified = cb(stack);
-                
+
                 if token_classified {
                     continue;
                 }
@@ -130,12 +129,20 @@ where
         references: HashMap::new(),
         declarations: vec![],
     };
+    let ignore_tokens = [
+        constants::START_CURLY_BRACES_TOKEN,
+        constants::END_CURLY_BRACES_TOKEN,
+    ];
 
     while let Some(snapshot) = &stack.next() {
         if !callback(&mut stack) {
-            syntax_error::report(&mut stack)
+            if let Some(token) = &snapshot.token {
+                if !ignore_tokens.contains(&token.as_str()) {
+                    syntax_error::report(&mut stack)
+                }
+            }
         }
     }
-    
+
     Ok(stack)
 }

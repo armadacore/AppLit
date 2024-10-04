@@ -11,11 +11,12 @@ pub fn new(root_dir: &str) -> Result<(), ErrorCause> {
     }?;
 
     println!();
-    // println!("api/main.rs: {:#?}", result.get_declaration());
-    for item in result.get_declaration(){
-        println!("api/main.rs: {:#?}", item);
-        println!();
-    }
+    println!("api/main.rs: {:#?}", result);
+    
+    // for item in result.get_declaration(){
+    //     println!("api/main.rs: {:#?}", item);
+    //     println!();
+    // }
 
     Ok(())
 }
