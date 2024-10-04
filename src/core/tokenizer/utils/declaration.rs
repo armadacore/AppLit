@@ -9,15 +9,32 @@ pub fn structure_validation<T: Debug + Clone, F>(
 where
     F: FnMut(TokenReaderSnapshot) -> bool,
 {
-    while let Some(snapshot) = &stack.next_literal() {
-        for declaration_item in structure.iter_mut() {
-            if declaration_item(snapshot.clone()) {
-                return true;
+    let structure_len = structure.len() - 1;
+    let mut result = false;
+
+    while let Some(snapshot) = &stack.next() {
+        if let Some(token) = &snapshot.token {
+            if token.trim().is_empty() {
+                continue;
+            }
+        }
+
+        for cb in structure.iter_mut() {
+            result = cb(snapshot.clone());
+        }
+        
+        if result {
+            return true;
+        }
+
+        if let Some(token) = &snapshot.token {
+            if token == constants::SEMICOLON_TOKEN {
+                return result;
             }
         }
     }
 
-    false
+    result
 }
 
 pub fn expected_token<F>(token: String, mut callback: F) -> impl FnMut(TokenReaderSnapshot) -> bool
@@ -28,7 +45,7 @@ where
 
     move |snapshot| {
         if can_skip {
-            return false;
+            return true;
         }
 
         if let Some(snapshot_token) = &snapshot.token {
@@ -49,22 +66,25 @@ where
     let mut can_skip = false;
     let mut start_curly_braces = false;
     let mut end_curly_braces = false;
+    let ignore_tokens = [
+        constants::START_CURLY_BRACES_TOKEN,
+        constants::COMMA_TOKEN,
+        constants::END_CURLY_BRACES_TOKEN,
+    ];
 
     move |snapshot| {
         if can_skip {
-            return false;
+            return true;
         }
 
-        if let Some(staring_curly_braces) = &snapshot.prev_token {
-            if staring_curly_braces == constants::START_CURLY_BRACES_TOKEN {
-                start_curly_braces = true;
-            }
+        let token = snapshot.token.clone().unwrap_or_default();
+
+        if token == constants::START_CURLY_BRACES_TOKEN {
+            start_curly_braces = true;
         }
 
-        if let Some(ending_curly_braces) = &snapshot.prev_token {
-            if ending_curly_braces == constants::END_CURLY_BRACES_TOKEN {
-                end_curly_braces = true;
-            }
+        if token == constants::END_CURLY_BRACES_TOKEN {
+            end_curly_braces = true;
         }
 
         if start_curly_braces && end_curly_braces {
@@ -73,7 +93,7 @@ where
             end_curly_braces = false;
         }
 
-        if start_curly_braces {
+        if start_curly_braces && !ignore_tokens.contains(&token.as_str()) {
             callback(snapshot);
         }
 
@@ -88,21 +108,22 @@ where
     let mut can_skip = false;
     let mut start_single_quote = false;
     let mut end_single_quote = false;
+    let ignore_tokens = [constants::SINGLE_QUOTES_TOKEN];
 
     move |snapshot| {
         if can_skip {
-            return false;
+            return true;
         }
 
-        if let Some(starting_single_quotes) = &snapshot.prev_token {
-            if starting_single_quotes == constants::SINGLE_QUOTES_TOKEN {
-                if start_single_quote && !end_single_quote {
-                    end_single_quote = true;
-                }
+        let token = snapshot.token.clone().unwrap_or_default();
 
-                if !start_single_quote {
-                    start_single_quote = true;
-                }
+        if token == constants::SINGLE_QUOTES_TOKEN {
+            if start_single_quote && !end_single_quote {
+                end_single_quote = true;
+            }
+
+            if !start_single_quote {
+                start_single_quote = true;
             }
         }
 
@@ -112,7 +133,7 @@ where
             end_single_quote = false;
         }
 
-        if start_single_quote {
+        if start_single_quote && !ignore_tokens.contains(&token.as_str()) {
             callback(snapshot.clone());
         }
 

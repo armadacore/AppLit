@@ -8,8 +8,6 @@ use std::vec;
 
 mod next;
 
-mod next_literal;
-
 mod syntax_error;
 
 pub type TokenReaderNodes<T> = Vec<T>;
@@ -39,7 +37,6 @@ pub struct TokenReaderLocation {
 #[derive(Debug, Clone)]
 pub struct TokenReaderSnapshot {
     pub location: TokenReaderLocation,
-    pub prev_token: Option<String>,
     pub token: Option<String>,
 }
 
@@ -70,10 +67,6 @@ impl<T: Debug + Clone> TokenReaderStack<T> {
 
     pub fn next(&mut self) -> Option<TokenReaderSnapshot> {
         next::token(self)
-    }
-
-    pub fn next_literal(&mut self) -> Option<TokenReaderSnapshot> {
-        next_literal::token(self)
     }
 
     pub fn syntax_error(&mut self, location: TokenReaderLocation, kind: &str) {
@@ -138,7 +131,7 @@ where
         declarations: vec![],
     };
 
-    while let Some(token) = &stack.next() {
+    while let Some(snapshot) = &stack.next() {
         if !callback(&mut stack) {
             syntax_error::report(&mut stack)
         }

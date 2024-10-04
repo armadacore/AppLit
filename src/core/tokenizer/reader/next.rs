@@ -25,7 +25,6 @@ pub fn token<T: Debug + Clone>(stack: &mut TokenReaderStack<T>) -> Option<TokenR
         Some(token) => {
             Some(TokenReaderSnapshot {
                 location: get_location(stack),
-                prev_token: None,
                 token: stack.token.clone()
             })
         },
