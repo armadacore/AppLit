@@ -1,17 +1,17 @@
-#[derive(Debug, Clone)]
-pub struct TokenSnapshot {
-    pub location: TokenLocation,
-    pub token: String,
-}
-
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct TokenLocation {
     pub start: usize,
     pub end: usize,
     pub line: usize,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
+pub struct TokenSnapshot {
+    pub location: TokenLocation,
+    pub token: String,
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub enum TokenDeclaration {
     Keyword(TokenSnapshot),
     Identifier(TokenSnapshot),

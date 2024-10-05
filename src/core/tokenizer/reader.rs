@@ -15,6 +15,11 @@ pub use models::*;
 pub fn new<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>> {
     let file = File::open(&file_path).unwrap();
     let reader = BufReader::new(file);
+    
+    token_declaration(reader)
+}
+
+fn token_declaration<'a>(reader: impl BufRead) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>>{
     let lines = reader.lines();
     let mut result: Vec<TokenDeclaration> = Vec::new();
     let mut line_count: usize = 1;
@@ -32,7 +37,7 @@ pub fn new<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'
 
             let end_count = start_count + current_token.len();
             let match_result = match_token(current_token, line_count, start_count, end_count);
-            
+
             result.push(match_result);
             start_count = end_count;
         }
@@ -41,4 +46,9 @@ pub fn new<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'
     }
 
     Ok(result)
+}
+
+#[cfg(test)]
+mod tests {
+    mod import_statement;
 }
