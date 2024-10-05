@@ -50,9 +50,7 @@ pub fn new<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'
     let mut line_count: usize = 1;
     let mut start_count: usize = 0;
 
-    // let identifier_regex = Regex::new("[a-zA-Z_][a-zA-Z0-9_]*").unwrap();
     let identifier_regex = Regex::new(IDENTIFIER_REGEX).unwrap();
-    // let literal_regex = Regex::new("'([^']*)'").unwrap();
     let literal_regex = Regex::new(LITERAL_REGEX).unwrap();
 
     for line_result in lines {
