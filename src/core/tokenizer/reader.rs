@@ -1,5 +1,4 @@
 use crate::core::feedback::error::ErrorCause;
-use regex::Regex;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
@@ -20,9 +19,6 @@ pub fn new<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'
     let mut result: Vec<TokenDeclaration> = Vec::new();
     let mut line_count: usize = 1;
     let mut start_count: usize = 0;
-
-    let identifier_regex = Regex::new(constants::IDENTIFIER_REGEX).unwrap();
-    let literal_regex = Regex::new(constants::LITERAL_REGEX).unwrap();
 
     for line_result in lines {
         let line_data = line_result.expect("Error reading line");
