@@ -1,19 +1,9 @@
 use super::{constants, models, TokenDeclaration};
-// use crate::core::tokenizer::reader::TokenDeclaration;
 use crate::bin;
 use regex::Regex;
 
 pub fn split_line(line: &str) -> Vec<String> {
-    let regex_tokens = [
-        bin::constants::LEFT_ROUND_BRACKETS_TOKEN,
-        bin::constants::LEFT_CURLY_BRACES_TOKEN,
-        bin::constants::COLON_TOKEN,
-        bin::constants::COMMA_TOKEN,
-        bin::constants::RIGHT_CURLY_BRACES_TOKEN,
-        bin::constants::RIGHT_ROUND_BRACKETS_TOKEN,
-        bin::constants::SEMICOLON_TOKEN,
-    ];
-    let regex_pattern = format!("'[^']*'|\\w+|[{}]|\\s", regex_tokens.join(""));
+    let regex_pattern = format!("'[^']*'|\\w+|[{}]|\\s", constants::REGEX_TOKENS.join(""));
     let regexp = Regex::new(&regex_pattern).unwrap();
     let result: Vec<String> = regexp
         .find_iter(line)
