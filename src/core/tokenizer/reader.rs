@@ -16,10 +16,10 @@ pub fn new<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'
     let file = File::open(&file_path).unwrap();
     let reader = BufReader::new(file);
     
-    token_declaration(reader)
+    create_token_declaration(reader)
 }
 
-fn token_declaration<'a>(reader: impl BufRead) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>>{
+fn create_token_declaration<'a>(reader: impl BufRead) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>>{
     let lines = reader.lines();
     let mut result: Vec<TokenDeclaration> = Vec::new();
     let mut line_count: usize = 1;
