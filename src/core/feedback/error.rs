@@ -32,7 +32,6 @@ pub enum ErrorCause<'a> {
 impl<'a> fmt::Display for ErrorCause<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            // ErrorCause::Unhandled(error) => write!(f, "Unhandled error: {}", error),
             ErrorCause::SyntaxError(error) => {write!(f, "Syntax error: {}", error) },
             ErrorCause::PathNotFound(path) => write!(f, "Path not found: {}", path),
             ErrorCause::FileNotFound(file) => write!(f, "File not found: {}", file),
