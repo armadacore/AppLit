@@ -1,4 +1,5 @@
 use crate::core::feedback::error::ErrorCause;
+use crate::core::tokenizer::reader::utils::match_token;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
@@ -7,9 +8,9 @@ mod constants;
 
 mod models;
 
+#[macro_use]
 mod utils;
 
-use crate::core::tokenizer::reader::utils::match_token;
 pub use models::*;
 
 pub fn translate_file<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>> {

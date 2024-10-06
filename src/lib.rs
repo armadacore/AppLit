@@ -3,6 +3,7 @@
 
 use std::path::PathBuf;
 use crate::core::feedback::error::ErrorCause;
+use crate::core::parser::ast::translate_tokens;
 use crate::core::tokenizer;
 use crate::core::tokenizer::reader::TokenDeclaration;
 
@@ -19,4 +20,8 @@ pub fn tokenize_source(path: &str) -> Result<Vec<TokenDeclaration>, ErrorCause> 
     } else {
         Err(ErrorCause::FileNotFound(path))
     }
+}
+
+pub fn parse_source(tokens: Vec<TokenDeclaration>) {
+    let ast = translate_tokens(tokens);
 }

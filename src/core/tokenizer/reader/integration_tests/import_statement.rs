@@ -176,7 +176,7 @@ fn multiline_result_is_as_expected() {
 }
 
 #[test]
-fn with_module_name_is_as_expected() {
+fn with_module_namespace_is_as_expected() {
     let data = "import foobar:{pi,co} from 'applit';";
     let cursor = Cursor::new(data);
     let expected_import = vec![

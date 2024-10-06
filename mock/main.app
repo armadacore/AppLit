@@ -1,1 +1,1 @@
-import foobar:{pi,co} from 'applit';
+import applit:{pi,co} from 'applit';

@@ -90,10 +90,10 @@ fn match_statement_end(){
 }
 
 #[test]
-fn match_error(){
+fn match_unknown(){
     let input = "µ";
     let result = match_token(input, 0, 0, 0);
-    let expected = TokenDeclaration::Error(create_snapshot(input));
+    let expected = TokenDeclaration::Unknown(create_snapshot(input));
 
     assert_eq!(expected, result);
 }

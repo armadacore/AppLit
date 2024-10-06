@@ -27,5 +27,5 @@ pub enum TokenDeclaration {
     StatementDivider(TokenSnapshot),
     StatementEnd(TokenSnapshot),
 
-    Error(TokenSnapshot),
+    Unknown(TokenSnapshot),
 }
