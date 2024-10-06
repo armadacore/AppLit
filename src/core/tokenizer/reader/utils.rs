@@ -3,7 +3,8 @@ use crate::bin;
 use regex::Regex;
 
 pub fn split_line(line: &str) -> Vec<String> {
-    let regex_pattern = format!("'[^']*'|\\w+|[{}]|\\s", constants::REGEX_TOKENS.join(""));
+    let regex_tokens = constants::REGEX_TOKENS.join("");
+    let regex_pattern = format!(r#"'(?:\\'|[^'])*'|\w+|[{}]|\s"#, regex_tokens);
     let regexp = Regex::new(&regex_pattern).unwrap();
     let result: Vec<String> = regexp
         .find_iter(line)
@@ -34,7 +35,7 @@ pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenD
         bin::constants::LEFT_CURLY_BRACES_TOKEN => TokenDeclaration::BlockOpen(token_snapshot),
         bin::constants::RIGHT_CURLY_BRACES_TOKEN => TokenDeclaration::BlockClose(token_snapshot),
 
-        bin::constants::COLON_TOKEN => TokenDeclaration::AssignmentStatement(token_snapshot),
+        bin::constants::COLON_TOKEN => TokenDeclaration::StatementAssignment(token_snapshot),
         bin::constants::COMMA_TOKEN => TokenDeclaration::StatementDivider(token_snapshot),
         bin::constants::SEMICOLON_TOKEN => TokenDeclaration::StatementEnd(token_snapshot),
 
@@ -43,4 +44,10 @@ pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenD
 
         _ => TokenDeclaration::Error(token_snapshot),
     }
+}
+
+#[cfg(test)]
+mod unit_tests {
+    mod split_line_unit;
+    mod match_token_unit;
 }

@@ -1,8 +1,7 @@
 use crate::core::tokenizer::reader::*;
 use std::io::Cursor;
-
 #[test]
-fn import_statement_result_is_ok() {
+fn result_is_ok() {
     let data = "import { pi, co } from 'applit';";
     let cursor = Cursor::new(data);
     let result = create_token_declaration(cursor);
@@ -11,7 +10,7 @@ fn import_statement_result_is_ok() {
 }
 
 #[test]
-fn import_statement_result_is_as_expected() {
+fn result_is_as_expected() {
     let data = "import { pi, co } from 'applit';";
     let cursor = Cursor::new(data);
     let expected_import = vec![
@@ -94,7 +93,7 @@ fn import_statement_result_is_as_expected() {
 }
 
 #[test]
-fn import_statement_multiline_is_as_expected() {
+fn multiline_result_is_as_expected() {
     let data = "import {\npi,\nco\n} from 'applit';";
     let cursor = Cursor::new(data);
     let expected_import = vec![
@@ -170,6 +169,128 @@ fn import_statement_multiline_is_as_expected() {
             },
             token: ";".into(),
         }),
+    ];
+    let result = create_token_declaration(cursor);
+
+    assert_eq!(expected_import, result.unwrap());
+}
+
+#[test]
+fn with_module_name_is_as_expected() {
+    let data = "import foobar:{pi,co} from 'applit';";
+    let cursor = Cursor::new(data);
+    let expected_import = vec![
+        TokenDeclaration::Keyword(
+            TokenSnapshot {
+                location: TokenLocation {
+                    start: 0,
+                    end: 6,
+                    line: 1,
+                },
+                token: "import".into(),
+            },
+        ),
+        TokenDeclaration::Identifier(
+            TokenSnapshot {
+                location: TokenLocation {
+                    start: 7,
+                    end: 13,
+                    line: 1,
+                },
+                token: "foobar".into(),
+            },
+        ),
+        TokenDeclaration::StatementAssignment(
+            TokenSnapshot {
+                location: TokenLocation {
+                    start: 13,
+                    end: 14,
+                    line: 1,
+                },
+                token: ":".into(),
+            },
+        ),
+        TokenDeclaration::BlockOpen(
+            TokenSnapshot {
+                location: TokenLocation {
+                    start: 14,
+                    end: 15,
+                    line: 1,
+                },
+                token: "{".into(),
+            },
+        ),
+        TokenDeclaration::Identifier(
+            TokenSnapshot {
+                location: TokenLocation {
+                    start: 15,
+                    end: 17,
+                    line: 1,
+                },
+                token: "pi".into(),
+            },
+        ),
+        TokenDeclaration::StatementDivider(
+            TokenSnapshot {
+                location: TokenLocation {
+                    start: 17,
+                    end: 18,
+                    line: 1,
+                },
+                token: ",".into(),
+            },
+        ),
+        TokenDeclaration::Identifier(
+            TokenSnapshot {
+                location: TokenLocation {
+                    start: 18,
+                    end: 20,
+                    line: 1,
+                },
+                token: "co".into(),
+            },
+        ),
+        TokenDeclaration::BlockClose(
+            TokenSnapshot {
+                location: TokenLocation {
+                    start: 20,
+                    end: 21,
+                    line: 1,
+                },
+                token: "}".into(),
+            },
+        ),
+        TokenDeclaration::Keyword(
+            TokenSnapshot {
+                location: TokenLocation {
+                    start: 22,
+                    end: 26,
+                    line: 1,
+                },
+                token: "from".into(),
+            },
+        ),
+        TokenDeclaration::Literal(
+            TokenSnapshot {
+                location: TokenLocation {
+                    start: 27,
+                    end: 35,
+                    line: 1,
+                },
+                token: "'applit'".into(),
+            },
+        ),
+        TokenDeclaration::StatementEnd(
+            TokenSnapshot {
+                location: TokenLocation {
+                    start: 35,
+                    end: 36,
+                    line: 1,
+                },
+                token: ";".into(),
+            },
+        ),
+
     ];
     let result = create_token_declaration(cursor);
 

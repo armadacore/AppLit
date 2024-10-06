@@ -23,7 +23,7 @@ pub enum TokenDeclaration {
     BlockOpen(TokenSnapshot),
     BlockClose(TokenSnapshot),
 
-    AssignmentStatement(TokenSnapshot),
+    StatementAssignment(TokenSnapshot),
     StatementDivider(TokenSnapshot),
     StatementEnd(TokenSnapshot),
 

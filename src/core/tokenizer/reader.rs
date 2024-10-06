@@ -49,6 +49,6 @@ fn create_token_declaration<'a>(reader: impl BufRead) -> Result<Vec<TokenDeclara
 }
 
 #[cfg(test)]
-mod tests {
+mod integration_tests {
     mod import_statement;
 }
