@@ -27,19 +27,22 @@ impl Parser {
 
     fn parse_statement(&mut self) -> Result<AstNode, AstError> {
         let peek = self.tokens.peek();
-        
+
         if peek.is_none() {
             return Err(AstError::UnexpectedEOF);
         }
-        
-        if let TokenDeclaration::Keyword(snapshot) = peek.unwrap(){
-            return match snapshot.token.as_str() { 
+
+        if let TokenDeclaration::Keyword(snapshot) = peek.unwrap() {
+            return match snapshot.token.as_str() {
                 bin::constants::IMPORT_TOKEN => Ok(import::parse(self)?),
                 unknown_token => Err(AstError::UnexpectedToken(snapshot.clone())),
-            }
+            };
         }
-        
-        panic!("Try to parse on top level for unknown keyword {:#?}", self.tokens.peek().unwrap());
+
+        panic!(
+            "Try to parse on top level for unknown TokenDeclaration {:#?}",
+            self.tokens.peek().unwrap()
+        );
     }
 }
 
