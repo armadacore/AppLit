@@ -12,7 +12,7 @@ mod utils;
 use crate::core::tokenizer::reader::utils::match_token;
 pub use models::*;
 
-pub fn analyze_file<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>> {
+pub fn translate_file<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>> {
     let file = File::open(&file_path).unwrap();
     let reader = BufReader::new(file);
     
