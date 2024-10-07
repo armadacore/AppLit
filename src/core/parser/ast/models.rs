@@ -1,13 +1,13 @@
-use std::iter::Peekable;
-use std::vec::IntoIter;
 use crate::bin;
 use crate::core::parser::ast::import;
 use crate::core::tokenizer::reader::{TokenDeclaration, TokenSnapshot};
+use std::iter::Peekable;
+use std::vec::IntoIter;
 
 #[derive(Debug)]
-pub enum AstNode{
+pub enum AstNode {
     Program {
-        statements: Vec<AstNode>
+        statements: Vec<AstNode>,
     },
     Import {
         namespace: Option<TokenSnapshot>,
@@ -54,7 +54,7 @@ impl Parser {
 
         if let TokenDeclaration::Keyword(snapshot) = peek.unwrap() {
             return match snapshot.token.as_str() {
-                bin::constants::IMPORT_TOKEN => Ok(import::parse(self)?),
+                bin::constants::KEYWORD_IMPORT => Ok(import::parse(self)?),
                 unknown_token => Err(AstError::UnexpectedToken(snapshot.clone())),
             };
         }

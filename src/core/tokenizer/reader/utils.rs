@@ -15,27 +15,28 @@ pub fn split_line(line: &str) -> Vec<String> {
 }
 
 pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenDeclaration {
-    let identifier_regex = Regex::new(constants::IDENTIFIER_REGEX).expect("identifier regex are broken");
+    let identifier_regex =
+        Regex::new(constants::IDENTIFIER_REGEX).expect("identifier regex are broken");
     let literal_regex = Regex::new(constants::LITERAL_REGEX).expect("literal regex are broken");
     let token_location = TokenLocation::new(line, start, end);
     let token_snapshot = TokenSnapshot::new(token_location, token.into());
 
     match token {
-        bin::constants::IMPORT_TOKEN | bin::constants::FROM_TOKEN => {
+        bin::constants::KEYWORD_IMPORT | bin::constants::KEYWORD_FROM => {
             TokenDeclaration::Keyword(token_snapshot)
         }
 
-        bin::constants::LEFT_ROUND_BRACKETS_TOKEN => TokenDeclaration::ArgumentOpen(token_snapshot),
-        bin::constants::RIGHT_ROUND_BRACKETS_TOKEN => {
-            TokenDeclaration::ArgumentClose(token_snapshot)
+        bin::constants::ARGUMENT_OPEN => TokenDeclaration::ArgumentOpen(token_snapshot),
+        bin::constants::ARGUMENT_CLOSE => TokenDeclaration::ArgumentClose(token_snapshot),
+
+        bin::constants::BLOCK_OPEN => TokenDeclaration::BlockOpen(token_snapshot),
+        bin::constants::BLOCK_CLOSE => TokenDeclaration::BlockClose(token_snapshot),
+
+        bin::constants::STATEMENT_ASSIGNMENT => {
+            TokenDeclaration::StatementAssignment(token_snapshot)
         }
-
-        bin::constants::LEFT_CURLY_BRACES_TOKEN => TokenDeclaration::BlockOpen(token_snapshot),
-        bin::constants::RIGHT_CURLY_BRACES_TOKEN => TokenDeclaration::BlockClose(token_snapshot),
-
-        bin::constants::COLON_TOKEN => TokenDeclaration::StatementAssignment(token_snapshot),
-        bin::constants::COMMA_TOKEN => TokenDeclaration::StatementDivider(token_snapshot),
-        bin::constants::SEMICOLON_TOKEN => TokenDeclaration::StatementEnd(token_snapshot),
+        bin::constants::STATEMENT_DIVIDER => TokenDeclaration::StatementDivider(token_snapshot),
+        bin::constants::STATEMENT_END => TokenDeclaration::StatementEnd(token_snapshot),
 
         literal_token if literal_regex.is_match(literal_token) => {
             TokenDeclaration::Literal(token_snapshot)
