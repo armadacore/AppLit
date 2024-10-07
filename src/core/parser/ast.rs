@@ -1,4 +1,3 @@
-use crate::bin;
 use crate::core::tokenizer::reader::TokenDeclaration;
 use models::Parser;
 

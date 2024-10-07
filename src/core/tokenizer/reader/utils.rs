@@ -1,4 +1,4 @@
-use super::{constants, models, TokenDeclaration, TokenLocation, TokenSnapshot};
+use super::{constants, TokenDeclaration, TokenLocation, TokenSnapshot};
 use crate::bin;
 use regex::Regex;
 
