@@ -4,7 +4,7 @@ use std::io::Cursor;
 fn result_is_ok() {
     let data = "import { pi, co } from 'applit';";
     let cursor = Cursor::new(data);
-    let result = create_token_declaration(cursor);
+    let result = create_token_declarations(cursor);
 
     assert!(result.is_ok());
 }
@@ -87,7 +87,7 @@ fn result_is_as_expected() {
             token: ";".into(),
         }),
     ];
-    let result = create_token_declaration(cursor);
+    let result = create_token_declarations(cursor);
 
     assert_eq!(expected_import, result.unwrap());
 }
@@ -170,7 +170,7 @@ fn multiline_result_is_as_expected() {
             token: ";".into(),
         }),
     ];
-    let result = create_token_declaration(cursor);
+    let result = create_token_declarations(cursor);
 
     assert_eq!(expected_import, result.unwrap());
 }
@@ -292,7 +292,7 @@ fn with_module_namespace_is_as_expected() {
         ),
 
     ];
-    let result = create_token_declaration(cursor);
+    let result = create_token_declarations(cursor);
 
     assert_eq!(expected_import, result.unwrap());
 }

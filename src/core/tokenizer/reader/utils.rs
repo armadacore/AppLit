@@ -1,4 +1,4 @@
-use super::{constants, models, TokenDeclaration};
+use super::{constants, models, TokenDeclaration, TokenLocation, TokenSnapshot};
 use crate::bin;
 use regex::Regex;
 
@@ -15,12 +15,10 @@ pub fn split_line(line: &str) -> Vec<String> {
 }
 
 pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenDeclaration {
-    let identifier_regex = Regex::new(constants::IDENTIFIER_REGEX).unwrap();
-    let literal_regex = Regex::new(constants::LITERAL_REGEX).unwrap();
-    let token_snapshot = models::TokenSnapshot {
-        location: models::TokenLocation { line, start, end },
-        token: token.to_string(),
-    };
+    let identifier_regex = Regex::new(constants::IDENTIFIER_REGEX).expect("identifier regex are broken");
+    let literal_regex = Regex::new(constants::LITERAL_REGEX).expect("literal regex are broken");
+    let token_location = TokenLocation::new(line, start, end);
+    let token_snapshot = TokenSnapshot::new(token_location, token.into());
 
     match token {
         bin::constants::IMPORT_TOKEN | bin::constants::FROM_TOKEN => {
