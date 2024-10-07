@@ -3,7 +3,7 @@
 
 use std::path::PathBuf;
 use crate::core::feedback::error::ErrorCause;
-use crate::core::parser::ast::translate_tokens;
+use crate::core::parser::ast::{translate_tokens, AstError, AstNode};
 use crate::core::tokenizer;
 use crate::core::tokenizer::reader::TokenDeclaration;
 
@@ -22,6 +22,6 @@ pub fn tokenize_source(path: &str) -> Result<Vec<TokenDeclaration>, ErrorCause> 
     }
 }
 
-pub fn parse_source(tokens: Vec<TokenDeclaration>) {
-    let ast = translate_tokens(tokens);
+pub fn parse_source(tokens: Vec<TokenDeclaration>) -> Result<AstNode, AstError> {
+    translate_tokens(tokens)
 }

@@ -41,3 +41,21 @@ pub enum TokenDeclaration {
 
     Unknown(TokenSnapshot),
 }
+
+impl TokenDeclaration {
+    pub fn extract_snapshot(&self) -> TokenSnapshot {
+        match self {
+            TokenDeclaration::Keyword(snapshot) => snapshot.clone(),
+            TokenDeclaration::Identifier(snapshot) => snapshot.clone(),
+            TokenDeclaration::Literal(snapshot) => snapshot.clone(),
+            TokenDeclaration::ArgumentOpen(snapshot) => snapshot.clone(),
+            TokenDeclaration::ArgumentClose(snapshot) => snapshot.clone(),
+            TokenDeclaration::BlockOpen(snapshot) => snapshot.clone(),
+            TokenDeclaration::BlockClose(snapshot) => snapshot.clone(),
+            TokenDeclaration::StatementAssignment(snapshot) => snapshot.clone(),
+            TokenDeclaration::StatementDivider(snapshot) => snapshot.clone(),
+            TokenDeclaration::StatementEnd(snapshot) => snapshot.clone(),
+            TokenDeclaration::Unknown(snapshot) => snapshot.clone(),
+        }
+    }
+}

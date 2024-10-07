@@ -4,19 +4,22 @@ use crate::bin;
 use crate::core::parser::ast::import;
 use crate::core::tokenizer::reader::{TokenDeclaration, TokenSnapshot};
 
+#[derive(Debug)]
 pub enum AstNode{
     Program {
         statements: Vec<AstNode>
     },
     Import {
         namespace: Option<TokenSnapshot>,
-        specifiers: Vec<TokenSnapshot>,
+        identifiers: Vec<TokenSnapshot>,
         reference: TokenSnapshot,
     },
 }
 
+#[derive(Debug)]
 pub enum AstError {
     UnexpectedToken(TokenSnapshot),
+    UnexpectedError,
     UnexpectedEOF,
 }
 
