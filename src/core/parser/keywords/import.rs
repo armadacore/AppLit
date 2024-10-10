@@ -1,7 +1,6 @@
 use crate::bin;
-use crate::core::parser::ast::models::Parser;
-use crate::core::parser::ast::{AstError, AstNode};
-use crate::core::tokenizer::reader::{try_snapshot_error, TokenDeclaration, TokenSnapshot};
+use crate::core::parser::{AstError, AstNode, Parser};
+use crate::core::tokenizer::{try_snapshot_error, TokenDeclaration, TokenSnapshot};
 
 pub fn parse(parser: &mut Parser) -> Result<AstNode, AstError> {
     parser.tokens.next();

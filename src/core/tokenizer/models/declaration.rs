@@ -1,4 +1,4 @@
-use crate::core::tokenizer::reader::TokenSnapshot;
+use crate::core::tokenizer::TokenSnapshot;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum TokenDeclaration {

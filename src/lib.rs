@@ -1,11 +1,10 @@
 #![allow(unused_variables)]
 #![allow(dead_code)]
 
-use std::path::PathBuf;
 use crate::core::feedback::error::ErrorCause;
-use crate::core::parser::ast::{translate_tokens, AstError, AstNode};
-use crate::core::tokenizer;
-use crate::core::tokenizer::reader::TokenDeclaration;
+use crate::core::parser::{translate_tokens, AstError, AstNode};
+use crate::core::tokenizer::{translate_file,TokenDeclaration};
+use std::path::PathBuf;
 
 pub mod bin;
 
@@ -15,7 +14,7 @@ pub fn tokenize_source(path: &str) -> Result<Vec<TokenDeclaration>, ErrorCause> 
     let file_path = PathBuf::from(path);
 
     if file_path.exists() && file_path.is_file() {
-        let tokens = tokenizer::reader::translate_file(file_path)?;
+        let tokens = translate_file(file_path)?;
         Ok(tokens)
     } else {
         Err(ErrorCause::FileNotFound(path))
