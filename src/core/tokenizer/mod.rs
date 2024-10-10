@@ -10,7 +10,7 @@ mod utils;
 pub use models::{declaration::*, snapshot::*};
 pub use utils::error_conversion::try_snapshot_error;
 
-pub fn translate_file<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>> {
+pub fn tokenize_file<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>> {
     let file = File::open(&file_path).unwrap();
     let reader = BufReader::new(file);
 
@@ -50,9 +50,15 @@ fn create_token_declarations<'a>(
 }
 
 #[cfg(test)]
-mod tests {
+pub mod tests {
     use super::*;
     use std::io::Cursor;
+
+    pub fn create_token_declarations<'a>(
+        reader: impl BufRead,
+    ) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>> {
+        super::create_token_declarations(reader)
+    }
 
     #[test]
     fn result_is_ok() {
