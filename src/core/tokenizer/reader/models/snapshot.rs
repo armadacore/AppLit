@@ -6,7 +6,7 @@ pub struct TokenLocation {
 }
 
 impl TokenLocation {
-    pub fn new(start: usize, end: usize, line: usize) -> TokenLocation {
+    pub fn new(line: usize, start: usize, end: usize) -> TokenLocation {
         TokenLocation { start, end, line }
     }
 }
