@@ -1,6 +1,7 @@
 use super::{constants, TokenDeclaration, TokenLocation, TokenSnapshot};
 use crate::bin;
 use regex::Regex;
+use crate::core::parser::ast::AstError;
 
 pub fn split_line(line: &str) -> Vec<String> {
     let regex_tokens = constants::REGEX_TOKENS.join("");
@@ -47,6 +48,14 @@ pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenD
 
         _ => TokenDeclaration::Unknown(token_snapshot),
     }
+}
+
+pub fn try_snapshot_error(token_declaration: Option<&TokenDeclaration>) -> AstError {
+    if let Some(token_declaration) = token_declaration {
+        return AstError::UnexpectedToken(token_declaration.clone().extract_snapshot());
+    }
+
+    AstError::UnexpectedError
 }
 
 #[cfg(test)]

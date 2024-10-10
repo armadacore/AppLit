@@ -12,6 +12,7 @@ mod models;
 mod utils;
 
 pub use models::{snapshot::*, declaration::*};
+pub use utils::try_snapshot_error;
 
 pub fn translate_file<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>> {
     let file = File::open(&file_path).unwrap();
