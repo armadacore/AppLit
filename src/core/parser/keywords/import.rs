@@ -1,4 +1,4 @@
-use crate::bin;
+use crate::bin::constants;
 use crate::core::parser::{AstError, AstNode, Parser};
 use crate::core::tokenizer::{try_snapshot_error, TokenDeclaration, TokenSnapshot};
 
@@ -61,7 +61,7 @@ fn parse_identifiers(parser: &mut Parser) -> Result<Vec<TokenSnapshot>, AstError
 
 fn parse_reference(parser: &mut Parser) -> Result<TokenSnapshot, AstError> {
     if let Some(TokenDeclaration::Keyword(snapshot)) = parser.tokens.next() {
-        if snapshot.token == bin::constants::KEYWORD_FROM {
+        if snapshot.token == constants::KEYWORD_FROM {
             if let Some(TokenDeclaration::Literal(source)) = parser.tokens.next() {
                 Ok(source)
             } else {
