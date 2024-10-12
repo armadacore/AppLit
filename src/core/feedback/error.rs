@@ -1,5 +1,5 @@
-use std::fmt;
 use crate::core::parser::AstError;
+use std::fmt;
 
 #[derive(Debug, Clone)]
 pub enum ErrorCause<'a> {

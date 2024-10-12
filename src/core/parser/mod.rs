@@ -1,8 +1,8 @@
 use crate::core::tokenizer::TokenDeclaration;
 
 mod models;
-pub use models::{ast::*, parser::*};
 use crate::core::feedback::error::ErrorCause;
+pub use models::{ast::*, parser::*};
 
 mod keywords;
 
@@ -12,7 +12,8 @@ pub fn parse_tokens<'a>(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorC
 
 #[cfg(test)]
 pub mod tests {
-    use crate::core::parser::{parse_tokens, AstNode};
+    use crate::core::feedback::error::ErrorCause;
+    use crate::core::parser::{parse_tokens, AstNode, Parser};
     use crate::core::tokenizer::tests::create_token_declarations;
     use std::io::Cursor;
 
@@ -20,10 +21,17 @@ pub mod tests {
         AstNode::Program { statements }
     }
 
-    pub fn create_parsed_tokens(data: &str) -> AstNode {
+    pub fn create_parser(data: &str) -> Parser{
         let cursor = Cursor::new(data);
         let token_declarations = create_token_declarations(cursor);
 
-        parse_tokens(token_declarations).expect("Import token declarations did not parse")
+        Parser::new(token_declarations)
+    }
+
+    pub fn create_parsed(data: &str) -> Result<AstNode, ErrorCause> {
+        let cursor = Cursor::new(data);
+        let token_declarations = create_token_declarations(cursor);
+
+        parse_tokens(token_declarations)
     }
 }

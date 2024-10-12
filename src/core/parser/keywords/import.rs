@@ -31,7 +31,9 @@ fn parse_namespace<'a>(parser: &mut Parser) -> Result<Option<TokenSnapshot>, Err
             if let TokenDeclaration::StatementAssignment(_) = token {
                 Ok(Some(name))
             } else {
-                Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(token.extract_snapshot())))
+                Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
+                    token.extract_snapshot(),
+                )))
             }
         } else {
             Err(ErrorCause::SyntaxError(AstError::UnexpectedError(None)))
@@ -79,7 +81,7 @@ fn parse_reference<'a>(parser: &mut Parser) -> Result<TokenSnapshot, ErrorCause<
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::parser::tests::{create_ast_node, create_parsed_tokens};
+    use crate::core::parser::tests::{create_ast_node, create_parsed, create_parser};
     use crate::core::tokenizer::TokenLocation;
 
     #[test]
@@ -122,9 +124,12 @@ mod tests {
             },
         }]);
         let data = "import {pi,co} from 'applit';";
-        let parsed_tokens = create_parsed_tokens(data);
+        let parsed_tokens = create_parsed(data);
 
-        assert_eq!(parsed_tokens, expected_import_ast);
+        assert_eq!(
+            parsed_tokens.expect("Import token declarations did not parse"),
+            expected_import_ast
+        );
     }
 
     #[test]
@@ -174,8 +179,130 @@ mod tests {
             },
         }]);
         let data = "import foobar:{pi,co} from 'applit';";
-        let parsed_tokens = create_parsed_tokens(data);
+        let parsed_tokens = create_parsed(data);
 
-        assert_eq!(parsed_tokens, expected_import_ast);
+        assert_eq!(
+            parsed_tokens.expect("Import token declarations did not parse"),
+            expected_import_ast
+        );
+    }
+
+    #[test]
+    fn statement_missing_end() {
+        let data = "import {foo} from 'somewhere'";
+        let mut parser = create_parser(data);
+        let parsed = parse(&mut parser);
+
+        match parsed {
+            Err(ErrorCause::SyntaxError(AstError::UnexpectedError(None))) => {/* assert true */},
+            Ok(_) => panic!("Did not fail"),
+            _ => panic!("Error isn't as expected"),
+        }
+    }
+
+    #[test]
+    fn parse_namespace_has_unexpected_error() {
+        let data = "import foobar";
+        let mut parser = create_parser(data);
+        parser.tokens.next();
+        let parsed = parse_namespace(&mut parser);
+
+        match parsed {
+            Err(ErrorCause::SyntaxError(AstError::UnexpectedError(None))) => {/* assert true */},
+            Ok(_) => panic!("Did not fail"),
+            _ => panic!("Error isn't as expected"),
+        }
+    }
+
+    #[test]
+    fn parse_namespace_has_unexpected_token_error() {
+        let data = "import foobar;";
+        let mut parser = create_parser(data);
+        parser.tokens.next();
+        let parsed = parse_namespace(&mut parser);
+
+        match parsed {
+            Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(_))) => {/* assert true */},
+            Ok(_) => panic!("Did not fail"),
+            _ => panic!("Error isn't as expected"),
+        }
+    }
+
+    #[test]
+    fn parse_identifiers_has_unexpected_token_error() {
+        let data = "foobar ;";
+        let mut parser = create_parser(data);
+        let parsed = parse_identifiers(&mut parser);
+
+        match parsed {
+            Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(_))) => {/* assert true */}
+            Ok(_) => panic!("Did not fail"),
+            _ => panic!("Error isn't as expected"),
+        }
+    }
+
+    #[test]
+    fn parse_incomplete_identifiers_has_unexpected_token_error() {
+        let data = "{ foo, ;";
+        let mut parser = create_parser(data);
+        let parsed = parse_identifiers(&mut parser);
+
+        match parsed {
+            Err(ErrorCause::SyntaxError(AstError::UnexpectedError(_))) => {/* assert true */}
+            Ok(_) => panic!("Did not fail"),
+            _ => panic!("Error isn't as expected"),
+        }
+    }
+
+    #[test]
+    fn parse_reference_has_unexpected_token_error() {
+        let data = "";
+        let mut parser = create_parser(data);
+        let parsed = parse_reference(&mut parser);
+
+        match parsed {
+            Err(ErrorCause::SyntaxError(AstError::UnexpectedError(_))) => {/* assert true */}
+            Ok(_) => panic!("Did not fail"),
+            _ => panic!("Error isn't as expected"),
+        }
+    }
+
+    #[test]
+    fn parse_reference_without_from_condition_has_unexpected_token_error() {
+        let data = "no_from";
+        let mut parser = create_parser(data);
+        let parsed = parse_reference(&mut parser);
+
+        match parsed {
+            Err(ErrorCause::SyntaxError(AstError::UnexpectedError(_))) => {/* assert true */}
+            Ok(_) => panic!("Did not fail"),
+            _ => panic!("Error isn't as expected"),
+        }
+    }
+
+    #[test]
+    fn parse_reference_no_literal_after_from_condition_has_unexpected_token_error() {
+        let data = "from";
+        let mut parser = create_parser(data);
+        let parsed = parse_reference(&mut parser);
+
+        match parsed {
+            Err(ErrorCause::SyntaxError(AstError::UnexpectedError(_))) => {/* assert true */}
+            Ok(_) => panic!("Did not fail"),
+            _ => panic!("Error isn't as expected"),
+        }
+    }
+
+    #[test]
+    fn parse_reference_invalid_reference_condition_has_unexpected_token_error() {
+        let data = "from foobar";
+        let mut parser = create_parser(data);
+        let parsed = parse_reference(&mut parser);
+
+        match parsed {
+            Err(ErrorCause::SyntaxError(AstError::UnexpectedError(_))) => {/* assert true */}
+            Ok(_) => panic!("Did not fail"),
+            _ => panic!("Error isn't as expected"),
+        }
     }
 }
