@@ -15,6 +15,12 @@ pub mod tests {
     use crate::core::tokenizer::tests::create_token_declarations;
     use std::io::Cursor;
 
+    pub fn create_ast_node(statements: Vec<AstNode>) -> AstNode {
+        AstNode::Program {
+            statements
+        }
+    }
+
     pub fn create_parsed_tokens(data: &str) -> AstNode {
         let cursor = Cursor::new(data);
         let token_declarations = create_token_declarations(cursor);

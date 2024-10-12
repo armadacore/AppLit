@@ -78,50 +78,48 @@ fn parse_reference(parser: &mut Parser) -> Result<TokenSnapshot, AstError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::parser::tests::create_parsed_tokens;
+    use crate::core::parser::tests::{create_ast_node, create_parsed_tokens};
     use crate::core::tokenizer::TokenLocation;
 
     #[test]
     fn statement_without_namespace_is_valid() {
-        let expected_import_ast = AstNode::Program {
-            statements: vec![AstNode::Import {
-                snapshot: TokenSnapshot {
+        let expected_import_ast = create_ast_node(vec![AstNode::Import {
+            snapshot: TokenSnapshot {
+                location: TokenLocation {
+                    start: 0,
+                    end: 6,
+                    line: 1,
+                },
+                token: "import".into(),
+            },
+            namespace: None,
+            identifiers: vec![
+                TokenSnapshot {
                     location: TokenLocation {
-                        start: 0,
-                        end: 6,
+                        start: 8,
+                        end: 10,
                         line: 1,
                     },
-                    token: "import".into(),
+                    token: "pi".into(),
                 },
-                namespace: None,
-                identifiers: vec![
-                    TokenSnapshot {
-                        location: TokenLocation {
-                            start: 8,
-                            end: 10,
-                            line: 1,
-                        },
-                        token: "pi".into(),
-                    },
-                    TokenSnapshot {
-                        location: TokenLocation {
-                            start: 11,
-                            end: 13,
-                            line: 1,
-                        },
-                        token: "co".into(),
-                    },
-                ],
-                reference: TokenSnapshot {
+                TokenSnapshot {
                     location: TokenLocation {
-                        start: 20,
-                        end: 28,
+                        start: 11,
+                        end: 13,
                         line: 1,
                     },
-                    token: "'applit'".into(),
+                    token: "co".into(),
                 },
-            }],
-        };
+            ],
+            reference: TokenSnapshot {
+                location: TokenLocation {
+                    start: 20,
+                    end: 28,
+                    line: 1,
+                },
+                token: "'applit'".into(),
+            },
+        }]);
         let data = "import {pi,co} from 'applit';";
         let parsed_tokens = create_parsed_tokens(data);
 
@@ -130,52 +128,50 @@ mod tests {
 
     #[test]
     fn statement_with_namespace_is_valid() {
-        let expected_import_ast = AstNode::Program {
-            statements: vec![AstNode::Import {
-                snapshot: TokenSnapshot {
-                    location: TokenLocation {
-                        start: 0,
-                        end: 6,
-                        line: 1,
-                    },
-                    token: "import".into(),
+        let expected_import_ast = create_ast_node(vec![AstNode::Import {
+            snapshot: TokenSnapshot {
+                location: TokenLocation {
+                    start: 0,
+                    end: 6,
+                    line: 1,
                 },
-                namespace: Some(TokenSnapshot {
-                    location: TokenLocation {
-                        start: 7,
-                        end: 13,
-                        line: 1,
-                    },
-                    token: "foobar".into(),
-                }),
-                identifiers: vec![
-                    TokenSnapshot {
-                        location: TokenLocation {
-                            start: 15,
-                            end: 17,
-                            line: 1,
-                        },
-                        token: "pi".into(),
-                    },
-                    TokenSnapshot {
-                        location: TokenLocation {
-                            start: 18,
-                            end: 20,
-                            line: 1,
-                        },
-                        token: "co".into(),
-                    },
-                ],
-                reference: TokenSnapshot {
-                    location: TokenLocation {
-                        start: 27,
-                        end: 35,
-                        line: 1,
-                    },
-                    token: "'applit'".into(),
+                token: "import".into(),
+            },
+            namespace: Some(TokenSnapshot {
+                location: TokenLocation {
+                    start: 7,
+                    end: 13,
+                    line: 1,
                 },
-            }],
-        };
+                token: "foobar".into(),
+            }),
+            identifiers: vec![
+                TokenSnapshot {
+                    location: TokenLocation {
+                        start: 15,
+                        end: 17,
+                        line: 1,
+                    },
+                    token: "pi".into(),
+                },
+                TokenSnapshot {
+                    location: TokenLocation {
+                        start: 18,
+                        end: 20,
+                        line: 1,
+                    },
+                    token: "co".into(),
+                },
+            ],
+            reference: TokenSnapshot {
+                location: TokenLocation {
+                    start: 27,
+                    end: 35,
+                    line: 1,
+                },
+                token: "'applit'".into(),
+            },
+        }]);
         let data = "import foobar:{pi,co} from 'applit';";
         let parsed_tokens = create_parsed_tokens(data);
 
