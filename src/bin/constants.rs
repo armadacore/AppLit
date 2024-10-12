@@ -1,5 +1,3 @@
-use crate::bin;
-
 pub const MAIN_APP_FILE: &str = "main.app";
 
 pub const MAIN_APPLIT_FILE: &str = "main.applit";
