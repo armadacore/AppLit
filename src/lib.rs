@@ -2,7 +2,7 @@
 #![allow(dead_code)]
 
 use crate::core::feedback::error::ErrorCause;
-use crate::core::parser::{parse_tokens, AstError, AstNode};
+use crate::core::parser::{parse_tokens, AstNode};
 use crate::core::tokenizer::{tokenize_file, TokenDeclaration};
 use std::path::PathBuf;
 
@@ -20,6 +20,6 @@ pub fn tokenize_source(path: &str) -> Result<Vec<TokenDeclaration>, ErrorCause> 
     }
 }
 
-pub fn parse_source(tokens: Vec<TokenDeclaration>) -> Result<AstNode, AstError> {
+pub fn parse_source<'a>(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause<'a>> {
     parse_tokens(tokens)
 }

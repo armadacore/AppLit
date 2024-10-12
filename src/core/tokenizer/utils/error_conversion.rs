@@ -1,10 +1,11 @@
+use crate::core::feedback::error::ErrorCause;
 use crate::core::parser::AstError;
 use crate::core::tokenizer::TokenDeclaration;
 
-pub fn try_snapshot_error(token_declaration: Option<&TokenDeclaration>) -> AstError {
+pub fn try_snapshot_error<'a>(token_declaration: Option<&TokenDeclaration>) -> ErrorCause<'a> {
     if let Some(token_declaration) = token_declaration {
-        return AstError::UnexpectedToken(token_declaration.clone().extract_snapshot());
+        return ErrorCause::SyntaxError(AstError::UnexpectedToken(token_declaration.clone().extract_snapshot()));
     }
 
-    AstError::UnexpectedError
+    ErrorCause::SyntaxError(AstError::UnexpectedError(None))
 }

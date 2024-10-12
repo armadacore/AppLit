@@ -1,8 +1,9 @@
 use crate::bin::constants;
+use crate::core::feedback::error::ErrorCause;
 use crate::core::parser::{AstError, AstNode, Parser};
 use crate::core::tokenizer::{try_snapshot_error, TokenDeclaration, TokenSnapshot};
 
-pub fn parse(parser: &mut Parser) -> Result<AstNode, AstError> {
+pub fn parse<'a>(parser: &mut Parser) -> Result<AstNode, ErrorCause<'a>> {
     let snapshot = parser.tokens.peek().unwrap().extract_snapshot();
     parser.tokens.next();
 
@@ -22,7 +23,7 @@ pub fn parse(parser: &mut Parser) -> Result<AstNode, AstError> {
     }
 }
 
-fn parse_namespace(parser: &mut Parser) -> Result<Option<TokenSnapshot>, AstError> {
+fn parse_namespace<'a>(parser: &mut Parser) -> Result<Option<TokenSnapshot>, ErrorCause<'a>> {
     if let Some(TokenDeclaration::Identifier(name)) = parser.tokens.peek().cloned() {
         parser.tokens.next();
 
@@ -30,17 +31,17 @@ fn parse_namespace(parser: &mut Parser) -> Result<Option<TokenSnapshot>, AstErro
             if let TokenDeclaration::StatementAssignment(_) = token {
                 Ok(Some(name))
             } else {
-                Err(AstError::UnexpectedToken(token.extract_snapshot()))
+                Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(token.extract_snapshot())))
             }
         } else {
-            Err(AstError::UnexpectedError)
+            Err(ErrorCause::SyntaxError(AstError::UnexpectedError(None)))
         }
     } else {
         Ok(None)
     }
 }
 
-fn parse_identifiers(parser: &mut Parser) -> Result<Vec<TokenSnapshot>, AstError> {
+fn parse_identifiers<'a>(parser: &mut Parser) -> Result<Vec<TokenSnapshot>, ErrorCause<'a>> {
     let mut identifiers = Vec::<TokenSnapshot>::new();
 
     if let Some(TokenDeclaration::BlockOpen(_)) = parser.tokens.next() {
@@ -59,7 +60,7 @@ fn parse_identifiers(parser: &mut Parser) -> Result<Vec<TokenSnapshot>, AstError
     Ok(identifiers)
 }
 
-fn parse_reference(parser: &mut Parser) -> Result<TokenSnapshot, AstError> {
+fn parse_reference<'a>(parser: &mut Parser) -> Result<TokenSnapshot, ErrorCause<'a>> {
     if let Some(TokenDeclaration::Keyword(snapshot)) = parser.tokens.next() {
         if snapshot.token == constants::KEYWORD_FROM {
             if let Some(TokenDeclaration::Literal(source)) = parser.tokens.next() {
