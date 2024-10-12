@@ -14,8 +14,7 @@ pub fn tokenize_source(path: &str) -> Result<Vec<TokenDeclaration>, ErrorCause> 
     let file_path = PathBuf::from(path);
 
     if file_path.exists() && file_path.is_file() {
-        let tokens = tokenize_file(file_path)?;
-        Ok(tokens)
+        Ok(tokenize_file(file_path))
     } else {
         Err(ErrorCause::FileNotFound(path))
     }

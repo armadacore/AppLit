@@ -1,4 +1,3 @@
-use crate::core::feedback::error::ErrorCause;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
@@ -10,16 +9,16 @@ mod utils;
 pub use models::{declaration::*, snapshot::*};
 pub use utils::error_conversion::try_snapshot_error;
 
-pub fn tokenize_file<'a>(file_path: PathBuf) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>> {
+pub fn tokenize_file(file_path: PathBuf) -> Vec<TokenDeclaration> {
     let file = File::open(&file_path).unwrap();
     let reader = BufReader::new(file);
 
     create_token_declarations(reader)
 }
 
-fn create_token_declarations<'a>(
+fn create_token_declarations(
     reader: impl BufRead,
-) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>> {
+) -> Vec<TokenDeclaration> {
     let lines = reader.lines();
     let mut result: Vec<TokenDeclaration> = Vec::new();
     let mut line_count: usize = 1;
@@ -46,7 +45,7 @@ fn create_token_declarations<'a>(
         line_count += 1;
     }
 
-    Ok(result)
+    result
 }
 
 #[cfg(test)]
@@ -56,17 +55,8 @@ pub mod tests {
 
     pub fn create_token_declarations<'a>(
         reader: impl BufRead,
-    ) -> Result<Vec<TokenDeclaration>, ErrorCause<'a>> {
+    ) -> Vec<TokenDeclaration> {
         super::create_token_declarations(reader)
-    }
-
-    #[test]
-    fn result_is_ok() {
-        let data = "import { pi, co } from 'applit';";
-        let cursor = Cursor::new(data);
-        let result = create_token_declarations(cursor);
-
-        assert!(result.is_ok());
     }
 
     #[test]
@@ -149,7 +139,7 @@ pub mod tests {
         ];
         let result = create_token_declarations(cursor);
 
-        assert_eq!(expected_import, result.unwrap());
+        assert_eq!(expected_import, result);
     }
 
     #[test]
@@ -232,7 +222,7 @@ pub mod tests {
         ];
         let result = create_token_declarations(cursor);
 
-        assert_eq!(expected_import, result.unwrap());
+        assert_eq!(expected_import, result);
     }
 
     #[test]
@@ -353,6 +343,6 @@ pub mod tests {
         ];
         let result = create_token_declarations(cursor);
 
-        assert_eq!(expected_import, result.unwrap());
+        assert_eq!(expected_import, result);
     }
 }
