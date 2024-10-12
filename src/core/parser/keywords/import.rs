@@ -1,3 +1,28 @@
+//! This module is responsible for parsing import statements.
+//!
+//! The primary purpose of the module is to facilitate the parsing of various
+//! components within import statements such as namespaces, identifiers, and references.
+//! It includes a variety of parser functions and associated error handling mechanisms 
+//! to ensure robust parsing operations.
+//!
+//! ## Functions
+//!
+//! - `parse`: The primary function to initiate parsing of an import statement.
+//! - `parse_namespace`: Parses namespace tokens within an import statement.
+//! - `parse_identifiers`: Parses a list of identifier tokens within an import statement.
+//! - `parse_reference`: Parses reference tokens within an import statement.
+//!
+//! ## Tests
+//!
+//! The module includes a comprehensive set of unit tests to validate the 
+//! parsing logic of import statements under various scenarios, including:
+//!
+//! - Valid and invalid statements without and with namespaces.
+//! - Handling of unexpected tokens and errors during parsing.
+//!
+//! These tests ensure that the parsing functions handle all edge cases
+//! and provide meaningful error messages for import statement parsing.
+
 use crate::bin::constants;
 use crate::core::feedback::error::ErrorCause;
 use crate::core::parser::{AstError, AstNode, Parser};

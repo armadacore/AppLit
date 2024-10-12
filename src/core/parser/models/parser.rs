@@ -1,3 +1,17 @@
+//! This module is responsible for parsing a sequence of tokens into an abstract syntax tree (AST).
+//!
+//! ## Functions
+//!
+//! - [`new`](Parser::new): Creates a new parser with a given vector of tokens.
+//! - [`parse_program`](Parser::parse_program): Parses a program from the token stream, returning an AST node.
+//! - [`parse_statement`](Parser::parse_statement): Parses a single statement from the token stream.
+//!
+//! ## Tests
+//!
+//! - `parse_statement_peek_is_none`: Tests that parsing a statement with no tokens results in an `UnexpectedEOF` error.
+//! - `parse_statement_unknown_keyword`: Tests that an unknown keyword token results in an `UnexpectedToken` error.
+//! - `parse_statement_missing_keyword`: Tests that a missing top-level keyword token causes a panic.
+
 use crate::bin::constants;
 use crate::core::feedback::error::ErrorCause;
 use crate::core::parser::keywords::import;

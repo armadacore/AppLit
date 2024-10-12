@@ -1,3 +1,15 @@
+//! This module is responsible for tokenizing files and managing related utility functions and models.
+//!
+//! ## Functions
+//!
+//! - [`tokenize_file`](tokenize_file): Tokenizes a file at the given path and returns a vector of token declarations.
+//!
+//! ## Tests
+//!
+//! - `result_is_as_expected`: Tests that the tokenization produces the expected result for a basic input file.
+//! - `multiline_result_is_as_expected`: Tests that tokenization handles multiline inputs correctly.
+//! - `with_module_namespace_is_as_expected`: Tests that tokenization respects module namespaces correctly.
+
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
