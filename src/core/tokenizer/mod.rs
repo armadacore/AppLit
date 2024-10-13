@@ -50,7 +50,7 @@ pub mod tests {
     use super::*;
     use std::io::Cursor;
 
-    pub fn create_token_declarations<'a>(reader: impl BufRead) -> Vec<TokenDeclaration> {
+    pub fn create_token_declarations(reader: impl BufRead) -> Vec<TokenDeclaration> {
         super::create_token_declarations(reader)
     }
 
