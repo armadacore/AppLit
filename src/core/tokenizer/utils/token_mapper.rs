@@ -140,10 +140,12 @@ mod tests {
         todo!()
     }
     
+    #[test]
     fn match_literal(){
         todo!()
     }
-    
+
+    #[test]
     fn match_identifier(){
         todo!()
     }
