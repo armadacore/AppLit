@@ -1,4 +1,4 @@
-use crate::core::feedback::error::ErrorCause;
+use crate::core::feedback::ErrorCause;
 use crate::core::parser::AstNode;
 
 use crate::core::tokenizer::TokenDeclaration;
@@ -7,13 +7,13 @@ use std::vec::IntoIter;
 
 mod module;
 
-pub struct Builder {
+pub struct TreeBuilder {
     pub tokens: Peekable<IntoIter<TokenDeclaration>>,
 }
 
-impl<'a> Builder {
+impl<'a> TreeBuilder {
     pub fn new(tokens: Vec<TokenDeclaration>) -> Self {
-        Builder {
+        TreeBuilder {
             tokens: tokens.into_iter().peekable(),
         }
     }

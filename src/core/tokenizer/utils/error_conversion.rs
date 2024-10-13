@@ -1,4 +1,4 @@
-use crate::core::feedback::error::ErrorCause;
+use crate::core::feedback::ErrorCause;
 use crate::core::parser::AstError;
 use crate::core::tokenizer::TokenDeclaration;
 

@@ -1,7 +1,7 @@
 #![allow(unused_variables)]
 #![allow(dead_code)]
 
-use crate::core::feedback::error::ErrorCause;
+use crate::core::feedback::ErrorCause;
 use crate::core::parser::{parse_tokens, AstNode};
 use crate::core::tokenizer::{tokenize_file, TokenDeclaration};
 use std::path::PathBuf;

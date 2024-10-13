@@ -1,4 +1,4 @@
-use crate::core::parser::entities::ast::statements::import::ImportStatement;
+use crate::core::parser::ImportStatement;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq)]

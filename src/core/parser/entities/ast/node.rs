@@ -1,5 +1,4 @@
-use crate::core::parser::entities::ast::main::AstNodeMain;
-use crate::core::parser::entities::ast::program::AstNodeModule;
+use crate::core::parser::{AstNodeMain, AstNodeModule};
 
 #[derive(Debug, PartialEq)]
 pub enum AstNode {

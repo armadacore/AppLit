@@ -1,24 +1,11 @@
-//! This module is responsible for tokenizing files and managing related utility functions and models.
-//!
-//! ## Functions
-//!
-//! - [`tokenize_file`](tokenize_file): Tokenizes a file at the given path and returns a vector of token declarations.
-//!
-//! ## Tests
-//!
-//! - `result_is_as_expected`: Tests that the tokenization produces the expected result for a basic input file.
-//! - `multiline_result_is_as_expected`: Tests that tokenization handles multiline inputs correctly.
-//! - `with_module_namespace_is_as_expected`: Tests that tokenization respects module namespaces correctly.
-
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
 mod entities;
+pub use entities::{declaration::*, snapshot::*};
 
 mod utils;
-
-pub use entities::{declaration::*, snapshot::*};
 pub use utils::error_conversion::try_snapshot_error;
 
 pub fn tokenize_file(file_path: PathBuf) -> Vec<TokenDeclaration> {
@@ -28,9 +15,7 @@ pub fn tokenize_file(file_path: PathBuf) -> Vec<TokenDeclaration> {
     create_token_declarations(reader)
 }
 
-fn create_token_declarations(
-    reader: impl BufRead,
-) -> Vec<TokenDeclaration> {
+fn create_token_declarations(reader: impl BufRead) -> Vec<TokenDeclaration> {
     let lines = reader.lines();
     let mut result: Vec<TokenDeclaration> = Vec::new();
     let mut line_count: usize = 1;
@@ -65,9 +50,7 @@ pub mod tests {
     use super::*;
     use std::io::Cursor;
 
-    pub fn create_token_declarations<'a>(
-        reader: impl BufRead,
-    ) -> Vec<TokenDeclaration> {
+    pub fn create_token_declarations<'a>(reader: impl BufRead) -> Vec<TokenDeclaration> {
         super::create_token_declarations(reader)
     }
 
@@ -242,116 +225,94 @@ pub mod tests {
         let data = "import foobar:{pi,co} from 'applit';";
         let cursor = Cursor::new(data);
         let expected_import = vec![
-            TokenDeclaration::Keyword(
-                TokenSnapshot {
-                    location: TokenLocation {
-                        start: 0,
-                        end: 6,
-                        line: 1,
-                    },
-                    token: "import".into(),
+            TokenDeclaration::Keyword(TokenSnapshot {
+                location: TokenLocation {
+                    start: 0,
+                    end: 6,
+                    line: 1,
                 },
-            ),
-            TokenDeclaration::Identifier(
-                TokenSnapshot {
-                    location: TokenLocation {
-                        start: 7,
-                        end: 13,
-                        line: 1,
-                    },
-                    token: "foobar".into(),
+                token: "import".into(),
+            }),
+            TokenDeclaration::Identifier(TokenSnapshot {
+                location: TokenLocation {
+                    start: 7,
+                    end: 13,
+                    line: 1,
                 },
-            ),
-            TokenDeclaration::StatementAssignment(
-                TokenSnapshot {
-                    location: TokenLocation {
-                        start: 13,
-                        end: 14,
-                        line: 1,
-                    },
-                    token: ":".into(),
+                token: "foobar".into(),
+            }),
+            TokenDeclaration::StatementAssignment(TokenSnapshot {
+                location: TokenLocation {
+                    start: 13,
+                    end: 14,
+                    line: 1,
                 },
-            ),
-            TokenDeclaration::BlockOpen(
-                TokenSnapshot {
-                    location: TokenLocation {
-                        start: 14,
-                        end: 15,
-                        line: 1,
-                    },
-                    token: "{".into(),
+                token: ":".into(),
+            }),
+            TokenDeclaration::BlockOpen(TokenSnapshot {
+                location: TokenLocation {
+                    start: 14,
+                    end: 15,
+                    line: 1,
                 },
-            ),
-            TokenDeclaration::Identifier(
-                TokenSnapshot {
-                    location: TokenLocation {
-                        start: 15,
-                        end: 17,
-                        line: 1,
-                    },
-                    token: "pi".into(),
+                token: "{".into(),
+            }),
+            TokenDeclaration::Identifier(TokenSnapshot {
+                location: TokenLocation {
+                    start: 15,
+                    end: 17,
+                    line: 1,
                 },
-            ),
-            TokenDeclaration::StatementDivider(
-                TokenSnapshot {
-                    location: TokenLocation {
-                        start: 17,
-                        end: 18,
-                        line: 1,
-                    },
-                    token: ",".into(),
+                token: "pi".into(),
+            }),
+            TokenDeclaration::StatementDivider(TokenSnapshot {
+                location: TokenLocation {
+                    start: 17,
+                    end: 18,
+                    line: 1,
                 },
-            ),
-            TokenDeclaration::Identifier(
-                TokenSnapshot {
-                    location: TokenLocation {
-                        start: 18,
-                        end: 20,
-                        line: 1,
-                    },
-                    token: "co".into(),
+                token: ",".into(),
+            }),
+            TokenDeclaration::Identifier(TokenSnapshot {
+                location: TokenLocation {
+                    start: 18,
+                    end: 20,
+                    line: 1,
                 },
-            ),
-            TokenDeclaration::BlockClose(
-                TokenSnapshot {
-                    location: TokenLocation {
-                        start: 20,
-                        end: 21,
-                        line: 1,
-                    },
-                    token: "}".into(),
+                token: "co".into(),
+            }),
+            TokenDeclaration::BlockClose(TokenSnapshot {
+                location: TokenLocation {
+                    start: 20,
+                    end: 21,
+                    line: 1,
                 },
-            ),
-            TokenDeclaration::Keyword(
-                TokenSnapshot {
-                    location: TokenLocation {
-                        start: 22,
-                        end: 26,
-                        line: 1,
-                    },
-                    token: "from".into(),
+                token: "}".into(),
+            }),
+            TokenDeclaration::Keyword(TokenSnapshot {
+                location: TokenLocation {
+                    start: 22,
+                    end: 26,
+                    line: 1,
                 },
-            ),
-            TokenDeclaration::Literal(
-                TokenSnapshot {
-                    location: TokenLocation {
-                        start: 27,
-                        end: 35,
-                        line: 1,
-                    },
-                    token: "'applit'".into(),
+                token: "from".into(),
+            }),
+            TokenDeclaration::Literal(TokenSnapshot {
+                location: TokenLocation {
+                    start: 27,
+                    end: 35,
+                    line: 1,
                 },
-            ),
-            TokenDeclaration::StatementEnd(
-                TokenSnapshot {
-                    location: TokenLocation {
-                        start: 35,
-                        end: 36,
-                        line: 1,
-                    },
-                    token: ";".into(),
+                token: "'applit'".into(),
+            }),
+            TokenDeclaration::StatementEnd(TokenSnapshot {
+                location: TokenLocation {
+                    start: 35,
+                    end: 36,
+                    line: 1,
                 },
-            ),
+                token: ";".into(),
+            }),
         ];
         let result = create_token_declarations(cursor);
 

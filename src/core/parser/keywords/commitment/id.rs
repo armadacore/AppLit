@@ -1,6 +1,6 @@
-use crate::core::feedback::error::ErrorCause;
-use crate::core::parser::{AstNode, Builder};
+use crate::core::feedback::ErrorCause;
+use crate::core::parser::{AstNode, TreeBuilder};
 
-pub fn parse(parser: &mut Builder) -> Result<AstNode, ErrorCause> {
+pub fn parse(parser: &mut TreeBuilder) -> Result<AstNode, ErrorCause> {
     todo!()
 }

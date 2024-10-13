@@ -1,2 +1,3 @@
 /// General error message functions
-pub mod error;
+mod error;
+pub use error::*;
