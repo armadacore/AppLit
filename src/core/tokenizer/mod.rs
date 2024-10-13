@@ -14,11 +14,11 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::path::PathBuf;
 
-mod models;
+mod entities;
 
 mod utils;
 
-pub use models::{declaration::*, snapshot::*};
+pub use entities::{declaration::*, snapshot::*};
 pub use utils::error_conversion::try_snapshot_error;
 
 pub fn tokenize_file(file_path: PathBuf) -> Vec<TokenDeclaration> {

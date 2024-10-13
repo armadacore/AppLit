@@ -4,8 +4,8 @@ use crate::core::tokenizer::TokenDeclaration;
 mod keywords;
 pub use keywords::*;
 
-mod models;
-pub use models::{
+mod entities;
+pub use entities::{
     ast::{
         error::AstError,
         node::AstNode,
