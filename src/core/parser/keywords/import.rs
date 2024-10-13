@@ -1,7 +1,7 @@
 use crate::bin::constants;
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::{AstError, ImportStatement, TreeBuilder};
-use crate::core::tokenizer::{try_snapshot_error, TokenDeclaration, TokenSnapshot};
+use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot};
 
 pub fn parse<'a>(builder: &mut TreeBuilder) -> Result<ImportStatement, ErrorCause<'a>> {
     let snapshot = builder.tokens.peek().unwrap().extract_snapshot();
@@ -19,7 +19,7 @@ pub fn parse<'a>(builder: &mut TreeBuilder) -> Result<ImportStatement, ErrorCaus
             reference,
         })
     } else {
-        Err(try_snapshot_error(builder.tokens.peek()))
+        Err(snapshot_error(builder.tokens.peek()))
     }
 }
 
@@ -52,11 +52,11 @@ fn parse_identifiers<'a>(builder: &mut TreeBuilder) -> Result<Vec<TokenSnapshot>
                 Some(TokenDeclaration::Identifier(name)) => identifiers.push(name),
                 Some(TokenDeclaration::StatementDivider(_)) => continue,
                 Some(TokenDeclaration::BlockClose(_)) => break,
-                _ => return Err(try_snapshot_error(builder.tokens.peek())),
+                _ => return Err(snapshot_error(builder.tokens.peek())),
             }
         }
     } else {
-        return Err(try_snapshot_error(builder.tokens.peek()));
+        return Err(snapshot_error(builder.tokens.peek()));
     }
 
     Ok(identifiers)
@@ -68,13 +68,13 @@ fn parse_reference<'a>(builder: &mut TreeBuilder) -> Result<TokenSnapshot, Error
             if let Some(TokenDeclaration::Literal(source)) = builder.tokens.next() {
                 Ok(source)
             } else {
-                Err(try_snapshot_error(builder.tokens.peek()))
+                Err(snapshot_error(builder.tokens.peek()))
             }
         } else {
-            Err(try_snapshot_error(builder.tokens.peek()))
+            Err(snapshot_error(builder.tokens.peek()))
         }
     } else {
-        Err(try_snapshot_error(builder.tokens.peek()))
+        Err(snapshot_error(builder.tokens.peek()))
     }
 }
 

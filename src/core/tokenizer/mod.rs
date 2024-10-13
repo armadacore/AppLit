@@ -6,7 +6,7 @@ mod entities;
 pub use entities::{declaration::*, snapshot::*};
 
 mod utils;
-pub use utils::error_conversion::try_snapshot_error;
+pub use utils::error_conversion::snapshot_error;
 
 pub fn tokenize_file(file_path: PathBuf) -> Vec<TokenDeclaration> {
     let file = File::open(&file_path).unwrap();
