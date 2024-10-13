@@ -2,7 +2,8 @@ use crate::core::parser::ImportStatement;
 use std::collections::HashMap;
 
 #[derive(Debug, PartialEq)]
-pub enum MainCommitment {
+pub enum MainStatement {
+    Import(ImportStatement),
     Id(String, String),
     Icon(String),
     Name(String),
@@ -17,6 +18,5 @@ pub enum MainCommitment {
 
 #[derive(Debug, PartialEq)]
 pub enum AstNodeMain{
-    Statements(Vec<ImportStatement>),
-    Commitments(Vec<MainCommitment>),
+    Statements(Vec<MainStatement>),
 }

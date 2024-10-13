@@ -1,14 +1,17 @@
 #![allow(unused_imports)]
+#![allow(unused_variables)]
 
-use applit::{parse_module, tokenize_source};
+use applit::AppLit;
 
 // main.rs still exists to test library
 fn main() {
-    let project_path = "/Users/marcelarmada-castellon/Documents/ArmadaCore/Repository/applit/mock";
-    let file_path =  "/Users/marcelarmada-castellon/Documents/ArmadaCore/Repository/applit/mock/main.app";
-    
-    match tokenize_source(file_path) {
-        Ok(tokens) => println!("{:#?}", parse_module(tokens)),
+    let app_path = "/Users/marcelarmada-castellon/Documents/ArmadaCore/Repository/applit/mock";
+
+    match AppLit::new(app_path) {
+        Ok(app) => match app.run() {
+            Ok(nodes) => println!("{:#?}", nodes),
+            Err(error) => eprintln!("{}", error)
+        },
         Err(error) => eprintln!("{}", error)
     }
 }

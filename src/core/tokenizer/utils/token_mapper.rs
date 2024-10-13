@@ -136,16 +136,19 @@ mod tests {
     }
     
     #[test]
+    #[ignore]
     fn match_commitment(){
         todo!()
     }
     
     #[test]
+    #[ignore]
     fn match_literal(){
         todo!()
     }
 
     #[test]
+    #[ignore]
     fn match_identifier(){
         todo!()
     }

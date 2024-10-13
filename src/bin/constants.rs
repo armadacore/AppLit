@@ -1,6 +1,6 @@
-pub const MAIN_APP_FILE: &str = "main.app";
+pub const SOURCE_CODE_FILE: &str = "main.app";
 
-pub const MAIN_APPLIT_FILE: &str = "main.applit";
+pub const BINARY_CODE_FILE: &str = "main.applit";
 
 pub const EMPTY_STRING: &str = "";
 
