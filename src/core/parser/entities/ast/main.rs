@@ -17,6 +17,6 @@ pub enum MainStatement {
 }
 
 #[derive(Debug, PartialEq)]
-pub enum AstNodeMain{
+pub enum AstMainNode {
     Statements(Vec<MainStatement>),
 }

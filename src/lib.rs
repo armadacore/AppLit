@@ -3,7 +3,7 @@
 
 use crate::bin::constants;
 use crate::core::feedback::ErrorCause;
-use crate::core::parser::{main_tree_builder, module_tree_builder, AstNode, AstNodeMain};
+use crate::core::parser::{main_tree_builder, module_tree_builder, AstMainNode, AstNode};
 use crate::core::tokenizer::tokenize_file;
 use std::path::PathBuf;
 
@@ -21,7 +21,7 @@ pub struct AppLit {
     pub app_directory: PathBuf,
     app_entry_path: PathBuf,
     mode: AppLitMode,
-    node: AstNodeMain,
+    node: AstMainNode,
 }
 
 impl AppLit {
@@ -49,7 +49,7 @@ impl AppLit {
             app_directory,
             app_entry_path,
             mode,
-            node: AstNodeMain::Statements(vec![]),
+            node: AstMainNode::Statements(vec![]),
         })
     }
 

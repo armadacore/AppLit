@@ -1,7 +1,7 @@
-use crate::core::parser::{AstNodeMain, AstNodeModule};
+use crate::core::parser::{AstMainNode, AstModuleNode};
 
 #[derive(Debug, PartialEq)]
 pub enum AstNode {
-    Main(AstNodeMain),
-    Module(AstNodeModule),
+    Main(AstMainNode),
+    Module(AstModuleNode),
 }

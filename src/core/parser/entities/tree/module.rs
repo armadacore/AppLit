@@ -1,20 +1,20 @@
 use crate::bin::constants;
 use crate::core::feedback::ErrorCause;
-use crate::core::parser::{import, AstError, AstNode, AstNodeModule, TreeBuilder};
+use crate::core::parser::{import, AstError, AstModuleNode, AstNode, TreeBuilder};
 use crate::core::tokenizer::TokenDeclaration;
 
 pub fn parse<'a>(parser: &mut TreeBuilder) -> Result<AstNode, ErrorCause<'a>> {
-    let mut statements = Vec::<AstNodeModule>::new();
+    let mut statements = Vec::<AstModuleNode>::new();
 
     while parser.tokens.peek().is_some() {
         let statement = parse_statement(parser)?;
         statements.push(statement);
     }
 
-    Ok(AstNode::Module(AstNodeModule::Statements(statements)))
+    Ok(AstNode::Module(AstModuleNode::Statements(statements)))
 }
 
-fn parse_statement<'a>(builder: &mut TreeBuilder) -> Result<AstNodeModule, ErrorCause<'a>> {
+fn parse_statement<'a>(builder: &mut TreeBuilder) -> Result<AstModuleNode, ErrorCause<'a>> {
     let peek = builder.tokens.peek();
 
     if peek.is_none() {
@@ -25,13 +25,13 @@ fn parse_statement<'a>(builder: &mut TreeBuilder) -> Result<AstNodeModule, Error
 
     if let TokenDeclaration::Keyword(snapshot) = peek {
         return match snapshot.token.as_str() {
-            constants::KEYWORD_IMPORT => Ok(AstNodeModule::Import(import::parse(builder)?)),
+            constants::KEYWORD_IMPORT => Ok(AstModuleNode::Import(import::parse(builder)?)),
             unknown_token => Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
                 snapshot.clone(),
             ))),
         };
     }
-    
+
     panic!(
         "Try to parse on top level for unknown TokenDeclaration {:#?}",
         builder.tokens.peek().unwrap()
