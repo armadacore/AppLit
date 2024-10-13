@@ -1,9 +1,9 @@
 use crate::bin::constants;
 use crate::core::feedback::error::ErrorCause;
-use crate::core::parser::{AstError, ImportStatement, Parser};
+use crate::core::parser::{AstError, Builder, ImportStatement};
 use crate::core::tokenizer::{try_snapshot_error, TokenDeclaration, TokenSnapshot};
 
-pub fn parse<'a>(parser: &mut Parser) -> Result<ImportStatement, ErrorCause<'a>> {
+pub fn parse<'a>(parser: &mut Builder) -> Result<ImportStatement, ErrorCause<'a>> {
     let snapshot = parser.tokens.peek().unwrap().extract_snapshot();
     parser.tokens.next();
 
@@ -23,7 +23,7 @@ pub fn parse<'a>(parser: &mut Parser) -> Result<ImportStatement, ErrorCause<'a>>
     }
 }
 
-fn parse_namespace<'a>(parser: &mut Parser) -> Result<Option<TokenSnapshot>, ErrorCause<'a>> {
+fn parse_namespace<'a>(parser: &mut Builder) -> Result<Option<TokenSnapshot>, ErrorCause<'a>> {
     if let Some(TokenDeclaration::Identifier(name)) = parser.tokens.peek().cloned() {
         parser.tokens.next();
 
@@ -43,7 +43,7 @@ fn parse_namespace<'a>(parser: &mut Parser) -> Result<Option<TokenSnapshot>, Err
     }
 }
 
-fn parse_identifiers<'a>(parser: &mut Parser) -> Result<Vec<TokenSnapshot>, ErrorCause<'a>> {
+fn parse_identifiers<'a>(parser: &mut Builder) -> Result<Vec<TokenSnapshot>, ErrorCause<'a>> {
     let mut identifiers = Vec::<TokenSnapshot>::new();
 
     if let Some(TokenDeclaration::BlockOpen(_)) = parser.tokens.next() {
@@ -62,7 +62,7 @@ fn parse_identifiers<'a>(parser: &mut Parser) -> Result<Vec<TokenSnapshot>, Erro
     Ok(identifiers)
 }
 
-fn parse_reference<'a>(parser: &mut Parser) -> Result<TokenSnapshot, ErrorCause<'a>> {
+fn parse_reference<'a>(parser: &mut Builder) -> Result<TokenSnapshot, ErrorCause<'a>> {
     if let Some(TokenDeclaration::Keyword(snapshot)) = parser.tokens.next() {
         if snapshot.token == constants::KEYWORD_FROM {
             if let Some(TokenDeclaration::Literal(source)) = parser.tokens.next() {

@@ -7,13 +7,13 @@ use std::vec::IntoIter;
 
 mod module;
 
-pub struct Parser {
+pub struct Builder {
     pub tokens: Peekable<IntoIter<TokenDeclaration>>,
 }
 
-impl<'a> Parser {
+impl<'a> Builder {
     pub fn new(tokens: Vec<TokenDeclaration>) -> Self {
-        Parser {
+        Builder {
             tokens: tokens.into_iter().peekable(),
         }
     }

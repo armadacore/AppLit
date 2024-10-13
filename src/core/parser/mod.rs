@@ -15,9 +15,9 @@ pub use entities::{
             import::*
         }
     },
-    parser::*
+    tree::*
 };
 
 pub fn parse_tokens<'a>(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause<'a>> {
-    Parser::new(tokens).parse_module()
+    Builder::new(tokens).parse_module()
 }

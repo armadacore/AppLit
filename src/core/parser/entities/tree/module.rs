@@ -1,9 +1,9 @@
 use crate::bin::constants;
 use crate::core::feedback::error::ErrorCause;
-use crate::core::parser::{import, AstError, AstNode, AstNodeModule, ModuleStatement, Parser};
+use crate::core::parser::{import, AstError, AstNode, AstNodeModule, Builder, ModuleStatement};
 use crate::core::tokenizer::TokenDeclaration;
 
-pub fn parse<'a>(parser: &mut Parser) -> Result<AstNode, ErrorCause<'a>> {
+pub fn parse<'a>(parser: &mut Builder) -> Result<AstNode, ErrorCause<'a>> {
     let mut statements = Vec::<ModuleStatement>::new();
 
     while parser.tokens.peek().is_some() {
@@ -14,7 +14,7 @@ pub fn parse<'a>(parser: &mut Parser) -> Result<AstNode, ErrorCause<'a>> {
     Ok(AstNode::Program(AstNodeModule::Statements(statements)))
 }
 
-fn parse_statement<'a>(parser: &mut Parser) -> Result<ModuleStatement, ErrorCause<'a>> {
+fn parse_statement<'a>(parser: &mut Builder) -> Result<ModuleStatement, ErrorCause<'a>> {
     let peek = parser.tokens.peek();
 
     if peek.is_none() {
