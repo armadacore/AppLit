@@ -11,7 +11,7 @@ pub fn parse<'a>(parser: &mut TreeBuilder) -> Result<AstNode, ErrorCause<'a>> {
         statements.push(statement);
     }
 
-    Ok(AstNode::Program(AstNodeModule::Statements(statements)))
+    Ok(AstNode::Module(AstNodeModule::Statements(statements)))
 }
 
 fn parse_statement<'a>(builder: &mut TreeBuilder) -> Result<ModuleStatement, ErrorCause<'a>> {

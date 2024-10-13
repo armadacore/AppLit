@@ -9,8 +9,8 @@ pub use entities::{
     ast::{
         error::*,
         main::*,
+        module::*,
         node::*,
-        program::*,
         statements::{
             function::*,
             import::*
@@ -38,7 +38,7 @@ mod tests {
     pub fn create_builder(statement: &str) -> TreeBuilder{
         let cursor = Cursor::new(statement);
         let token_declaration = create_token_declarations(cursor);
-        
+
         TreeBuilder::new(token_declaration)
     }
 }

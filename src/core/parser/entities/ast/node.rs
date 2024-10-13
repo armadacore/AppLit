@@ -3,5 +3,5 @@ use crate::core::parser::{AstNodeMain, AstNodeModule};
 #[derive(Debug, PartialEq)]
 pub enum AstNode {
     Main(AstNodeMain),
-    Program(AstNodeModule),
+    Module(AstNodeModule),
 }

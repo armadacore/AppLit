@@ -10,6 +10,10 @@ pub mod bin;
 
 mod core;
 
+pub struct AppLit {
+    
+}
+
 pub fn tokenize_source(path: &str) -> Result<Vec<TokenDeclaration>, ErrorCause> {
     let file_path = PathBuf::from(path);
 
