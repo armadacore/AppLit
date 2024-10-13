@@ -59,4 +59,9 @@ mod tests {
 
         assert_eq!(expected, result);
     }
+    
+    #[test]
+    fn split_by_commitments(){
+        todo!()
+    }
 }

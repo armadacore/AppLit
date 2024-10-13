@@ -134,6 +134,19 @@ mod tests {
 
         assert_eq!(expected, result);
     }
+    
+    #[test]
+    fn match_commitment(){
+        todo!()
+    }
+    
+    fn match_literal(){
+        todo!()
+    }
+    
+    fn match_identifier(){
+        todo!()
+    }
 
     #[test]
     fn match_unknown(){
