@@ -28,7 +28,10 @@ pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenD
         }
         constants::STATEMENT_DIVIDER => TokenDeclaration::StatementDivider(token_snapshot),
         constants::STATEMENT_END => TokenDeclaration::StatementEnd(token_snapshot),
-
+        
+        commitment_token if commitment_token.starts_with(constants::COMMITMENT_IDENTIFIER) => {
+            TokenDeclaration::Commitment(token_snapshot)
+        }
         literal_token if literal_regex.is_match(literal_token) => {
             TokenDeclaration::Literal(token_snapshot)
         }

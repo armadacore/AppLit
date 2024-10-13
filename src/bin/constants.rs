@@ -6,6 +6,22 @@ pub const EMPTY_STRING: &str = "";
 
 pub const SPACE_STRING: &str = " ";
 
+pub const COMMITMENT_IDENTIFIER: &str = "@";
+
+pub const COMMITMENT_ID: &str = "@id";
+
+pub const COMMITMENT_ICON: &str = "@icon";
+
+pub const COMMITMENT_NAME: &str = "@name";
+
+pub const COMMITMENT_VERSION: &str = "@version";
+
+pub const COMMITMENT_DESCRIPTION: &str = "@description";
+
+pub const COMMITMENT_LINK: &str = "@link";
+
+pub const COMMITMENT_DOMAIN: &str = "@domain";
+
 pub const STATEMENT_DIVIDER: &str = ",";
 
 pub const STATEMENT_END: &str = ";";

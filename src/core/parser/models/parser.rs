@@ -15,7 +15,7 @@
 use crate::bin::constants;
 use crate::core::feedback::error::ErrorCause;
 use crate::core::parser::keywords::import;
-use crate::core::parser::{AstError, AstNode};
+use crate::core::parser::{AstCommitment, AstError, AstNode};
 use crate::core::tokenizer::TokenDeclaration;
 use std::iter::Peekable;
 use std::vec::IntoIter;
@@ -32,6 +32,7 @@ impl<'a> Parser {
     }
 
     pub fn parse_program(&mut self) -> Result<AstNode, ErrorCause<'a>> {
+        let commitment = Vec::<AstCommitment>::new();
         let mut statements = Vec::<AstNode>::new();
 
         while self.tokens.peek().is_some() {
@@ -39,7 +40,7 @@ impl<'a> Parser {
             statements.push(statement);
         }
 
-        Ok(AstNode::Program { statements })
+        Ok(AstNode::Program { commitment, statements })
     }
 
     pub fn parse_statement(&mut self) -> Result<AstNode, ErrorCause<'a>> {
@@ -49,7 +50,22 @@ impl<'a> Parser {
             return Err(ErrorCause::SyntaxError(AstError::UnexpectedEOF));
         }
 
-        if let TokenDeclaration::Keyword(snapshot) = peek.unwrap() {
+        let peek = peek.unwrap();
+
+        if let TokenDeclaration::Commitment(snapshot) = peek {
+            return match snapshot.token.as_str() {
+                constants::COMMITMENT_ID => todo!(),
+                constants::COMMITMENT_ICON => todo!(),
+                constants::COMMITMENT_NAME => todo!(),
+                constants::COMMITMENT_VERSION => todo!(),
+                constants::COMMITMENT_DESCRIPTION => todo!(),
+                constants::COMMITMENT_LINK => todo!(),
+                constants::COMMITMENT_DOMAIN => todo!(),
+                unknown_token => Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(snapshot.clone()))),
+            };
+        }
+
+        if let TokenDeclaration::Keyword(snapshot) = peek {
             return match snapshot.token.as_str() {
                 constants::KEYWORD_IMPORT => Ok(import::parse(self)?),
                 unknown_token => Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(snapshot.clone()))),

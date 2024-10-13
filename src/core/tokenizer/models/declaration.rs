@@ -2,6 +2,8 @@ use crate::core::tokenizer::TokenSnapshot;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum TokenDeclaration {
+    Commitment(TokenSnapshot),
+    
     Keyword(TokenSnapshot),
     Identifier(TokenSnapshot),
     Literal(TokenSnapshot),
@@ -22,6 +24,7 @@ pub enum TokenDeclaration {
 impl TokenDeclaration {
     pub fn extract_snapshot(&self) -> TokenSnapshot {
         match self {
+            TokenDeclaration::Commitment(snapshot) => snapshot.clone(),
             TokenDeclaration::Keyword(snapshot) => snapshot.clone(),
             TokenDeclaration::Identifier(snapshot) => snapshot.clone(),
             TokenDeclaration::Literal(snapshot) => snapshot.clone(),
