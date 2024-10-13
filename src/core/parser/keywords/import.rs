@@ -1,7 +1,6 @@
 use crate::bin::constants;
 use crate::core::feedback::error::ErrorCause;
-use crate::core::parser::models::ast::statements::import::ImportStatement;
-use crate::core::parser::{AstError, Parser};
+use crate::core::parser::{AstError, ImportStatement, Parser};
 use crate::core::tokenizer::{try_snapshot_error, TokenDeclaration, TokenSnapshot};
 
 pub fn parse<'a>(parser: &mut Parser) -> Result<ImportStatement, ErrorCause<'a>> {

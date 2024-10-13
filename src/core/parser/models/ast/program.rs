@@ -1,12 +1,12 @@
 use crate::core::parser::{FunctionStatement, ImportStatement};
 
 #[derive(Debug, PartialEq)]
-pub enum ProgramStatement {
+pub enum ModuleStatement {
     Import(ImportStatement),
     Function(FunctionStatement)
 }
 
 #[derive(Debug, PartialEq)]
-pub enum AstNodeProgram{
-    Statements(Vec<ProgramStatement>)
+pub enum AstNodeModule {
+    Statements(Vec<ModuleStatement>)
 }

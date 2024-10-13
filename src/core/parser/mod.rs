@@ -1,7 +1,10 @@
+use crate::core::feedback::error::ErrorCause;
 use crate::core::tokenizer::TokenDeclaration;
 
+mod keywords;
+pub use keywords::*;
+
 mod models;
-use crate::core::feedback::error::ErrorCause;
 pub use models::{
     ast::{
         error::AstError,
@@ -12,11 +15,9 @@ pub use models::{
             import::*
         }
     },
-    parser::*,
+    parser::*
 };
 
-mod keywords;
-
 pub fn parse_tokens<'a>(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause<'a>> {
-    Parser::new(tokens).parse_program()
+    Parser::new(tokens).parse_module()
 }
