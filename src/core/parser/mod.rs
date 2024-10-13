@@ -5,8 +5,6 @@ mod keywords;
 pub use keywords::*;
 
 mod entities;
-pub mod commitments;
-
 pub use entities::{
     ast::{
         error::*,
@@ -21,7 +19,13 @@ pub use entities::{
     tree::*
 };
 
-pub fn parse_tokens<'a>(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause<'a>> {
+pub mod commitments;
+
+pub fn main_tree_builder<'a>(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause<'a>> {
+    TreeBuilder::new(tokens).parse_main()
+}
+
+pub fn module_tree_builder<'a>(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause<'a>> {
     TreeBuilder::new(tokens).parse_module()
 }
 

@@ -17,6 +17,10 @@ impl<'a> TreeBuilder {
             tokens: tokens.into_iter().peekable(),
         }
     }
+    
+    pub fn parse_main(&mut self) -> Result<AstNode, ErrorCause<'a>> {
+        todo!()
+    }
 
     pub fn parse_module(&mut self) -> Result<AstNode, ErrorCause<'a>> {
         module::parse(self)
