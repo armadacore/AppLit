@@ -9,7 +9,7 @@ mod utils;
 pub use utils::error_conversion::snapshot_error;
 
 pub fn tokenize_file(file_path: &PathBuf) -> Vec<TokenDeclaration> {
-    let file = File::open(&file_path).unwrap();
+    let file = File::open(file_path).unwrap();
     let reader = BufReader::new(file);
 
     create_token_declarations(reader)
