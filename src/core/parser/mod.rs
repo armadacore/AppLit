@@ -5,6 +5,8 @@ mod keywords;
 pub use keywords::*;
 
 mod entities;
+pub mod commitments;
+
 pub use entities::{
     ast::{
         error::*,
