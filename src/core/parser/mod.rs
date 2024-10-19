@@ -19,8 +19,6 @@ pub use entities::{
     tree::*
 };
 
-pub mod commitments;
-
 pub fn main_tree_builder<'a>(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause<'a>> {
     TreeBuilder::new(tokens).parse_main()
 }
