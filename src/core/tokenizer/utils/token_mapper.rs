@@ -17,11 +17,11 @@ pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenD
             TokenDeclaration::Keyword(token_snapshot)
         }
 
-        constants::ARGUMENT_OPEN => TokenDeclaration::ArgumentOpen(token_snapshot),
-        constants::ARGUMENT_CLOSE => TokenDeclaration::ArgumentClose(token_snapshot),
+        constants::STATEMENT_ARGUMENT_OPEN => TokenDeclaration::ArgumentOpen(token_snapshot),
+        constants::STATEMENT_ARGUMENT_CLOSE => TokenDeclaration::ArgumentClose(token_snapshot),
 
-        constants::BLOCK_OPEN => TokenDeclaration::BlockOpen(token_snapshot),
-        constants::BLOCK_CLOSE => TokenDeclaration::BlockClose(token_snapshot),
+        constants::STATEMENT_BLOCK_OPEN => TokenDeclaration::BlockOpen(token_snapshot),
+        constants::STATEMENT_BLOCK_CLOSE => TokenDeclaration::BlockClose(token_snapshot),
 
         constants::STATEMENT_ASSIGNMENT => {
             TokenDeclaration::StatementAssignment(token_snapshot)
