@@ -8,7 +8,7 @@ fn main() {
     let app_path = "/Users/marcelarmada-castellon/Documents/ArmadaCore/Repository/applit/mock";
 
     match AppLit::new(app_path) {
-        Ok(app) => match app.cache_and_run() {
+        Ok(mut app) => match app.cache_and_run() {
             Ok(nodes) => println!("{:#?}", nodes),
             Err(error) => eprintln!("{}", error)
         },
