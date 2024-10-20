@@ -2,6 +2,8 @@ use crate::bin::constants;
 use crate::composer::AppLit;
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::AstNode;
+use bincode;
+use sha3::{Digest, Sha3_256};
 use std::fs::File;
 use std::io::{Read, Write};
 
@@ -14,6 +16,9 @@ pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
                 return Err(ErrorCause::CouldNotSerializeData("AstNode".into()));
             }
             let encoded = encoded.unwrap();
+            let mut hasher = Sha3_256::new();
+            hasher.update(&encoded);
+            let hash = hasher.finalize();
 
             let file = File::create(path);
             if file.is_err() {
@@ -22,6 +27,11 @@ pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
             let mut file = file.unwrap();
 
             let write = file.write_all(&encoded);
+            if write.is_err() {
+                return Err(ErrorCause::CouldNotWriteFile(path.into()));
+            }
+
+            let write = file.write_all(&hash);
             if write.is_err() {
                 return Err(ErrorCause::CouldNotWriteFile(path.into()));
             }
@@ -37,13 +47,21 @@ pub fn read_binary_file(app_lit: &AppLit) -> Result<Vec<AstNode>, ErrorCause> {
 
     match File::open(&app_lit.entry) {
         Ok(mut file) => {
-            let mut encoded = Vec::<u8>::new();
+            let mut data = Vec::<u8>::new();
 
-            if file.read_to_end(&mut encoded).is_err() {
+            if file.read_to_end(&mut data).is_err() {
                 return Err(ErrorCause::CouldNotReadFile(path));
             }
+            let (encoded_data, stored_hash) = data.split_at(data.len() - 32);
+            let mut hasher = Sha3_256::new();
+            hasher.update(encoded_data);
+            let computed_hash = hasher.finalize();
 
-            let result = bincode::deserialize::<Vec<AstNode>>(&encoded);
+            if stored_hash != computed_hash.as_slice() {
+                return Err(ErrorCause::UnexpectedError("File is modification".into()));
+            }
+
+            let result = bincode::deserialize::<Vec<AstNode>>(encoded_data);
 
             if result.is_err() {
                 return Err(ErrorCause::CouldNotDeserializeData(path));
