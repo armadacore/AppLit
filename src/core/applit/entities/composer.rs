@@ -32,7 +32,7 @@ impl AppLit {
         let node = create_node_from_source_code(self)?;
         
         match node {
-            None => read_binary_file(&self),
+            None => read_binary_file(self),
             Some(ast_node) => {
                 self.nodes.push(ast_node);
                 
@@ -45,10 +45,10 @@ impl AppLit {
         let node = create_node_from_source_code(self)?;
 
         match node {
-            None => read_binary_file(&self),
+            None => read_binary_file(self),
             Some(ast_node) => {
                 self.nodes.push(ast_node);
-                write_binary_file(&self)?;
+                write_binary_file(self)?;
                 
                 Ok(self.nodes.clone())
             }
