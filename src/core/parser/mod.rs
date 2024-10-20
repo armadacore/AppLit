@@ -8,9 +8,7 @@ mod entities;
 pub use entities::{
     ast::{
         error::*,
-        main::*,
-        module::*,
-        node::*,
+        node::{AstNode, main::*, module::*},
         statements::{
             function::*,
             import::*
