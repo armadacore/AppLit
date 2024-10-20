@@ -5,8 +5,8 @@ use std::path::PathBuf;
 mod entities;
 pub use entities::{declaration::*, snapshot::*};
 
-mod utils;
-pub use utils::error_conversion::snapshot_error;
+mod lib;
+pub use lib::error_conversion::snapshot_error;
 
 pub fn tokenize_file(file_path: &PathBuf) -> Vec<TokenDeclaration> {
     let file = File::open(file_path).unwrap();
@@ -23,7 +23,7 @@ fn create_token_declarations(reader: impl BufRead) -> Vec<TokenDeclaration> {
 
     for line_result in lines {
         let line_data = line_result.expect("Error reading line");
-        let mut tokens = utils::string_utils::split_line(line_data.as_str());
+        let mut tokens = lib::string_utils::split_line(line_data.as_str());
 
         for current_token in &mut tokens {
             if current_token.trim().is_empty() {
@@ -33,7 +33,7 @@ fn create_token_declarations(reader: impl BufRead) -> Vec<TokenDeclaration> {
 
             let end_count = start_count + current_token.len();
             let match_result =
-                utils::token_mapper::match_token(current_token, line_count, start_count, end_count);
+                lib::token_mapper::match_token(current_token, line_count, start_count, end_count);
 
             result.push(match_result);
             start_count = end_count;
