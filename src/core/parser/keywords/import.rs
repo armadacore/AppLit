@@ -3,7 +3,7 @@ use crate::core::feedback::ErrorCause;
 use crate::core::parser::{AstError, ImportStatement, TreeBuilder};
 use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot};
 
-pub fn parse<'a>(builder: &mut TreeBuilder) -> Result<ImportStatement, ErrorCause<'a>> {
+pub fn parse(builder: &mut TreeBuilder) -> Result<ImportStatement, ErrorCause> {
     let snapshot = builder.tokens.peek().unwrap().extract_snapshot();
     builder.tokens.next();
 
@@ -23,7 +23,7 @@ pub fn parse<'a>(builder: &mut TreeBuilder) -> Result<ImportStatement, ErrorCaus
     }
 }
 
-fn parse_namespace<'a>(builder: &mut TreeBuilder) -> Result<Option<TokenSnapshot>, ErrorCause<'a>> {
+fn parse_namespace(builder: &mut TreeBuilder) -> Result<Option<TokenSnapshot>, ErrorCause> {
     if let Some(TokenDeclaration::Identifier(name)) = builder.tokens.peek().cloned() {
         builder.tokens.next();
 
@@ -43,7 +43,7 @@ fn parse_namespace<'a>(builder: &mut TreeBuilder) -> Result<Option<TokenSnapshot
     }
 }
 
-fn parse_identifiers<'a>(builder: &mut TreeBuilder) -> Result<Vec<TokenSnapshot>, ErrorCause<'a>> {
+fn parse_identifiers(builder: &mut TreeBuilder) -> Result<Vec<TokenSnapshot>, ErrorCause> {
     let mut identifiers = Vec::<TokenSnapshot>::new();
 
     if let Some(TokenDeclaration::BlockOpen(_)) = builder.tokens.next() {
@@ -62,7 +62,7 @@ fn parse_identifiers<'a>(builder: &mut TreeBuilder) -> Result<Vec<TokenSnapshot>
     Ok(identifiers)
 }
 
-fn parse_reference<'a>(builder: &mut TreeBuilder) -> Result<TokenSnapshot, ErrorCause<'a>> {
+fn parse_reference(builder: &mut TreeBuilder) -> Result<TokenSnapshot, ErrorCause> {
     if let Some(TokenDeclaration::Keyword(snapshot)) = builder.tokens.next() {
         if snapshot.token == constants::KEYWORD_FROM {
             if let Some(TokenDeclaration::Literal(source)) = builder.tokens.next() {

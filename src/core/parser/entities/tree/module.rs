@@ -3,7 +3,7 @@ use crate::core::feedback::ErrorCause;
 use crate::core::parser::{import, AstError, AstModuleNode, AstNode, TreeBuilder};
 use crate::core::tokenizer::TokenDeclaration;
 
-pub fn parse<'a>(parser: &mut TreeBuilder) -> Result<AstNode, ErrorCause<'a>> {
+pub fn parse(parser: &mut TreeBuilder) -> Result<AstNode, ErrorCause> {
     let mut statements = Vec::<AstModuleNode>::new();
 
     while parser.tokens.peek().is_some() {
@@ -14,7 +14,7 @@ pub fn parse<'a>(parser: &mut TreeBuilder) -> Result<AstNode, ErrorCause<'a>> {
     Ok(AstNode::Module(AstModuleNode::Statements(statements)))
 }
 
-fn parse_statement<'a>(builder: &mut TreeBuilder) -> Result<AstModuleNode, ErrorCause<'a>> {
+fn parse_statement(builder: &mut TreeBuilder) -> Result<AstModuleNode, ErrorCause> {
     let peek = builder.tokens.peek();
 
     if peek.is_none() {

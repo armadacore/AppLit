@@ -19,11 +19,11 @@ pub use entities::{
     tree::*
 };
 
-pub fn main_tree_builder<'a>(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause<'a>> {
+pub fn main_tree_builder(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause> {
     TreeBuilder::new(tokens).parse_main()
 }
 
-pub fn module_tree_builder<'a>(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause<'a>> {
+pub fn module_tree_builder(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause> {
     TreeBuilder::new(tokens).parse_module()
 }
 

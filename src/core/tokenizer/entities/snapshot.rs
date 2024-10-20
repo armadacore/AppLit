@@ -1,4 +1,6 @@
-#[derive(Debug, Clone, PartialEq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TokenLocation {
     pub start: usize,
     pub end: usize,
@@ -11,7 +13,7 @@ impl TokenLocation {
     }
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct TokenSnapshot {
     pub location: TokenLocation,
     pub token: String,

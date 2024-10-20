@@ -1,6 +1,7 @@
+use serde::{Deserialize, Serialize};
 use crate::core::tokenizer::TokenSnapshot;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FunctionStatement {
     pub snapshot: TokenSnapshot,
     pub identifier: TokenSnapshot,

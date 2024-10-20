@@ -1,10 +1,14 @@
 use crate::core::parser::ImportStatement;
 use std::collections::HashMap;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum MainStatement {
     Import(ImportStatement),
-    Id(String, String),
+    Id {
+        dev_id: String,
+        app_id: String
+    },
     Icon(String),
     Name(String),
     Version(String),
@@ -16,7 +20,7 @@ pub enum MainStatement {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum AstMainNode {
     Statements(Vec<MainStatement>),
 }
