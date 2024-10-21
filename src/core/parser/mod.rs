@@ -2,16 +2,13 @@ use crate::core::feedback::ErrorCause;
 use crate::core::tokenizer::TokenDeclaration;
 
 mod entities;
-pub use entities::{
-    ast::{
-        error::*,
-        node::{AstNode, main::*, module::*},
-        statements::{
-            function::*,
-            import::*
-        }
-    },
-    tree::*
+pub use entities::ast::{
+    error::*,
+    node::{main::*, module::*, AstNode, TreeBuilder},
+    statements::{
+        function::*,
+        import::*
+    }
 };
 
 pub fn main_tree_builder(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause> {
