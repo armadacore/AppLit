@@ -42,6 +42,8 @@ pub const KEYWORD_IMPORT: &str = "import";
 
 pub const KEYWORD_FROM: &str = "from";
 
+pub const KEYWORD_FUNCTION: &str = "function";
+
 pub const REGEX_TOKENS_CONDITION: [&str; 7] = [
     STATEMENT_ARGUMENT_OPEN,
     STATEMENT_BLOCK_OPEN,

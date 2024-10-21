@@ -1,6 +1,6 @@
 use crate::bin::constants;
 use crate::core::feedback::ErrorCause;
-use crate::core::parser::{import, AstError, AstModuleNode, TreeBuilder};
+use crate::core::parser::{parse_import_statement, AstError, AstModuleNode, TreeBuilder};
 use crate::core::tokenizer::TokenDeclaration;
 
 pub fn parse_statement(builder: &mut TreeBuilder) -> Result<AstModuleNode, ErrorCause> {
@@ -14,7 +14,8 @@ pub fn parse_statement(builder: &mut TreeBuilder) -> Result<AstModuleNode, Error
 
     if let TokenDeclaration::Keyword(snapshot) = peek {
         return match snapshot.token.as_str() {
-            constants::KEYWORD_IMPORT => Ok(AstModuleNode::Import(import::parse(builder)?)),
+            constants::KEYWORD_IMPORT => Ok(AstModuleNode::Import(parse_import_statement(builder)?)),
+            constants::KEYWORD_FUNCTION => todo!(),
             unknown_token => Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
                 snapshot.clone(),
             ))),

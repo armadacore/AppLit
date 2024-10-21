@@ -1,9 +1,6 @@
 use crate::core::feedback::ErrorCause;
 use crate::core::tokenizer::TokenDeclaration;
 
-mod keywords;
-pub use keywords::*;
-
 mod entities;
 pub use entities::{
     ast::{
