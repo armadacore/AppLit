@@ -1,6 +1,7 @@
 use crate::bin::constants;
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::statements::icon::{parse_icon_commitment, IconCommitment};
+use crate::core::parser::statements::name::{parse_name_commitment, NameCommitment};
 use crate::core::parser::{parse_id_commitment, parse_import_statement, AstError, IdCommitment, ImportStatement, TreeBuilder};
 use crate::core::tokenizer::TokenDeclaration;
 use serde::{Deserialize, Serialize};
@@ -12,7 +13,7 @@ pub enum AstMainNode {
     Import(ImportStatement),
     Id(IdCommitment),
     Icon(IconCommitment),
-    Name(String),
+    Name(NameCommitment),
     Version(String),
     Description(String),
     Link(String),
@@ -45,6 +46,7 @@ pub fn parse_statement(builder: &mut TreeBuilder) -> Result<AstMainNode, ErrorCa
         return match snapshot.token.as_str() {
             constants::COMMITMENT_ID => Ok(AstMainNode::Id(parse_id_commitment(builder)?)),
             constants::COMMITMENT_ICON => Ok(AstMainNode::Icon(parse_icon_commitment(builder)?)),
+            constants::COMMITMENT_NAME => Ok(AstMainNode::Name(parse_name_commitment(builder)?)),
             unknown_token => Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
                 snapshot.clone(),
             ))),
