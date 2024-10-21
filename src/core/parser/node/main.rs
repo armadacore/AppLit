@@ -1,7 +1,10 @@
 use crate::bin::constants;
 use crate::core::feedback::ErrorCause;
+use crate::core::parser::statements::description::{parse_description_commitment, DescriptionCommitment};
 use crate::core::parser::statements::icon::{parse_icon_commitment, IconCommitment};
+use crate::core::parser::statements::link::{parse_link_commitment, LinkCommitment};
 use crate::core::parser::statements::name::{parse_name_commitment, NameCommitment};
+use crate::core::parser::statements::version::{parse_version_commitment, VersionCommitment};
 use crate::core::parser::{parse_id_commitment, parse_import_statement, AstError, IdCommitment, ImportStatement, TreeBuilder};
 use crate::core::tokenizer::TokenDeclaration;
 use serde::{Deserialize, Serialize};
@@ -14,9 +17,10 @@ pub enum AstMainNode {
     Id(IdCommitment),
     Icon(IconCommitment),
     Name(NameCommitment),
-    Version(String),
-    Description(String),
-    Link(String),
+    Version(VersionCommitment),
+    Description(DescriptionCommitment),
+    Link(LinkCommitment),
+    // TODO support third party packages
     Packages(String),
     Domain{
         default: String,
@@ -47,6 +51,9 @@ pub fn parse_statement(builder: &mut TreeBuilder) -> Result<AstMainNode, ErrorCa
             constants::COMMITMENT_ID => Ok(AstMainNode::Id(parse_id_commitment(builder)?)),
             constants::COMMITMENT_ICON => Ok(AstMainNode::Icon(parse_icon_commitment(builder)?)),
             constants::COMMITMENT_NAME => Ok(AstMainNode::Name(parse_name_commitment(builder)?)),
+            constants::COMMITMENT_VERSION => Ok(AstMainNode::Version(parse_version_commitment(builder)?)),
+            constants::COMMITMENT_DESCRIPTION => Ok(AstMainNode::Description(parse_description_commitment(builder)?)),
+            constants::COMMITMENT_LINK => Ok(AstMainNode::Link(parse_link_commitment(builder)?)),
             unknown_token => Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
                 snapshot.clone(),
             ))),
