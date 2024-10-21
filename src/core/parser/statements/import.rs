@@ -134,7 +134,7 @@ mod tests {
             },
         };
         let mut builder = create_builder(statement);
-        let result_tree = crate::core::parser::import::parse(&mut builder).unwrap();
+        let result_tree = parse_import_statement(&mut builder).unwrap();
 
         assert_eq!(expected_tree, result_tree);
     }
@@ -189,7 +189,7 @@ mod tests {
             },
         };
         let mut builder = create_builder(statement);
-        let result_tree = crate::core::parser::import::parse(&mut builder).unwrap();
+        let result_tree = parse_import_statement(&mut builder).unwrap();
 
         assert_eq!(expected_tree, result_tree);
     }
@@ -198,7 +198,7 @@ mod tests {
     fn statement_missing_end_should_fail() {
         let statement = "import {foo} from 'somewhere'";
         let mut builder = create_builder(statement);
-        let parsed = crate::core::parser::import::parse(&mut builder);
+        let parsed = parse_import_statement(&mut builder);
 
         match parsed {
             Err(ErrorCause::SyntaxError(AstError::UnexpectedError(None))) => {/* assert true */},
