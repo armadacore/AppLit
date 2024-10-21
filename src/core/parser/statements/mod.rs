@@ -13,3 +13,5 @@ pub mod version;
 pub mod description;
 
 pub mod link;
+
+pub mod domain;
