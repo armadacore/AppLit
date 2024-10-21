@@ -1,4 +1,4 @@
-use crate::core::applit::lib::cache::{read_binary_file, write_binary_file};
+use crate::core::applit::lib::cache::{read_binary_file};
 use crate::core::applit::lib::directory::app_location_path;
 use crate::core::applit::lib::node::create_node_from_source_code;
 use crate::core::applit::lib::target::app_target_mode;
@@ -35,20 +35,7 @@ impl AppLit {
             None => read_binary_file(self),
             Some(ast_node) => {
                 self.nodes.push(ast_node);
-                
-                Ok(self.nodes.clone())
-            }
-        }
-    }
-
-    pub fn cache_and_run(&mut self) -> Result<Vec<AstNode>, ErrorCause>{
-        let node = create_node_from_source_code(self)?;
-
-        match node {
-            None => read_binary_file(self),
-            Some(ast_node) => {
-                self.nodes.push(ast_node);
-                write_binary_file(self)?;
+                // write_binary_file(self)?;
                 
                 Ok(self.nodes.clone())
             }

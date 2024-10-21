@@ -1,20 +1,9 @@
 use crate::bin::constants;
 use crate::core::feedback::ErrorCause;
-use crate::core::parser::{import, AstError, AstModuleNode, AstNode, TreeBuilder};
+use crate::core::parser::{import, AstError, AstModuleNode, TreeBuilder};
 use crate::core::tokenizer::TokenDeclaration;
 
-pub fn parse(parser: &mut TreeBuilder) -> Result<AstNode, ErrorCause> {
-    let mut statements = Vec::<AstModuleNode>::new();
-
-    while parser.tokens.peek().is_some() {
-        let statement = parse_statement(parser)?;
-        statements.push(statement);
-    }
-
-    Ok(AstNode::Module(AstModuleNode::Statements(statements)))
-}
-
-fn parse_statement(builder: &mut TreeBuilder) -> Result<AstModuleNode, ErrorCause> {
+pub fn parse_statement(builder: &mut TreeBuilder) -> Result<AstModuleNode, ErrorCause> {
     let peek = builder.tokens.peek();
 
     if peek.is_none() {
