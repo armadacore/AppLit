@@ -31,7 +31,7 @@ pub fn parse_statement(builder: &mut TreeBuilder) -> Result<AstModuleNode, Error
     }
 
     panic!(
-        "Try to parse on top level for unknown TokenDeclaration {:#?}",
+        "Try to parse on module top level for unknown TokenDeclaration {:#?}",
         builder.tokens.peek().unwrap()
     );
 }

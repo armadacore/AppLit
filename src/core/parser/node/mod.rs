@@ -27,18 +27,21 @@ impl TreeBuilder {
     }
 
     pub fn parse_main(&mut self) -> Result<AstNode, ErrorCause> {
-        self.parse_statement(&mut main::parse_statement)
+        let mut statements = Vec::<AstMainNode>::new();
+
+        while self.tokens.peek().is_some() {
+            let statement = main::parse_statement(self)?;
+            statements.push(statement);
+        }
+
+        Ok(AstNode::Main(AstMainNode::Statements(statements)))
     }
 
     pub fn parse_module(&mut self) -> Result<AstNode, ErrorCause> {
-        self.parse_statement(&mut module::parse_statement)
-    }
-
-    fn parse_statement(&mut self, token_parser: &mut dyn  FnMut(&mut Self) -> Result<AstModuleNode, ErrorCause>) -> Result<AstNode, ErrorCause> {
         let mut statements = Vec::<AstModuleNode>::new();
 
         while self.tokens.peek().is_some() {
-            let statement = token_parser(self)?;
+            let statement = module::parse_statement(self)?;
             statements.push(statement);
         }
 
