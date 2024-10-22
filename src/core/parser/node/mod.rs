@@ -21,6 +21,7 @@ pub struct TreeBuilder {
 
 impl TreeBuilder {
     pub fn new(tokens: Vec<TokenDeclaration>) -> Self {
+        println!("Tokens: {:#?}", tokens);
         TreeBuilder {
             tokens: tokens.into_iter().peekable(),
         }

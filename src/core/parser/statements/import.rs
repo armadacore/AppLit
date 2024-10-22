@@ -13,9 +13,7 @@ pub struct ImportStatement {
 }
 
 pub fn parse_import_statement(builder: &mut TreeBuilder) -> Result<ImportStatement, ErrorCause> {
-    let snapshot = builder.tokens.peek().unwrap().extract_snapshot();
-    builder.tokens.next();
-
+    let snapshot = builder.tokens.next().unwrap().extract_snapshot();
     let namespace = parse_namespace(builder)?;
     let identifiers = parse_identifiers(builder)?;
     let reference = parse_reference(builder)?;

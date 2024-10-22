@@ -10,8 +10,7 @@ pub struct VersionCommitment {
 }
 
 pub fn parse_version_commitment(builder: &mut TreeBuilder) -> Result<VersionCommitment, ErrorCause> {
-    let snapshot = builder.tokens.peek().unwrap().extract_snapshot();
-    builder.tokens.next();
+    let snapshot = builder.tokens.next().unwrap().extract_snapshot();
 
     if let Some(TokenDeclaration::ArgumentOpen(_)) = builder.tokens.next() {
         if let Some(TokenDeclaration::Literal(version)) = builder.tokens.next() {
