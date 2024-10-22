@@ -5,11 +5,13 @@ use crate::core::parser::statements::description::{
 };
 use crate::core::parser::statements::domain::{parse_domain_commitment, DomainCommitment};
 use crate::core::parser::statements::icon::{parse_icon_commitment, IconCommitment};
+use crate::core::parser::statements::id::{parse_id_commitment, IdCommitment};
+use crate::core::parser::statements::import::{parse_import_statement, ImportStatement};
 use crate::core::parser::statements::link::{parse_link_commitment, LinkCommitment};
 use crate::core::parser::statements::name::{parse_name_commitment, NameCommitment};
 use crate::core::parser::statements::version::{parse_version_commitment, VersionCommitment};
 use crate::core::parser::{
-    parse_id_commitment, parse_import_statement, AstError, IdCommitment, ImportStatement,
+    AstError,
     TreeBuilder,
 };
 use crate::core::tokenizer::TokenDeclaration;

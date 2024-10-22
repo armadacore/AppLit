@@ -1,17 +1,14 @@
 use crate::core::feedback::ErrorCause;
 use crate::core::tokenizer::TokenDeclaration;
 
-pub mod statements;
-pub mod error;
-pub mod node;
+mod statements;
+
+mod error;
+
+mod node;
 
 pub use error::*;
 pub use node::{main::*, module::*, AstNode, TreeBuilder};
-pub use statements::{
-    function::*,
-    id::*,
-    import::*,
-};
 
 pub fn main_tree_builder(tokens: Vec<TokenDeclaration>) -> Result<AstNode, ErrorCause> {
     TreeBuilder::new(tokens).parse_main()

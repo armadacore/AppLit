@@ -1,6 +1,8 @@
 use crate::bin::constants;
 use crate::core::feedback::ErrorCause;
-use crate::core::parser::{parse_import_statement, AstError, FunctionStatement, ImportStatement, TreeBuilder};
+use crate::core::parser::statements::function::FunctionStatement;
+use crate::core::parser::statements::import::{parse_import_statement, ImportStatement};
+use crate::core::parser::{AstError, TreeBuilder};
 use crate::core::tokenizer::TokenDeclaration;
 use serde::{Deserialize, Serialize};
 

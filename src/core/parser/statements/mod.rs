@@ -1,17 +1,21 @@
-pub mod import;
-
-pub mod function;
-
-pub mod id;
-
-pub mod icon;
-
-pub mod name;
-
-pub mod version;
+pub mod chained_property;
 
 pub mod description;
 
+pub mod domain;
+
+pub mod function;
+
+pub mod icon;
+
+pub mod id;
+
+pub mod import;
+
 pub mod link;
 
-pub mod domain;
+pub mod name;
+
+pub mod object_declaration;
+
+pub mod version;
