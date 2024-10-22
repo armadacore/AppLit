@@ -16,6 +16,8 @@ pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenD
         constants::KEYWORD_IMPORT | constants::KEYWORD_FROM => {
             TokenDeclaration::Keyword(token_snapshot)
         }
+        
+        constants::SEPARATOR => TokenDeclaration::Separator(token_snapshot),
 
         constants::STATEMENT_ARGUMENT_OPEN => TokenDeclaration::ArgumentOpen(token_snapshot),
         constants::STATEMENT_ARGUMENT_CLOSE => TokenDeclaration::ArgumentClose(token_snapshot),

@@ -7,6 +7,8 @@ pub enum TokenDeclaration {
     Keyword(TokenSnapshot),
     Identifier(TokenSnapshot),
     Literal(TokenSnapshot),
+    
+    Separator(TokenSnapshot),
 
     ArgumentOpen(TokenSnapshot),
     ArgumentClose(TokenSnapshot),
@@ -28,6 +30,7 @@ impl TokenDeclaration {
             TokenDeclaration::Keyword(snapshot) => snapshot.clone(),
             TokenDeclaration::Identifier(snapshot) => snapshot.clone(),
             TokenDeclaration::Literal(snapshot) => snapshot.clone(),
+            TokenDeclaration::Separator(snapshot) => snapshot.clone(),
             TokenDeclaration::ArgumentOpen(snapshot) => snapshot.clone(),
             TokenDeclaration::ArgumentClose(snapshot) => snapshot.clone(),
             TokenDeclaration::BlockOpen(snapshot) => snapshot.clone(),

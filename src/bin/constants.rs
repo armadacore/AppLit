@@ -6,6 +6,8 @@ pub const EMPTY_STRING: &str = "";
 
 pub const SPACE_STRING: &str = " ";
 
+pub const SEPARATOR: &str = ".";
+
 pub const COMMITMENT_IDENTIFIER: &str = "@";
 
 pub const COMMITMENT_ID: &str = "@id";
@@ -44,7 +46,8 @@ pub const KEYWORD_FROM: &str = "from";
 
 pub const KEYWORD_FUNCTION: &str = "function";
 
-pub const REGEX_TOKENS_CONDITION: [&str; 7] = [
+pub const REGEX_TOKENS_CONDITION: [&str; 8] = [
+    SEPARATOR,
     STATEMENT_ARGUMENT_OPEN,
     STATEMENT_BLOCK_OPEN,
     STATEMENT_ASSIGNMENT,
