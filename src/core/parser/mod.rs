@@ -18,6 +18,7 @@ pub fn module_tree_builder(tokens: Vec<TokenDeclaration>) -> Result<AstNode, Err
     TreeBuilder::new(tokens).parse_module()
 }
 
+
 #[cfg(test)]
 mod tests {
     use crate::core::parser::TreeBuilder;

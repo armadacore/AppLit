@@ -5,7 +5,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ChainedProperties {
-    chain: Vec<TokenSnapshot>
+    pub chain: Vec<TokenSnapshot>
+}
+
+impl ChainedProperties {
+    pub fn new(snapshots: Vec<TokenSnapshot>) -> Self {
+        ChainedProperties { chain: snapshots }
+    }
 }
 
 pub fn parse_chained_property(builder: &mut TreeBuilder) -> Result<ChainedProperties, ErrorCause> {

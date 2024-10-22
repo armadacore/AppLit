@@ -1,15 +1,15 @@
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::statements::chained_property::{parse_chained_property, ChainedProperties};
+use crate::core::parser::statements::object_declaration::{parse_object_declaration, ObjectDeclaration};
 use crate::core::parser::TreeBuilder;
 use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct DomainCommitment {
     pub snapshot: TokenSnapshot,
     pub default: ChainedProperties,
-    pub distribution: Option<HashMap<String, TokenSnapshot>>,
+    pub distribution: Option<ObjectDeclaration>,
 }
 
 pub fn parse_domain_commitment(builder: &mut TreeBuilder) -> Result<DomainCommitment, ErrorCause> {
@@ -27,7 +27,7 @@ pub fn parse_domain_commitment(builder: &mut TreeBuilder) -> Result<DomainCommit
         }
 
         if let Some(TokenDeclaration::StatementDivider(_)) = builder.tokens.next() {
-            let distribution = None;
+            let distribution = Some(parse_object_declaration(builder)?);
 
             if domain_parser_end(builder) {
                 return Ok(DomainCommitment {
@@ -38,7 +38,7 @@ pub fn parse_domain_commitment(builder: &mut TreeBuilder) -> Result<DomainCommit
             }
         }
     }
-
+    
     Err(snapshot_error(builder.tokens.peek()))
 }
 
