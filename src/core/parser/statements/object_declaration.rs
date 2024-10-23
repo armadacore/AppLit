@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::statements::chained_property::{
     parse_chained_property, ChainedProperties,
@@ -22,13 +21,13 @@ pub fn parse_object_declaration(
             builder.tokens.next();
             continue;
         }
-
         if let Some(TokenDeclaration::StatementDivider(_)) = builder.tokens.peek() {
             builder.tokens.next();
             continue;
         }
 
-        if let Some(TokenDeclaration::Identifier(_)) = builder.tokens.peek() {
+        
+        if is_declaration(builder) {
             let identifier = builder.tokens.next().unwrap().extract_snapshot();
 
             if let Some(TokenDeclaration::StatementAssignment(_)) = builder.tokens.peek() {
@@ -47,7 +46,17 @@ pub fn parse_object_declaration(
             builder.tokens.next();
             return Ok(ObjectDeclaration{ objects });
         }
+
+        return Err(snapshot_error(builder.tokens.peek()));
     }
 
     Err(snapshot_error(builder.tokens.peek()))
+}
+
+fn is_declaration(builder: &mut TreeBuilder) -> bool {
+    if matches!(builder.tokens.peek(), Some(TokenDeclaration::Literal(_)) | Some(TokenDeclaration::Identifier(_))) {
+        return true;
+    }
+    
+    false
 }

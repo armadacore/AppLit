@@ -16,6 +16,9 @@ pub enum TokenDeclaration {
     BlockOpen(TokenSnapshot),
     BlockClose(TokenSnapshot),
 
+    IndicesOpen(TokenSnapshot),
+    IndicesClose(TokenSnapshot),
+
     StatementAssignment(TokenSnapshot),
     StatementDivider(TokenSnapshot),
     StatementEnd(TokenSnapshot),
@@ -35,6 +38,8 @@ impl TokenDeclaration {
             TokenDeclaration::ArgumentClose(snapshot) => snapshot.clone(),
             TokenDeclaration::BlockOpen(snapshot) => snapshot.clone(),
             TokenDeclaration::BlockClose(snapshot) => snapshot.clone(),
+            TokenDeclaration::IndicesOpen(snapshot) => snapshot.clone(),
+            TokenDeclaration::IndicesClose(snapshot) => snapshot.clone(),
             TokenDeclaration::StatementAssignment(snapshot) => snapshot.clone(),
             TokenDeclaration::StatementDivider(snapshot) => snapshot.clone(),
             TokenDeclaration::StatementEnd(snapshot) => snapshot.clone(),

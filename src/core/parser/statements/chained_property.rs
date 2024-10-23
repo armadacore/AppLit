@@ -18,12 +18,28 @@ pub fn parse_chained_property(builder: &mut TreeBuilder) -> Result<ChainedProper
     let mut chain = Vec::<TokenSnapshot>::new();
 
     while builder.tokens.peek().is_some() {
-        if let Some(TokenDeclaration::Identifier(_)) = builder.tokens.peek() {
-            chain.push(builder.tokens.next().unwrap().extract_snapshot());
-        }
-
         if let Some(TokenDeclaration::Separator(_)) = builder.tokens.peek() {
             builder.tokens.next();
+            continue
+        }
+        
+        if let Some(TokenDeclaration::IndicesOpen(_)) = builder.tokens.peek() {
+            builder.tokens.next();
+            
+            if let Some(TokenDeclaration::Literal(_)) = builder.tokens.peek() {
+                chain.push(builder.tokens.next().unwrap().extract_snapshot());
+            }
+            
+            if let Some(TokenDeclaration::IndicesClose(_)) = builder.tokens.peek() {
+                builder.tokens.next();
+                continue
+            }
+            
+            return Err(snapshot_error(builder.tokens.peek()));
+        }
+        
+        if let Some(TokenDeclaration::Identifier(_)) = builder.tokens.peek() {
+            chain.push(builder.tokens.next().unwrap().extract_snapshot());
             continue
         }
 

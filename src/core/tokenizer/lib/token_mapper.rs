@@ -24,6 +24,9 @@ pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenD
 
         constants::STATEMENT_BLOCK_OPEN => TokenDeclaration::BlockOpen(token_snapshot),
         constants::STATEMENT_BLOCK_CLOSE => TokenDeclaration::BlockClose(token_snapshot),
+        
+        constants::STATEMENT_INDICES_OPEN => TokenDeclaration::IndicesOpen(token_snapshot),
+        constants::STATEMENT_INDICES_CLOSE => TokenDeclaration::IndicesClose(token_snapshot),
 
         constants::STATEMENT_ASSIGNMENT => {
             TokenDeclaration::StatementAssignment(token_snapshot)

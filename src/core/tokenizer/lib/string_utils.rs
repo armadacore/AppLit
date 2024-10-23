@@ -2,7 +2,7 @@ use crate::bin::constants;
 use regex::Regex;
 
 pub fn split_line(line: &str) -> Vec<String> {
-    let regex_tokens = constants::REGEX_TOKENS_CONDITION.join("");
+    let regex_tokens = constants::REGEX_TOKENS_CONDITION.join("\\");
     let regex_pattern = format!(r#"'(?:\\'|[^'])*'|@\w+|\w+|[{}]|\s"#, regex_tokens);
     let regexp = Regex::new(&regex_pattern).unwrap();
     let result: Vec<String> = regexp

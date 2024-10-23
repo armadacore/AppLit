@@ -7,6 +7,6 @@ import route:{default, routeA, routeB} from '/route';
 @description('demo app to prove compiler');
 @link('https://www.armadacore.com');
 @domain(route.default, {
-    routeA,
-    routeB,
+    'routeA': route['routeA'],
+    'routeB': route.routeB,
 });
