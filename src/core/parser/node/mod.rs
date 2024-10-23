@@ -33,11 +33,11 @@ impl TreeBuilder {
             let statement = main::parse_statement(self)?;
             statements.push(statement);
         }
-
+        
         Ok(AstNode::Main(AstMainNode::Statements(statements)))
     }
 
-    pub fn parse_module(&mut self) -> Result<AstNode, ErrorCause> {
+    fn parse_module(&mut self) -> Result<AstNode, ErrorCause> {
         let mut statements = Vec::<AstModuleNode>::new();
 
         while self.tokens.peek().is_some() {

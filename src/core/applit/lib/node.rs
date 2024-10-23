@@ -1,13 +1,13 @@
 use crate::composer::AppLit;
 use crate::core::feedback::ErrorCause;
-use crate::core::parser::{main_tree_builder, AstNode};
+use crate::core::parser::{AstNode, TreeBuilder};
 use crate::core::tokenizer::tokenize_file;
 use crate::mode::AppLitMode;
 
 pub fn create_node_from_source_code(app_lit: &AppLit) -> Result<Option<AstNode>, ErrorCause>{
     if app_lit.mode == AppLitMode::SourceCode {
         let tokens = tokenize_file(&app_lit.entry);
-        let nodes = main_tree_builder(tokens)?;
+        let nodes =TreeBuilder::new(tokens).parse_main()?;
 
         return Ok(Some(nodes));
     }
