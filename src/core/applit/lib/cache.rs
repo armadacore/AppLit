@@ -1,5 +1,5 @@
 use crate::bin::constants;
-use crate::composer::AppLit;
+use crate::composer::{AppLit, AppLitAst};
 use crate::core::feedback::ErrorCause;
 use bincode;
 use sha3::{Digest, Sha3_256};
@@ -10,7 +10,7 @@ pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
     let path_buf = app_lit.location.join(constants::BINARY_CODE_FILE);
     match path_buf.to_str() {
         Some(path) => {
-            let encoded = bincode::serialize(&app_lit);
+            let encoded = bincode::serialize(&app_lit.ast);
             if encoded.is_err() {
                 return Err(ErrorCause::CouldNotSerializeData("AstNode".into()));
             }
@@ -41,7 +41,7 @@ pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
     Ok(())
 }
 
-pub fn read_binary_file(app_lit: &AppLit) -> Result<AppLit, ErrorCause> {
+pub fn read_binary_file(app_lit: &AppLit) -> Result<Option<AppLitAst>, ErrorCause> {
     let path = app_lit.entry.to_str().unwrap().to_string();
 
     match File::open(&app_lit.entry) {
@@ -60,7 +60,7 @@ pub fn read_binary_file(app_lit: &AppLit) -> Result<AppLit, ErrorCause> {
                 return Err(ErrorCause::UnexpectedError("File is modification".into()));
             }
 
-            let result = bincode::deserialize::<AppLit>(encoded_data);
+            let result = bincode::deserialize::<Option<AppLitAst>>(encoded_data);
 
             if result.is_err() {
                 return Err(ErrorCause::CouldNotDeserializeData(path));
