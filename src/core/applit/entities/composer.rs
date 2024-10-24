@@ -1,13 +1,15 @@
-use crate::core::applit::lib::cache::{read_binary_file};
+use crate::core::applit::lib::cache::{read_binary_file, write_binary_file};
 use crate::core::applit::lib::directory::app_location_path;
 use crate::core::applit::lib::node::create_node_from_source_code;
 use crate::core::applit::lib::target::app_target_mode;
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::AstNode;
 use crate::mode::AppLitMode;
+use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::vec;
 
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AppLit {
     pub location: PathBuf,
     pub entry: PathBuf,
@@ -28,17 +30,20 @@ impl AppLit {
         })
     }
 
-    pub fn run(&mut self) -> Result<Vec<AstNode>, ErrorCause> {
-        let node = create_node_from_source_code(self)?;
+    pub fn run(&mut self) -> Result<Self, ErrorCause> {
+        let mut result = self.clone();
         
-        match node {
-            None => read_binary_file(self),
+        match create_node_from_source_code(self)? {
+            None => {
+                result = read_binary_file(self)?;
+                result.mode = self.mode.clone();
+            },
             Some(ast_node) => {
-                self.nodes.push(ast_node);
-                // write_binary_file(self)?;
-                
-                Ok(self.nodes.clone())
+                result.nodes.push(ast_node);
+                write_binary_file(&result)?;
             }
-        }
+        };
+
+        Ok(result)
     }
 }
