@@ -1,6 +1,6 @@
 use crate::core::applit::lib::cache::{read_binary_file, write_binary_file};
 use crate::core::applit::lib::directory::app_location_path;
-use crate::core::applit::lib::node::create_node_from_source_code;
+use crate::core::applit::lib::node::try_create_node_from_source_code;
 use crate::core::applit::lib::target::app_target_mode;
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::AstNode;
@@ -33,9 +33,10 @@ impl AppLit {
     pub fn run(&mut self) -> Result<Self, ErrorCause> {
         let mut result = self.clone();
         
-        match create_node_from_source_code(self)? {
+        match try_create_node_from_source_code(self)? {
             None => {
                 result = read_binary_file(self)?;
+                result.entry = self.entry.clone();
                 result.mode = self.mode.clone();
             },
             Some(ast_node) => {
