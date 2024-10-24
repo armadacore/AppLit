@@ -1,3 +1,4 @@
+use crate::composer::AppLit;
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::{AstMainNode, AstModuleNode};
 use crate::core::tokenizer::TokenDeclaration;
@@ -26,15 +27,22 @@ impl TreeBuilder {
         }
     }
 
-    pub fn parse(&mut self) -> Result<AstNode, ErrorCause> {
+    pub fn parse(&mut self, app_lit: &mut AppLit) -> Result<(), ErrorCause> {
         let mut statements = Vec::<AstMainNode>::new();
 
         while self.tokens.peek().is_some() {
             let statement = main::parse_statement(self)?;
             statements.push(statement);
         }
+
+        let path = "main";
+        if app_lit.exist_ast_node_item(path) {
+            panic!("Main source already exists");
+        } else {
+            app_lit.add_ast_node_item(path, AstNode::Main(AstMainNode::Statements(statements)));
+        }
         
-        Ok(AstNode::Main(AstMainNode::Statements(statements)))
+        Ok(())
     }
 
     fn parse_module(&mut self) -> Result<AstNode, ErrorCause> {

@@ -10,7 +10,13 @@ pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
     let path_buf = app_lit.location.join(constants::BINARY_CODE_FILE);
     match path_buf.to_str() {
         Some(path) => {
-            let encoded = bincode::serialize(&app_lit.ast);
+            let ast = if let Some(ast_mutex) = &app_lit.ast{
+                ast_mutex.lock().unwrap()
+            } else {
+                return Err(ErrorCause::UnexpectedError("Ast Mutex is None".into()));
+            };
+            let encoded = bincode::serialize(&*ast);
+            
             if encoded.is_err() {
                 return Err(ErrorCause::CouldNotSerializeData("AstNode".into()));
             }
@@ -41,7 +47,7 @@ pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
     Ok(())
 }
 
-pub fn read_binary_file(app_lit: &AppLit) -> Result<Option<AppLitAst>, ErrorCause> {
+pub fn read_binary_file(app_lit: &AppLit) -> Result<AppLitAst, ErrorCause> {
     let path = app_lit.entry.to_str().unwrap().to_string();
 
     match File::open(&app_lit.entry) {
@@ -60,7 +66,7 @@ pub fn read_binary_file(app_lit: &AppLit) -> Result<Option<AppLitAst>, ErrorCaus
                 return Err(ErrorCause::UnexpectedError("File is modification".into()));
             }
 
-            let result = bincode::deserialize::<Option<AppLitAst>>(encoded_data);
+            let result = bincode::deserialize::<AppLitAst>(encoded_data);
 
             if result.is_err() {
                 return Err(ErrorCause::CouldNotDeserializeData(path));

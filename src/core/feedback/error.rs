@@ -14,7 +14,8 @@ pub enum ErrorCause {
     CouldNotWriteFile(String),
     CouldNotReadFile(String),
     UnexpectedError(String),
-    SyntaxError(AstError)
+    SyntaxError(AstError),
+    MutexUnwrapError(String)
 }
 
 impl fmt::Display for ErrorCause {
@@ -32,6 +33,7 @@ impl fmt::Display for ErrorCause {
             ErrorCause::CouldNotReadFile(file) => write!(f, "Could not read file: {}", file),
             ErrorCause::UnexpectedError(err) => write!(f, "Unexpected error: {}", err),
             ErrorCause::SyntaxError(error) => {write!(f, "Syntax error: {}", error) },
+            ErrorCause::MutexUnwrapError(error) => write!(f, "Mutex unwrap error: {}", error)
         }
     }
 }
