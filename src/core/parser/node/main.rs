@@ -10,10 +10,7 @@ use crate::core::parser::statements::import::{parse_import_statement, ImportStat
 use crate::core::parser::statements::link::{parse_link_commitment, LinkCommitment};
 use crate::core::parser::statements::name::{parse_name_commitment, NameCommitment};
 use crate::core::parser::statements::version::{parse_version_commitment, VersionCommitment};
-use crate::core::parser::{
-    AstError,
-    TreeBuilder,
-};
+use crate::core::parser::{AstError, TreeBuilder};
 use crate::core::tokenizer::TokenDeclaration;
 use serde::{Deserialize, Serialize};
 
@@ -28,7 +25,9 @@ pub enum AstMainNode {
     Description(DescriptionCommitment),
     Link(LinkCommitment),
     // TODO support third party packages
-    Packages(String),
+    Dependencies(()),
+    // TODO support enable different options like network etc
+    Permissions(()),
     Domain(DomainCommitment),
 }
 

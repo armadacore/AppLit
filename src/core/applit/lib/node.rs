@@ -7,7 +7,7 @@ use crate::mode::AppLitMode;
 pub fn create_node_from_source_code(app_lit: &AppLit) -> Result<Option<AstNode>, ErrorCause>{
     if app_lit.mode == AppLitMode::SourceCode {
         let tokens = tokenize_file(&app_lit.entry);
-        let nodes =TreeBuilder::new(tokens).parse_main()?;
+        let nodes =TreeBuilder::new(tokens).parse()?;
 
         return Ok(Some(nodes));
     }

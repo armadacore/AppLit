@@ -26,7 +26,7 @@ impl TreeBuilder {
         }
     }
 
-    pub fn parse_main(&mut self) -> Result<AstNode, ErrorCause> {
+    pub fn parse(&mut self) -> Result<AstNode, ErrorCause> {
         let mut statements = Vec::<AstMainNode>::new();
 
         while self.tokens.peek().is_some() {
