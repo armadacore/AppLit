@@ -2,6 +2,8 @@ pub const SOURCE_CODE_FILE: &str = "main.app";
 
 pub const BINARY_CODE_FILE: &str = "main.applit";
 
+pub const MODULE_EXTENSION: &str = "app";
+
 pub const EMPTY_STRING: &str = "";
 
 pub const SPACE_STRING: &str = " ";

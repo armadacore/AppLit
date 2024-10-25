@@ -83,7 +83,7 @@ impl AppLit {
     
     pub fn get_module_path<P: AsRef<Path>>(&self, location: P) -> PathBuf {
         let mut path = location.as_ref().to_path_buf();
-        path.set_extension("app");
+        path.set_extension(constants::MODULE_EXTENSION);
         path
     }
 
