@@ -9,7 +9,7 @@ fn main() {
 
     match AppLit::new(app_path) {
         Ok(mut app) => match app.run() {
-            Ok(applit) => (), //println!("{:#?}", applit),
+            Ok(applit) => println!("{:#?}", applit),
             Err(error) => eprintln!("{}", error)
         },
         Err(error) => eprintln!("{}", error)

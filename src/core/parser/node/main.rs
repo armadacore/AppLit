@@ -32,10 +32,6 @@ pub enum AstMainNode {
 }
 
 pub fn parse_main_statements(tokens: &mut Tokens) -> Result<AstNode, ErrorCause>{
-    if tokens.peek().is_none() {
-        return Err(ErrorCause::SyntaxError(AstError::UnexpectedEOF));
-    }
-    
     let mut statements = Vec::<AstMainNode>::new();
 
     while tokens.peek().is_some() {

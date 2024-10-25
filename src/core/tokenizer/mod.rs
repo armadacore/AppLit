@@ -8,7 +8,7 @@ mod entities;
 pub use entities::{declaration::*, snapshot::*};
 
 mod lib;
-pub use lib::{error_conversion::snapshot_error, string_utils::literally_to_clean_string};
+pub use lib::{error_conversion::snapshot_error, string_utils::literal_to_cleaned_string};
 
 pub type Tokens = Peekable<IntoIter<TokenDeclaration>>;
 

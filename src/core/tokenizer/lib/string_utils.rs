@@ -13,7 +13,7 @@ pub fn split_line(line: &str) -> Vec<String> {
     result
 }
 
-pub fn literally_to_clean_string(literal: &str) -> String {
+pub fn literal_to_cleaned_string(literal: &str) -> String {
     literal.trim_matches('\'').to_string()
 }
 

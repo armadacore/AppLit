@@ -18,4 +18,14 @@ impl AppLit{
         path.set_extension(constants::MODULE_EXTENSION);
         path
     }
+    
+    pub fn exists_module<P: AsRef<Path>>(&self, location: P) -> bool {
+        let path = location.as_ref().to_path_buf();
+        
+        if path.exists() && path.is_file() {
+            return true
+        }
+        
+        false
+    }
 }

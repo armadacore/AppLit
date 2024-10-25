@@ -17,7 +17,7 @@ mod location;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AppLitAst {
-    pub references: HashMap<PathBuf, usize>,
+    pub references: HashMap<String, usize>,
     pub nodes: Vec<AstNode>,
 }
 
@@ -48,11 +48,15 @@ impl AppLit {
         let result = match try_create_node_from_source(self)? {
             false => read_binary_file(self)?,
             true => {
-                // write_binary_file(self)?;
-                Arc::try_unwrap(self.ast.take().unwrap())
-                    .map_err(|_| ErrorCause::MutexUnwrapError("For AppLit.ast".into()))?
-                    .into_inner()
-                    .unwrap()
+                match Arc::try_unwrap(self.ast.take().unwrap()) {
+                    Ok(ast) => {
+                        // write_binary_file(self)?;
+                        ast.into_inner().unwrap()
+                    },
+                    Err(e) => {
+                        return Err(ErrorCause::MutexUnwrapError("For AppLit.ast".into()))
+                    }
+                }
             }
         };
 
