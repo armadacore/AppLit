@@ -29,7 +29,7 @@ impl<'a> TreeBuilder<'a> {
     }
 
     pub fn parse_app(&mut self) -> Result<(), ErrorCause> {
-        let path = "main";
+        let path = "/main";
         if self.app_lit.exist_ast_node_item(path) {
             panic!("Main source already exists");
         }
@@ -57,8 +57,12 @@ impl<'a> TreeBuilder<'a> {
     }
 
     fn parse_modules(&mut self, mut import_statements: Vec<ImportStatement>) -> Result<(), ErrorCause> {
-        let pool = ThreadPool::new(constants::MAX_PARSE_THREADS);
-        let (sender, receiver) = unbounded::<ErrorCause>();
+        let pool_amount = match constants::USE_CPU_AMOUNT_AS_THREAD_POOL {
+            true => num_cpus::get(),
+            false => constants::MAX_THREAD_POOLS 
+        };
+        let pool = ThreadPool::new(constants::MAX_THREAD_POOLS);
+        let (sender, receiver) = unbounded::<Result<usize, ErrorCause>>();
         let arc_ast = self.app_lit.clone_ast().unwrap();
         let arc_sender = Arc::new(Mutex::new(sender));
 
@@ -66,7 +70,7 @@ impl<'a> TreeBuilder<'a> {
             let arc_ast = Arc::clone(&arc_ast);
             let arc_sender = Arc::clone(&arc_sender);
 
-            if receiver.try_recv().is_ok() {
+            if let Ok(Err(error_cause)) = receiver.try_recv() {
                 break;
             }
 
@@ -81,15 +85,16 @@ impl<'a> TreeBuilder<'a> {
             pool.execute(move || {
                 let mut ast = arc_ast.lock().unwrap();
                 let mut tokens = tokenize_file(&module_path);
+                let sender = arc_sender.lock().unwrap();
 
                 match parse_main_statements(&mut tokens) {
                     Ok(ast_node) => {
                         let index = ast.push_ast_node(ast_node);
                         ast.insert_reference(&path, index);
+                        let _ = sender.send(Ok(index));
                     }
                     Err(error_cause) => {
-                        let sender = arc_sender.lock().unwrap();
-                        let _ = sender.send(error_cause);
+                        let _ = sender.send(Err(error_cause));
                     }
                 }
             });
@@ -97,10 +102,15 @@ impl<'a> TreeBuilder<'a> {
         }
         pool.join();
 
-        if let Ok(error_cause) = receiver.try_recv() {
-            return Err(error_cause);
+        match receiver.try_recv() {
+            Ok(message) => match message {
+                Ok(index) => {
+                    // parse import statements
+                    Ok(())
+                }
+                Err(error_cause) => Err(error_cause)
+            }
+            Err(_) => Err(ErrorCause::UnexpectedChannelError("For parse module".into()))
         }
-
-        Ok(())
     }
 }

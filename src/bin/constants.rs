@@ -67,4 +67,6 @@ pub const REGEX_TOKENS_CONDITION: [&str; 10] = [
     STATEMENT_END,
 ];
 
-pub const MAX_PARSE_THREADS: usize = 4;
+pub const MAX_THREAD_POOLS: usize = 4;
+
+pub const USE_CPU_AMOUNT_AS_THREAD_POOL: bool = true;

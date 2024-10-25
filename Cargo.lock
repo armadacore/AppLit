@@ -18,6 +18,7 @@ dependencies = [
  "bincode",
  "crossbeam-channel",
  "log",
+ "num_cpus",
  "regex",
  "serde",
  "sha3",
