@@ -10,7 +10,7 @@ use crate::core::parser::statements::import::{parse_import_statement, ImportStat
 use crate::core::parser::statements::link::{parse_link_commitment, LinkCommitment};
 use crate::core::parser::statements::name::{parse_name_commitment, NameCommitment};
 use crate::core::parser::statements::version::{parse_version_commitment, VersionCommitment};
-use crate::core::parser::AstError;
+use crate::core::parser::{AstError, AstNode};
 use crate::core::tokenizer::{TokenDeclaration, Tokens};
 use serde::{Deserialize, Serialize};
 
@@ -31,47 +31,61 @@ pub enum AstMainNode {
     Domain(DomainCommitment),
 }
 
-pub fn parse_statement(tokens: &mut Tokens) -> Result<AstMainNode, ErrorCause> {
-    let peek = tokens.peek();
-
-    if peek.is_none() {
+pub fn parse_main_statements(tokens: &mut Tokens) -> Result<AstNode, ErrorCause>{
+    if tokens.peek().is_none() {
         return Err(ErrorCause::SyntaxError(AstError::UnexpectedEOF));
     }
+    
+    let mut statements = Vec::<AstMainNode>::new();
 
-    let peek = peek.unwrap();
+    while tokens.peek().is_some() {
+        if let Some(keywords) = parse_keywords(tokens)? {
+            statements.push(keywords);
+            continue;
+        }
+        
+        if let Some(commitments) = parse_commitments(tokens)? {
+            statements.push(commitments);
+            continue;
+        }
+        
+        panic!(
+            "Try to parse on main top level for unknown TokenDeclaration {:#?}",
+            tokens.peek().unwrap()
+        );
+    }
+    
+    Ok(AstNode::Main(AstMainNode::Statements(statements)))
+}
 
-    if let TokenDeclaration::Keyword(snapshot) = peek {
-        return match snapshot.token.as_str() {
-            constants::KEYWORD_IMPORT => Ok(AstMainNode::Import(parse_import_statement(tokens)?)),
-            unknown_token => Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
+fn parse_keywords(tokens: &mut Tokens) -> Result<Option<AstMainNode>, ErrorCause> {
+    if let Some(TokenDeclaration::Keyword(snapshot)) = tokens.peek() {
+        return Ok(Some(match snapshot.token.as_str() {
+            constants::KEYWORD_IMPORT => AstMainNode::Import(parse_import_statement(tokens)?),
+            unknown_token => return Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
                 snapshot.clone(),
             ))),
-        };
+        }));
     }
+    
+    Ok(None)
+}
 
-    if let TokenDeclaration::Commitment(snapshot) = peek {
-        return match snapshot.token.as_str() {
-            constants::COMMITMENT_ID => Ok(AstMainNode::Id(parse_id_commitment(tokens)?)),
-            constants::COMMITMENT_ICON => Ok(AstMainNode::Icon(parse_icon_commitment(tokens)?)),
-            constants::COMMITMENT_NAME => Ok(AstMainNode::Name(parse_name_commitment(tokens)?)),
-            constants::COMMITMENT_VERSION => {
-                Ok(AstMainNode::Version(parse_version_commitment(tokens)?))
-            }
-            constants::COMMITMENT_DESCRIPTION => Ok(AstMainNode::Description(
-                parse_description_commitment(tokens)?,
-            )),
-            constants::COMMITMENT_LINK => Ok(AstMainNode::Link(parse_link_commitment(tokens)?)),
-            constants::COMMITMENT_DOMAIN => {
-                Ok(AstMainNode::Domain(parse_domain_commitment(tokens)?))
-            }
-            unknown_token => Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
+fn parse_commitments(tokens: &mut Tokens) -> Result<Option<AstMainNode>, ErrorCause> {
+    if let Some(TokenDeclaration::Commitment(snapshot)) = tokens.peek() {
+        return Ok(Some(match snapshot.token.as_str() {
+            constants::COMMITMENT_ID => AstMainNode::Id(parse_id_commitment(tokens)?),
+            constants::COMMITMENT_ICON => AstMainNode::Icon(parse_icon_commitment(tokens)?),
+            constants::COMMITMENT_NAME => AstMainNode::Name(parse_name_commitment(tokens)?),
+            constants::COMMITMENT_VERSION => AstMainNode::Version(parse_version_commitment(tokens)?),
+            constants::COMMITMENT_DESCRIPTION => AstMainNode::Description(parse_description_commitment(tokens)?),
+            constants::COMMITMENT_LINK => AstMainNode::Link(parse_link_commitment(tokens)?),
+            constants::COMMITMENT_DOMAIN => AstMainNode::Domain(parse_domain_commitment(tokens)?),
+            unknown_token =>  return Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
                 snapshot.clone(),
             ))),
-        };
+        }));
     }
-
-    panic!(
-        "Try to parse on main top level for unknown TokenDeclaration {:#?}",
-        tokens.peek().unwrap()
-    );
+    
+    Ok(None)
 }
