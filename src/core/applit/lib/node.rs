@@ -1,4 +1,4 @@
-use crate::composer::AppLit;
+use crate::bundle::AppLit;
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::TreeBuilder;
 use crate::mode::AppLitMode;

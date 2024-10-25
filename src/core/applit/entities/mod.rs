@@ -1,2 +1,2 @@
-pub mod composer;
+pub mod bundle;
 pub mod mode;

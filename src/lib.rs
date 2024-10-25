@@ -5,4 +5,4 @@ mod bin;
 
 mod core;
 
-pub use core::applit::entities::{composer, mode};
+pub use core::applit::entities::{bundle, mode};

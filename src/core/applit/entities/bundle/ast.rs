@@ -1,4 +1,4 @@
-use crate::composer::{AppLit, AppLitAst};
+use crate::bundle::{AppLit, AppLitAst};
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::AstNode;
 use std::sync::{Arc, Mutex, MutexGuard};

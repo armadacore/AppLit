@@ -1,5 +1,5 @@
 use crate::bin::constants;
-use crate::composer::AppLit;
+use crate::bundle::AppLit;
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::statements::import::ImportStatement;
 use crate::core::parser::{parse_main_statements, AstMainNode, AstModuleNode};
@@ -59,7 +59,7 @@ impl<'a> TreeBuilder<'a> {
     fn parse_modules(&mut self, mut import_statements: Vec<ImportStatement>) -> Result<(), ErrorCause> {
         let pool_amount = match constants::USE_CPU_AMOUNT_AS_THREAD_POOL {
             true => num_cpus::get(),
-            false => constants::MAX_THREAD_POOLS 
+            false => constants::MAX_THREAD_POOLS,
         };
         let pool = ThreadPool::new(constants::MAX_THREAD_POOLS);
         let (sender, receiver) = unbounded::<Result<usize, ErrorCause>>();
@@ -98,7 +98,6 @@ impl<'a> TreeBuilder<'a> {
                     }
                 }
             });
-
         }
         pool.join();
 
@@ -108,9 +107,9 @@ impl<'a> TreeBuilder<'a> {
                     // parse import statements
                     Ok(())
                 }
-                Err(error_cause) => Err(error_cause)
-            }
-            Err(_) => Err(ErrorCause::UnexpectedChannelError("For parse module".into()))
+                Err(error_cause) => Err(error_cause),
+            },
+            Err(_) => Err(ErrorCause::UnexpectedChannelError("For parse module".into())),
         }
     }
 }

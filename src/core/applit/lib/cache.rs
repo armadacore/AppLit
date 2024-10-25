@@ -1,5 +1,5 @@
 use crate::bin::constants;
-use crate::composer::{AppLit, AppLitAst};
+use crate::bundle::{AppLit, AppLitAst};
 use crate::core::feedback::ErrorCause;
 use bincode;
 use sha3::{Digest, Sha3_256};

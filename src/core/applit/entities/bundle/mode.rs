@@ -1,4 +1,4 @@
-use crate::composer::AppLit;
+use crate::bundle::AppLit;
 use crate::mode::AppLitMode;
 
 impl AppLit {

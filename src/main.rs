@@ -1,7 +1,7 @@
 #![allow(unused_imports)]
 #![allow(unused_variables)]
 
-use applit::composer::AppLit;
+use applit::bundle::AppLit;
 
 // main.rs still exists to test library
 fn main() {

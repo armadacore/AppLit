@@ -1,4 +1,4 @@
-use crate::composer::AppLit;
+use crate::bundle::AppLit;
 
 impl AppLit {
     pub fn get_entry(&self) -> String {
