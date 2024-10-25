@@ -9,8 +9,9 @@ impl AppLit{
         } else {
             path
         };
-
-        self.location.join(uri.trim_matches('\''))
+        let pat_char = constants::STATEMENT_LITERAL.chars().nth(0).unwrap();
+        
+        self.location.join(uri.trim_matches(pat_char))
     }
 
     pub fn get_module_path<P: AsRef<Path>>(&self, location: P) -> PathBuf {
