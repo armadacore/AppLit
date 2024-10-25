@@ -1,0 +1,1 @@
+import {lala} from 'some/path';

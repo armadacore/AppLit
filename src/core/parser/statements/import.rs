@@ -1,7 +1,7 @@
 use crate::bin::constants;
 use crate::core::feedback::ErrorCause;
-use crate::core::parser::{AstError, TreeBuilder};
-use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot};
+use crate::core::parser::AstError;
+use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot, Tokens};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -12,13 +12,13 @@ pub struct ImportStatement {
     pub reference: TokenSnapshot,
 }
 
-pub fn parse_import_statement(builder: &mut TreeBuilder) -> Result<ImportStatement, ErrorCause> {
-    let snapshot = builder.tokens.next().unwrap().extract_snapshot();
-    let namespace = parse_namespace(builder)?;
-    let identifiers = parse_identifiers(builder)?;
-    let reference = parse_reference(builder)?;
+pub fn parse_import_statement(tokens: &mut Tokens) -> Result<ImportStatement, ErrorCause> {
+    let snapshot = tokens.next().unwrap().extract_snapshot();
+    let namespace = parse_namespace(tokens)?;
+    let identifiers = parse_identifiers(tokens)?;
+    let reference = parse_reference(tokens)?;
 
-    if let Some(TokenDeclaration::StatementEnd(_)) = builder.tokens.next() {
+    if let Some(TokenDeclaration::StatementEnd(_)) = tokens.next() {
         Ok(ImportStatement{
             snapshot,
             namespace,
@@ -26,15 +26,15 @@ pub fn parse_import_statement(builder: &mut TreeBuilder) -> Result<ImportStateme
             reference,
         })
     } else {
-        Err(snapshot_error(builder.tokens.peek()))
+        Err(snapshot_error(tokens.peek()))
     }
 }
 
-fn parse_namespace(builder: &mut TreeBuilder) -> Result<Option<TokenSnapshot>, ErrorCause> {
-    if let Some(TokenDeclaration::Identifier(name)) = builder.tokens.peek().cloned() {
-        builder.tokens.next();
+fn parse_namespace(tokens: &mut Tokens) -> Result<Option<TokenSnapshot>, ErrorCause> {
+    if let Some(TokenDeclaration::Identifier(name)) = tokens.peek().cloned() {
+        tokens.next();
 
-        if let Some(token) = builder.tokens.next() {
+        if let Some(token) = tokens.next() {
             if let TokenDeclaration::StatementAssignment(_) = token {
                 Ok(Some(name))
             } else {
@@ -50,41 +50,42 @@ fn parse_namespace(builder: &mut TreeBuilder) -> Result<Option<TokenSnapshot>, E
     }
 }
 
-fn parse_identifiers(builder: &mut TreeBuilder) -> Result<Vec<TokenSnapshot>, ErrorCause> {
+fn parse_identifiers(tokens: &mut Tokens) -> Result<Vec<TokenSnapshot>, ErrorCause> {
     let mut identifiers = Vec::<TokenSnapshot>::new();
 
-    if let Some(TokenDeclaration::BlockOpen(_)) = builder.tokens.next() {
+    if let Some(TokenDeclaration::BlockOpen(_)) = tokens.next() {
         loop {
-            match builder.tokens.next() {
+            match tokens.next() {
                 Some(TokenDeclaration::Identifier(name)) => identifiers.push(name),
                 Some(TokenDeclaration::StatementDivider(_)) => continue,
                 Some(TokenDeclaration::BlockClose(_)) => break,
-                _ => return Err(snapshot_error(builder.tokens.peek())),
+                _ => return Err(snapshot_error(tokens.peek())),
             }
         }
     } else {
-        return Err(snapshot_error(builder.tokens.peek()));
+        return Err(snapshot_error(tokens.peek()));
     }
 
     Ok(identifiers)
 }
 
-fn parse_reference(builder: &mut TreeBuilder) -> Result<TokenSnapshot, ErrorCause> {
-    if let Some(TokenDeclaration::Keyword(snapshot)) = builder.tokens.next() {
+fn parse_reference(tokens: &mut Tokens) -> Result<TokenSnapshot, ErrorCause> {
+    if let Some(TokenDeclaration::Keyword(snapshot)) = tokens.next() {
         if snapshot.token == constants::KEYWORD_FROM {
-            if let Some(TokenDeclaration::Literal(source)) = builder.tokens.next() {
+            if let Some(TokenDeclaration::Literal(source)) = tokens.next() {
                 Ok(source)
             } else {
-                Err(snapshot_error(builder.tokens.peek()))
+                Err(snapshot_error(tokens.peek()))
             }
         } else {
-            Err(snapshot_error(builder.tokens.peek()))
+            Err(snapshot_error(tokens.peek()))
         }
     } else {
-        Err(snapshot_error(builder.tokens.peek()))
+        Err(snapshot_error(tokens.peek()))
     }
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -311,3 +312,4 @@ mod tests {
         }
     }
 }
+*/

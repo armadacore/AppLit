@@ -1,4 +1,4 @@
-use crate::core::applit::lib::cache::{read_binary_file, write_binary_file};
+use crate::core::applit::lib::cache::read_binary_file;
 use crate::core::applit::lib::directory::app_location_path;
 use crate::core::applit::lib::node::try_create_node_from_source;
 use crate::core::applit::lib::target::app_target_mode;
@@ -8,7 +8,7 @@ use crate::mode::AppLitMode;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, MutexGuard};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AppLitAst {
@@ -17,10 +17,10 @@ pub struct AppLitAst {
 }
 
 pub struct AppLit {
-    pub location: PathBuf,
-    pub entry: PathBuf,
-    pub mode: AppLitMode,
-    pub ast: Option<Arc<Mutex<AppLitAst>>>,
+    location: PathBuf,
+    entry: PathBuf,
+    mode: AppLitMode,
+    ast: Option<Arc<Mutex<AppLitAst>>>,
 }
 
 impl AppLit {
@@ -43,7 +43,7 @@ impl AppLit {
         let result = match try_create_node_from_source(self)? {
             false => read_binary_file(self)?,
             true => {
-                write_binary_file(self)?;
+                // write_binary_file(self)?;
                 Arc::try_unwrap(self.ast.take().unwrap())
                     .map_err(|_| ErrorCause::MutexUnwrapError("For AppLit.ast".into()))?
                     .into_inner()
@@ -53,8 +53,28 @@ impl AppLit {
 
         Ok(result)
     }
+    
+    pub fn get_ast(&self) -> Result<MutexGuard<AppLitAst>, ErrorCause> {
+        if let Some(ast_mutex) = &self.ast{
+            return Ok(ast_mutex.lock().unwrap());
+        }
 
-    pub fn add_ast_node_item(&mut self, item_path: &str, item_value: AstNode) {
+        Err(ErrorCause::UnexpectedError("Ast Mutex is None".into()))
+    }
+    
+    pub fn get_entry(&self) -> String {
+        self.entry.to_string_lossy().to_string()
+    }
+    
+    pub fn get_mode(&self) -> AppLitMode {
+        self.mode.clone()
+    }
+    
+    pub fn join_location(&self, path: &str) -> PathBuf {
+        self.location.join(path)
+    }
+
+    pub fn add_ast_node_item(&mut self, item_path: &str, item_value: AstNode) -> usize {
         if let Some(ast) = &mut self.ast {
             let mut ast = ast.lock().unwrap();
 
@@ -65,12 +85,12 @@ impl AppLit {
 
             ast.references.insert(path, index);
 
-            return;
+            return index;
         }
 
         panic!("Attempted to add a node item to a composer without valid AST.");
     }
-    
+
     pub fn exist_ast_node_item(&self, item_path: &str) -> bool {
         if let Some(ast) = &self.ast {
             let ast = ast.lock().unwrap();
@@ -78,7 +98,7 @@ impl AppLit {
 
             return ast.references.contains_key(&path);
         }
-        
+
         panic!("Attempted to find a node without valid AST.");
     }
 }

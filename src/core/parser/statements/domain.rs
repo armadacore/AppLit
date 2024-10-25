@@ -1,8 +1,7 @@
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::statements::chained_property::{parse_chained_property, ChainedProperties};
 use crate::core::parser::statements::object_declaration::{parse_object_declaration, ObjectDeclaration};
-use crate::core::parser::TreeBuilder;
-use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot};
+use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot, Tokens};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -12,13 +11,13 @@ pub struct DomainCommitment {
     pub distribution: Option<ObjectDeclaration>,
 }
 
-pub fn parse_domain_commitment(builder: &mut TreeBuilder) -> Result<DomainCommitment, ErrorCause> {
-    let snapshot = builder.tokens.next().unwrap().extract_snapshot();
+pub fn parse_domain_commitment(tokens: &mut Tokens) -> Result<DomainCommitment, ErrorCause> {
+    let snapshot = tokens.next().unwrap().extract_snapshot();
     
-    if let Some(TokenDeclaration::ArgumentOpen(_)) = builder.tokens.next() {
-        let default = parse_chained_property(builder)?;
+    if let Some(TokenDeclaration::ArgumentOpen(_)) = tokens.next() {
+        let default = parse_chained_property(tokens)?;
 
-        if domain_parser_end(builder) {
+        if domain_parser_end(tokens) {
             return Ok(DomainCommitment {
                 snapshot,
                 default,
@@ -26,10 +25,10 @@ pub fn parse_domain_commitment(builder: &mut TreeBuilder) -> Result<DomainCommit
             });
         }
 
-        if let Some(TokenDeclaration::StatementDivider(_)) = builder.tokens.next() {
-            let distribution = Some(parse_object_declaration(builder)?);
+        if let Some(TokenDeclaration::StatementDivider(_)) = tokens.next() {
+            let distribution = Some(parse_object_declaration(tokens)?);
 
-            if domain_parser_end(builder) {
+            if domain_parser_end(tokens) {
                 return Ok(DomainCommitment {
                     snapshot,
                     default,
@@ -39,15 +38,15 @@ pub fn parse_domain_commitment(builder: &mut TreeBuilder) -> Result<DomainCommit
         }
     }
     
-    Err(snapshot_error(builder.tokens.peek()))
+    Err(snapshot_error(tokens.peek()))
 }
 
-fn domain_parser_end(builder: &mut TreeBuilder) -> bool {
-    if let Some(TokenDeclaration::ArgumentClose(_)) = builder.tokens.peek() {
-        builder.tokens.next();
+fn domain_parser_end(tokens: &mut Tokens) -> bool {
+    if let Some(TokenDeclaration::ArgumentClose(_)) = tokens.peek() {
+        tokens.next();
 
-        if let Some(TokenDeclaration::StatementEnd(_)) = builder.tokens.peek() {
-            builder.tokens.next();
+        if let Some(TokenDeclaration::StatementEnd(_)) = tokens.peek() {
+            tokens.next();
 
             return true;
         }

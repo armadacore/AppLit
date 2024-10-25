@@ -1,10 +1,8 @@
 use crate::composer::AppLit;
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::{AstMainNode, AstModuleNode};
-use crate::core::tokenizer::TokenDeclaration;
+use crate::core::tokenizer::Tokens;
 use serde::{Deserialize, Serialize};
-use std::iter::Peekable;
-use std::vec::IntoIter;
 
 pub mod main;
 
@@ -16,43 +14,47 @@ pub enum AstNode {
     Module(AstModuleNode),
 }
 
-pub struct TreeBuilder {
-    pub tokens: Peekable<IntoIter<TokenDeclaration>>,
+pub struct TreeBuilder<'a> {
+    app_lit: &'a mut AppLit,
 }
 
-impl TreeBuilder {
-    pub fn new(tokens: Vec<TokenDeclaration>) -> Self {
+impl<'a> TreeBuilder<'a> {
+    pub fn new(app_lit: &'a mut AppLit) -> Self {
         TreeBuilder {
-            tokens: tokens.into_iter().peekable(),
+            app_lit,
         }
     }
 
-    pub fn parse(&mut self, app_lit: &mut AppLit) -> Result<(), ErrorCause> {
+    pub fn parse_app(&mut self, tokens: &mut Tokens) -> Result<(), ErrorCause> {
+        let path = "main";
+        if self.app_lit.exist_ast_node_item(path) {
+            panic!("Main source already exists");
+        }
+
         let mut statements = Vec::<AstMainNode>::new();
 
-        while self.tokens.peek().is_some() {
-            let statement = main::parse_statement(self)?;
+        while tokens.peek().is_some() {
+            let statement = main::parse_statement(tokens)?;
             statements.push(statement);
         }
 
-        let path = "main";
-        if app_lit.exist_ast_node_item(path) {
-            panic!("Main source already exists");
-        } else {
-            app_lit.add_ast_node_item(path, AstNode::Main(AstMainNode::Statements(statements)));
-        }
-        
+        self.app_lit.add_ast_node_item(path, AstNode::Main(AstMainNode::Statements(statements)));
         Ok(())
     }
 
-    fn parse_module(&mut self) -> Result<AstNode, ErrorCause> {
-        let mut statements = Vec::<AstModuleNode>::new();
-
-        while self.tokens.peek().is_some() {
-            let statement = module::parse_statement(self)?;
-            statements.push(statement);
-        }
-
-        Ok(AstNode::Module(AstModuleNode::Statements(statements)))
-    }
+    // fn parse_module(&mut self, app_lit: &mut AppLit, path: &str) -> Result<(), ErrorCause> {
+    //     if app_lit.exist_ast_node_item(path) {
+    //         panic!("Module source \"{}\" already exists", path);
+    //     }
+    //
+    //     let mut statements = Vec::<AstModuleNode>::new();
+    //
+    //     while self.tokens.peek().is_some() {
+    //         let statement = module::parse_statement(self)?;
+    //         statements.push(statement);
+    //     }
+    //
+    //     app_lit.add_ast_node_item(path, AstNode::Module(AstModuleNode::Statements(statements)));
+    //     Ok(())
+    // }
 }

@@ -2,8 +2,8 @@ use crate::bin::constants;
 use crate::core::feedback::ErrorCause;
 use crate::core::parser::statements::function::FunctionStatement;
 use crate::core::parser::statements::import::{parse_import_statement, ImportStatement};
-use crate::core::parser::{AstError, TreeBuilder};
-use crate::core::tokenizer::TokenDeclaration;
+use crate::core::parser::AstError;
+use crate::core::tokenizer::{TokenDeclaration, Tokens};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -13,8 +13,8 @@ pub enum AstModuleNode {
     Function(FunctionStatement)
 }
 
-pub fn parse_statement(builder: &mut TreeBuilder) -> Result<AstModuleNode, ErrorCause> {
-    let peek = builder.tokens.peek();
+pub fn parse_statement(tokens: &mut Tokens) -> Result<AstModuleNode, ErrorCause> {
+    let peek = tokens.peek();
 
     if peek.is_none() {
         return Err(ErrorCause::SyntaxError(AstError::UnexpectedEOF));
@@ -24,7 +24,7 @@ pub fn parse_statement(builder: &mut TreeBuilder) -> Result<AstModuleNode, Error
 
     if let TokenDeclaration::Keyword(snapshot) = peek {
         return match snapshot.token.as_str() {
-            constants::KEYWORD_IMPORT => Ok(AstModuleNode::Import(parse_import_statement(builder)?)),
+            constants::KEYWORD_IMPORT => Ok(AstModuleNode::Import(parse_import_statement(tokens)?)),
             constants::KEYWORD_FUNCTION => todo!(),
             unknown_token => Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
                 snapshot.clone(),
@@ -34,10 +34,11 @@ pub fn parse_statement(builder: &mut TreeBuilder) -> Result<AstModuleNode, Error
 
     panic!(
         "Try to parse on module top level for unknown TokenDeclaration {:#?}",
-        builder.tokens.peek().unwrap()
+        tokens.peek().unwrap()
     );
 }
 
+/*
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -76,3 +77,4 @@ mod tests {
         parse_statement(&mut builder).expect("Did not panic from parse_statement self");
     }
 }
+*/

@@ -7,14 +7,10 @@ use std::fs::File;
 use std::io::{Read, Write};
 
 pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
-    let path_buf = app_lit.location.join(constants::BINARY_CODE_FILE);
+    let path_buf = app_lit.join_location(constants::BINARY_CODE_FILE);
     match path_buf.to_str() {
         Some(path) => {
-            let ast = if let Some(ast_mutex) = &app_lit.ast{
-                ast_mutex.lock().unwrap()
-            } else {
-                return Err(ErrorCause::UnexpectedError("Ast Mutex is None".into()));
-            };
+            let ast = app_lit.get_ast()?;
             let encoded = bincode::serialize(&*ast);
             
             if encoded.is_err() {
@@ -48,14 +44,14 @@ pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
 }
 
 pub fn read_binary_file(app_lit: &AppLit) -> Result<AppLitAst, ErrorCause> {
-    let path = app_lit.entry.to_str().unwrap().to_string();
+    let entry_path = app_lit.get_entry();
 
-    match File::open(&app_lit.entry) {
+    match File::open(&entry_path) {
         Ok(mut file) => {
             let mut data = Vec::<u8>::new();
 
             if file.read_to_end(&mut data).is_err() {
-                return Err(ErrorCause::CouldNotReadFile(path));
+                return Err(ErrorCause::CouldNotReadFile(entry_path));
             }
             let (encoded_data, stored_hash) = data.split_at(data.len() - 32);
             let mut hasher = Sha3_256::new();
@@ -69,11 +65,11 @@ pub fn read_binary_file(app_lit: &AppLit) -> Result<AppLitAst, ErrorCause> {
             let result = bincode::deserialize::<AppLitAst>(encoded_data);
 
             if result.is_err() {
-                return Err(ErrorCause::CouldNotDeserializeData(path));
+                return Err(ErrorCause::CouldNotDeserializeData(entry_path));
             }
 
             Ok(result.unwrap())
         }
-        Err(_) => Err(ErrorCause::CouldNotOpenFile(path))
+        Err(_) => Err(ErrorCause::CouldNotOpenFile(entry_path))
     }
 }

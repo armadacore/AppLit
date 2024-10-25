@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
-use std::path::PathBuf;
+use std::iter::Peekable;
+use std::vec::IntoIter;
 
 mod entities;
 pub use entities::{declaration::*, snapshot::*};
@@ -8,11 +9,13 @@ pub use entities::{declaration::*, snapshot::*};
 mod lib;
 pub use lib::error_conversion::snapshot_error;
 
-pub fn tokenize_file(file_path: &PathBuf) -> Vec<TokenDeclaration> {
+pub type Tokens = Peekable<IntoIter<TokenDeclaration>>;
+
+pub fn tokenize_file(file_path: &str) -> Tokens {
     let file = File::open(file_path).unwrap();
     let reader = BufReader::new(file);
 
-    create_token_declarations(reader)
+    create_token_declarations(reader).into_iter().peekable()
 }
 
 fn create_token_declarations(reader: impl BufRead) -> Vec<TokenDeclaration> {

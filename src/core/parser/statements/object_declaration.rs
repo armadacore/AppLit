@@ -2,8 +2,7 @@ use crate::core::feedback::ErrorCause;
 use crate::core::parser::statements::chained_property::{
     parse_chained_property, ChainedProperties,
 };
-use crate::core::parser::TreeBuilder;
-use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot};
+use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot, Tokens};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -12,27 +11,27 @@ pub struct ObjectDeclaration {
 }
 
 pub fn parse_object_declaration(
-    builder: &mut TreeBuilder,
+    tokens: &mut Tokens,
 ) -> Result<ObjectDeclaration, ErrorCause> {
     let mut objects: Vec<(TokenSnapshot, ChainedProperties)> = Vec::new();
 
-    while builder.tokens.peek().is_some() {
-        if let Some(TokenDeclaration::BlockOpen(_)) = builder.tokens.peek() {
-            builder.tokens.next();
+    while tokens.peek().is_some() {
+        if let Some(TokenDeclaration::BlockOpen(_)) = tokens.peek() {
+            tokens.next();
             continue;
         }
-        if let Some(TokenDeclaration::StatementDivider(_)) = builder.tokens.peek() {
-            builder.tokens.next();
+        if let Some(TokenDeclaration::StatementDivider(_)) = tokens.peek() {
+            tokens.next();
             continue;
         }
 
         
-        if is_declaration(builder) {
-            let identifier = builder.tokens.next().unwrap().extract_snapshot();
+        if is_declaration(tokens) {
+            let identifier = tokens.next().unwrap().extract_snapshot();
 
-            if let Some(TokenDeclaration::StatementAssignment(_)) = builder.tokens.peek() {
-                builder.tokens.next();
-                let chained_properties = parse_chained_property(builder)?;
+            if let Some(TokenDeclaration::StatementAssignment(_)) = tokens.peek() {
+                tokens.next();
+                let chained_properties = parse_chained_property(tokens)?;
                 objects.push((identifier, chained_properties));
 
                 continue;
@@ -42,19 +41,19 @@ pub fn parse_object_declaration(
             continue;
         }
 
-        if let Some(TokenDeclaration::BlockClose(_)) = builder.tokens.peek() {
-            builder.tokens.next();
+        if let Some(TokenDeclaration::BlockClose(_)) = tokens.peek() {
+            tokens.next();
             return Ok(ObjectDeclaration{ objects });
         }
 
-        return Err(snapshot_error(builder.tokens.peek()));
+        return Err(snapshot_error(tokens.peek()));
     }
 
-    Err(snapshot_error(builder.tokens.peek()))
+    Err(snapshot_error(tokens.peek()))
 }
 
-fn is_declaration(builder: &mut TreeBuilder) -> bool {
-    if matches!(builder.tokens.peek(), Some(TokenDeclaration::Literal(_)) | Some(TokenDeclaration::Identifier(_))) {
+fn is_declaration(tokens: &mut Tokens) -> bool {
+    if matches!(tokens.peek(), Some(TokenDeclaration::Literal(_)) | Some(TokenDeclaration::Identifier(_))) {
         return true;
     }
     
