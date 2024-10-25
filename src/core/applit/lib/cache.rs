@@ -7,7 +7,7 @@ use std::fs::File;
 use std::io::{Read, Write};
 
 pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
-    let path_buf = app_lit.join_location(constants::BINARY_CODE_FILE);
+    let path_buf = app_lit.get_joined_location(constants::BINARY_CODE_FILE);
     match path_buf.to_str() {
         Some(path) => {
             let ast = app_lit.get_ast()?;

@@ -1,3 +1,4 @@
+use crate::bin::constants;
 use crate::core::applit::lib::cache::read_binary_file;
 use crate::core::applit::lib::directory::app_location_path;
 use crate::core::applit::lib::node::try_create_node_from_source;
@@ -7,7 +8,7 @@ use crate::core::parser::AstNode;
 use crate::mode::AppLitMode;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -53,25 +54,37 @@ impl AppLit {
 
         Ok(result)
     }
-    
+
     pub fn get_ast(&self) -> Result<MutexGuard<AppLitAst>, ErrorCause> {
-        if let Some(ast_mutex) = &self.ast{
+        if let Some(ast_mutex) = &self.ast {
             return Ok(ast_mutex.lock().unwrap());
         }
 
         Err(ErrorCause::UnexpectedError("Ast Mutex is None".into()))
     }
-    
+
     pub fn get_entry(&self) -> String {
         self.entry.to_string_lossy().to_string()
     }
-    
+
     pub fn get_mode(&self) -> AppLitMode {
         self.mode.clone()
     }
+
+    pub fn get_joined_location(&self, path: &str) -> PathBuf {
+        let uri =if path.starts_with(constants::URI_DIVIDER) {
+            path.strip_prefix(constants::URI_DIVIDER).expect("Location path could not be stripped from stripped.")
+        } else {
+            path
+        };
+
+        self.location.join(uri.trim_matches('\''))
+    }
     
-    pub fn join_location(&self, path: &str) -> PathBuf {
-        self.location.join(path)
+    pub fn get_module_path<P: AsRef<Path>>(&self, location: P) -> PathBuf {
+        let mut path = location.as_ref().to_path_buf();
+        path.set_extension("app");
+        path
     }
 
     pub fn add_ast_node_item(&mut self, item_path: &str, item_value: AstNode) -> usize {

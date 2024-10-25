@@ -24,6 +24,8 @@ pub const COMMITMENT_LINK: &str = "@link";
 
 pub const COMMITMENT_DOMAIN: &str = "@domain";
 
+pub const URI_DIVIDER: &str = "/";
+
 pub const STATEMENT_DIVIDER: &str = ",";
 
 pub const STATEMENT_END: &str = ";";
