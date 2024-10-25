@@ -66,3 +66,5 @@ pub const REGEX_TOKENS_CONDITION: [&str; 10] = [
     STATEMENT_DIVIDER,
     STATEMENT_END,
 ];
+
+pub const MAX_PARSE_THREADS: usize = 4;
