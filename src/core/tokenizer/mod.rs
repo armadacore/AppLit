@@ -1,17 +1,18 @@
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::iter::Peekable;
+use std::path::Path;
 use std::vec::IntoIter;
 
 mod entities;
 pub use entities::{declaration::*, snapshot::*};
 
 mod lib;
-pub use lib::error_conversion::snapshot_error;
+pub use lib::{error_conversion::snapshot_error, string_utils::literally_to_clean_string};
 
 pub type Tokens = Peekable<IntoIter<TokenDeclaration>>;
 
-pub fn tokenize_file(file_path: &str) -> Tokens {
+pub fn tokenize_file<P: AsRef<Path>>(file_path: P) -> Tokens {
     let file = File::open(file_path).unwrap();
     let reader = BufReader::new(file);
 
