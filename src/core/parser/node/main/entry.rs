@@ -14,22 +14,24 @@ impl<'a> TreeBuilder<'a> {
         let mut tokens = tokenize_file(self.app_lit.get_entry());
         let ast_node = parse_main_statements(&mut tokens)?;
         let index = self.app_lit.add_ast_node_with_reference(path, ast_node);
-        let import_statements: Vec<ImportStatement> = {
-            if let Some(AstNode::Main(AstMainNode::Statements(statements))) = self.app_lit.get_ast()?.nodes.get(index) {
-                statements
-                    .iter()
-                    .filter_map(|stmt| {
-                        if let AstMainNode::Import(import_statement) = stmt {
-                            return Some(import_statement.clone());
-                        }
-                        None
-                    })
-                    .collect()
-            } else {
-                vec![]
-            }
-        };
+        let import_statements = self.get_import_statements(index)?;
 
         self.parse_modules(import_statements)
+    }
+    
+    fn get_import_statements(&mut self, index: usize) -> Result<Vec<ImportStatement>, Cause> {
+        Ok(if let Some(AstNode::Main(AstMainNode::Statements(statements))) = self.app_lit.get_ast()?.nodes.get(index) {
+            statements
+                .iter()
+                .filter_map(|stmt| {
+                    if let AstMainNode::Import(import_statement) = stmt {
+                        return Some(import_statement.clone());
+                    }
+                    None
+                })
+                .collect()
+        } else {
+            vec![]
+        })
     }
 }
