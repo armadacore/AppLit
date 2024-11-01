@@ -1,8 +1,9 @@
+use crate::core::feedback::error::Cause;
 use crate::core::tokenizer::entities::declaration::TokenDeclaration;
 use crate::core::tokenizer::lib::string_utils::split_line;
 use crate::core::tokenizer::lib::token_mapper::match_token;
 use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::io::{BufRead, BufReader, ErrorKind};
 use std::iter::Peekable;
 use std::path::Path;
 use std::vec::IntoIter;
@@ -13,11 +14,22 @@ pub mod lib;
 
 pub type Tokens = Peekable<IntoIter<TokenDeclaration>>;
 
-pub fn tokenize_file<P: AsRef<Path>>(file_path: P) -> Tokens {
-    let file = File::open(file_path).unwrap();
-    let reader = BufReader::new(file);
+pub fn tokenize_file<P: AsRef<Path>>(file_path: P) -> Result<Tokens, Cause> {
+    match File::open(&file_path) {
+        Ok(file) => {
+            let reader = BufReader::new(file);
 
-    create_token_declarations(reader).into_iter().peekable()
+            Ok(create_token_declarations(reader).into_iter().peekable())
+        }
+        Err(err) => {
+            let path = file_path.as_ref().display().to_string();
+
+            Err(match err.kind() {
+                ErrorKind::NotFound => Cause::FileNotFound(path),
+                _ => Cause::UnexpectedError(path)
+            })
+        }
+    }
 }
 
 fn create_token_declarations(reader: impl BufRead) -> Vec<TokenDeclaration> {
