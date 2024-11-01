@@ -29,7 +29,7 @@ pub fn parse_module_statements(tokens: &mut Tokens) -> Result<AstNode, Cause> {
             tokens.peek().unwrap()
         );
     }
-    
+
     Ok(AstNode::Module(AstModuleNode::Statements(statements)))
 }
 
@@ -43,7 +43,7 @@ fn parse_keywords(tokens: &mut Tokens) -> Result<Option<AstModuleNode>, Cause> {
             ))),
         }));
     }
-    
+
     Ok(None)
 }
 
