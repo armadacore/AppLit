@@ -1,4 +1,4 @@
-use crate::core::feedback::ErrorCause;
+use crate::core::feedback::error::Cause;
 use crate::core::parser::statements::chained_property::{parse_chained_property, ChainedProperties};
 use crate::core::parser::statements::object_declaration::{parse_object_declaration, ObjectDeclaration};
 use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot, Tokens};
@@ -11,7 +11,7 @@ pub struct DomainCommitment {
     pub distribution: Option<ObjectDeclaration>,
 }
 
-pub fn parse_domain_commitment(tokens: &mut Tokens) -> Result<DomainCommitment, ErrorCause> {
+pub fn parse_domain_commitment(tokens: &mut Tokens) -> Result<DomainCommitment, Cause> {
     let snapshot = tokens.next().unwrap().extract_snapshot();
     
     if let Some(TokenDeclaration::ArgumentOpen(_)) = tokens.next() {

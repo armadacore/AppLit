@@ -2,7 +2,7 @@ use crate::core::applit::lib::cache::read_binary_file;
 use crate::core::applit::lib::directory::app_location_path;
 use crate::core::applit::lib::node::try_create_node_from_source;
 use crate::core::applit::lib::target::app_target_mode;
-use crate::core::feedback::ErrorCause;
+use crate::core::feedback::error::Cause;
 use crate::core::parser::AstNode;
 use crate::mode::AppLitMode;
 use serde::{Deserialize, Serialize};
@@ -29,7 +29,7 @@ pub struct AppLit {
 }
 
 impl AppLit {
-    pub fn new(app_directory: &str) -> Result<Self, ErrorCause> {
+    pub fn new(app_directory: &str) -> Result<Self, Cause> {
         let location = app_location_path(app_directory)?;
         let (mode, entry) = app_target_mode(&location)?;
 
@@ -44,7 +44,7 @@ impl AppLit {
         })
     }
 
-    pub fn run(&mut self) -> Result<AppLitAst, ErrorCause> {
+    pub fn run(&mut self) -> Result<AppLitAst, Cause> {
         let result = match try_create_node_from_source(self)? {
             false => read_binary_file(self)?,
             true => {
@@ -54,7 +54,7 @@ impl AppLit {
                         ast.into_inner().unwrap()
                     },
                     Err(e) => {
-                        return Err(ErrorCause::MutexUnwrapError("For AppLit.ast".into()))
+                        return Err(Cause::MutexUnwrapError("For AppLit.ast".into()))
                     }
                 }
             }

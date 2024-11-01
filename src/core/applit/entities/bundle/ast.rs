@@ -1,6 +1,6 @@
-use crate::bundle::{AppLit, AppLitAst};
-use crate::core::feedback::ErrorCause;
+use crate::core::feedback::error::Cause;
 use crate::core::parser::AstNode;
+use crate::{AppLit, AppLitAst};
 use std::sync::{Arc, Mutex, MutexGuard};
 
 impl AppLitAst {
@@ -24,12 +24,12 @@ impl AppLit {
         self.ast.clone()
     }
 
-    pub fn get_ast(&self) -> Result<MutexGuard<AppLitAst>, ErrorCause> {
+    pub fn get_ast(&self) -> Result<MutexGuard<AppLitAst>, Cause> {
         if let Some(ast_mutex) = &self.ast {
             return Ok(ast_mutex.lock().unwrap());
         }
 
-        Err(ErrorCause::UnexpectedError("Ast Mutex is None".into()))
+        Err(Cause::UnexpectedError("Ast Mutex is None".into()))
     }
 
     pub fn add_ast_node_with_reference(&mut self, reference: &str, ast_node: AstNode) -> usize {

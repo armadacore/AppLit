@@ -1,4 +1,4 @@
-use crate::core::feedback::ErrorCause;
+use crate::core::feedback::error::Cause;
 use crate::core::parser::statements::chained_property::{
     parse_chained_property, ChainedProperties,
 };
@@ -12,7 +12,7 @@ pub struct ObjectDeclaration {
 
 pub fn parse_object_declaration(
     tokens: &mut Tokens,
-) -> Result<ObjectDeclaration, ErrorCause> {
+) -> Result<ObjectDeclaration, Cause> {
     let mut objects: Vec<(TokenSnapshot, ChainedProperties)> = Vec::new();
 
     while tokens.peek().is_some() {

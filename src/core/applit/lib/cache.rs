@@ -1,12 +1,12 @@
 use crate::bin::constants;
-use crate::bundle::{AppLit, AppLitAst};
-use crate::core::feedback::ErrorCause;
+use crate::core::feedback::error::Cause;
+use crate::{AppLit, AppLitAst};
 use bincode;
 use sha3::{Digest, Sha3_256};
 use std::fs::File;
 use std::io::{Read, Write};
 
-pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
+pub fn write_binary_file(app_lit: &AppLit) -> Result<(), Cause> {
     let path_buf = app_lit.get_joined_location(constants::BINARY_CODE_FILE);
     match path_buf.to_str() {
         Some(path) => {
@@ -14,7 +14,7 @@ pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
             let encoded = bincode::serialize(&*ast);
             
             if encoded.is_err() {
-                return Err(ErrorCause::CouldNotSerializeData("AstNode".into()));
+                return Err(Cause::CouldNotSerializeData("AstNode".into()));
             }
             let encoded = encoded.unwrap();
             let mut hasher = Sha3_256::new();
@@ -23,27 +23,27 @@ pub fn write_binary_file(app_lit: &AppLit) -> Result<(), ErrorCause> {
 
             let file = File::create(path);
             if file.is_err() {
-                return Err(ErrorCause::CouldNotCreateFile(path.into()));
+                return Err(Cause::CouldNotCreateFile(path.into()));
             }
             let mut file = file.unwrap();
 
             let write = file.write_all(&encoded);
             if write.is_err() {
-                return Err(ErrorCause::CouldNotWriteFile(path.into()));
+                return Err(Cause::CouldNotWriteFile(path.into()));
             }
 
             let write = file.write_all(&hash);
             if write.is_err() {
-                return Err(ErrorCause::CouldNotWriteFile(path.into()));
+                return Err(Cause::CouldNotWriteFile(path.into()));
             }
         },
-        None => return Err(ErrorCause::UnexpectedError("Could not convert path to string".into())),
+        None => return Err(Cause::UnexpectedError("Could not convert path to string".into())),
     };
 
     Ok(())
 }
 
-pub fn read_binary_file(app_lit: &AppLit) -> Result<AppLitAst, ErrorCause> {
+pub fn read_binary_file(app_lit: &AppLit) -> Result<AppLitAst, Cause> {
     let entry_path = app_lit.get_entry();
 
     match File::open(&entry_path) {
@@ -51,7 +51,7 @@ pub fn read_binary_file(app_lit: &AppLit) -> Result<AppLitAst, ErrorCause> {
             let mut data = Vec::<u8>::new();
 
             if file.read_to_end(&mut data).is_err() {
-                return Err(ErrorCause::CouldNotReadFile(entry_path));
+                return Err(Cause::CouldNotReadFile(entry_path));
             }
             let (encoded_data, stored_hash) = data.split_at(data.len() - 32);
             let mut hasher = Sha3_256::new();
@@ -59,17 +59,17 @@ pub fn read_binary_file(app_lit: &AppLit) -> Result<AppLitAst, ErrorCause> {
             let computed_hash = hasher.finalize();
 
             if stored_hash != computed_hash.as_slice() {
-                return Err(ErrorCause::UnexpectedError("File is modification".into()));
+                return Err(Cause::UnexpectedError("File is modification".into()));
             }
 
             let result = bincode::deserialize::<AppLitAst>(encoded_data);
 
             if result.is_err() {
-                return Err(ErrorCause::CouldNotDeserializeData(entry_path));
+                return Err(Cause::CouldNotDeserializeData(entry_path));
             }
 
             Ok(result.unwrap())
         }
-        Err(_) => Err(ErrorCause::CouldNotOpenFile(entry_path))
+        Err(_) => Err(Cause::CouldNotOpenFile(entry_path))
     }
 }

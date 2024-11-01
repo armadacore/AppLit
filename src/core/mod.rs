@@ -1,7 +1,7 @@
 pub mod applit;
 
-pub mod feedback;
+mod feedback;
 
-pub mod parser;
+mod parser;
 
-pub mod tokenizer;
+mod tokenizer;

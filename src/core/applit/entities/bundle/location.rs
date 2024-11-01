@@ -1,5 +1,5 @@
 use crate::bin::constants;
-use crate::bundle::AppLit;
+use crate::AppLit;
 use std::path::{Path, PathBuf};
 
 impl AppLit{

@@ -1,6 +1,6 @@
 use crate::bin::constants;
-use crate::core::feedback::ErrorCause;
-use crate::core::parser::AstError;
+use crate::core::feedback::error::Cause;
+use crate::core::parser::error::AstError;
 use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot, Tokens};
 use serde::{Deserialize, Serialize};
 
@@ -12,7 +12,7 @@ pub struct ImportStatement {
     pub reference: TokenSnapshot,
 }
 
-pub fn parse_import_statement(tokens: &mut Tokens) -> Result<ImportStatement, ErrorCause> {
+pub fn parse_import_statement(tokens: &mut Tokens) -> Result<ImportStatement, Cause> {
     let snapshot = tokens.next().unwrap().extract_snapshot();
     let namespace = parse_namespace(tokens)?;
     let identifiers = parse_identifiers(tokens)?;
@@ -30,7 +30,7 @@ pub fn parse_import_statement(tokens: &mut Tokens) -> Result<ImportStatement, Er
     }
 }
 
-fn parse_namespace(tokens: &mut Tokens) -> Result<Option<TokenSnapshot>, ErrorCause> {
+fn parse_namespace(tokens: &mut Tokens) -> Result<Option<TokenSnapshot>, Cause> {
     if let Some(TokenDeclaration::Identifier(name)) = tokens.peek().cloned() {
         tokens.next();
 
@@ -38,19 +38,19 @@ fn parse_namespace(tokens: &mut Tokens) -> Result<Option<TokenSnapshot>, ErrorCa
             if let TokenDeclaration::StatementAssignment(_) = token {
                 Ok(Some(name))
             } else {
-                Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
+                Err(Cause::SyntaxError(AstError::UnexpectedToken(
                     token.extract_snapshot(),
                 )))
             }
         } else {
-            Err(ErrorCause::SyntaxError(AstError::UnexpectedError(None)))
+            Err(Cause::SyntaxError(AstError::UnexpectedError(None)))
         }
     } else {
         Ok(None)
     }
 }
 
-fn parse_identifiers(tokens: &mut Tokens) -> Result<Vec<TokenSnapshot>, ErrorCause> {
+fn parse_identifiers(tokens: &mut Tokens) -> Result<Vec<TokenSnapshot>, Cause> {
     let mut identifiers = Vec::<TokenSnapshot>::new();
 
     if let Some(TokenDeclaration::BlockOpen(_)) = tokens.next() {
@@ -69,7 +69,7 @@ fn parse_identifiers(tokens: &mut Tokens) -> Result<Vec<TokenSnapshot>, ErrorCau
     Ok(identifiers)
 }
 
-fn parse_reference(tokens: &mut Tokens) -> Result<TokenSnapshot, ErrorCause> {
+fn parse_reference(tokens: &mut Tokens) -> Result<TokenSnapshot, Cause> {
     if let Some(TokenDeclaration::Keyword(snapshot)) = tokens.next() {
         if snapshot.token == constants::KEYWORD_FROM {
             if let Some(TokenDeclaration::Literal(source)) = tokens.next() {

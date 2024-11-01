@@ -1,8 +1,9 @@
 use crate::bin::constants;
-use crate::core::feedback::ErrorCause;
+use crate::core::feedback::error::Cause;
+use crate::core::parser::error::AstError;
+use crate::core::parser::node::AstNode;
 use crate::core::parser::statements::function::FunctionStatement;
 use crate::core::parser::statements::import::{parse_import_statement, ImportStatement};
-use crate::core::parser::{AstError, AstNode};
 use crate::core::tokenizer::{TokenDeclaration, Tokens};
 use serde::{Deserialize, Serialize};
 
@@ -13,7 +14,7 @@ pub enum AstModuleNode {
     Function(FunctionStatement)
 }
 
-pub fn parse_module_statements(tokens: &mut Tokens) -> Result<AstNode, ErrorCause> {
+pub fn parse_module_statements(tokens: &mut Tokens) -> Result<AstNode, Cause> {
     let mut statements: Vec<AstModuleNode> = Vec::new();
 
     while tokens.peek().is_some() {
@@ -31,12 +32,12 @@ pub fn parse_module_statements(tokens: &mut Tokens) -> Result<AstNode, ErrorCaus
     Ok(AstNode::Module(AstModuleNode::Statements(statements)))
 }
 
-fn parse_keywords(tokens: &mut Tokens) -> Result<Option<AstModuleNode>, ErrorCause> {
+fn parse_keywords(tokens: &mut Tokens) -> Result<Option<AstModuleNode>, Cause> {
     if let Some(TokenDeclaration::Keyword(snapshot)) = tokens.peek() {
         return Ok(Some(match snapshot.token.as_str() {
             constants::KEYWORD_IMPORT => AstModuleNode::Import(parse_import_statement(tokens)?),
             constants::KEYWORD_FUNCTION => todo!(),
-            unknown_token => return Err(ErrorCause::SyntaxError(AstError::UnexpectedToken(
+            unknown_token => return Err(Cause::SyntaxError(AstError::UnexpectedToken(
                 snapshot.clone(),
             ))),
         }));

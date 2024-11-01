@@ -1,4 +1,4 @@
-use crate::core::feedback::ErrorCause;
+use crate::core::feedback::error::Cause;
 use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot, Tokens};
 use serde::{Deserialize, Serialize};
 
@@ -13,7 +13,7 @@ impl ChainedProperties {
     }
 }
 
-pub fn parse_chained_property(tokens: &mut Tokens) -> Result<ChainedProperties, ErrorCause> {
+pub fn parse_chained_property(tokens: &mut Tokens) -> Result<ChainedProperties, Cause> {
     let mut chain = Vec::<TokenSnapshot>::new();
 
     while tokens.peek().is_some() {

@@ -1,4 +1,4 @@
-use crate::core::feedback::ErrorCause;
+use crate::core::feedback::error::Cause;
 use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot, Tokens};
 use serde::{Deserialize, Serialize};
 
@@ -8,7 +8,7 @@ pub struct NameCommitment {
     pub name: TokenSnapshot,
 }
 
-pub fn parse_name_commitment(tokens: &mut Tokens) -> Result<NameCommitment, ErrorCause> {
+pub fn parse_name_commitment(tokens: &mut Tokens) -> Result<NameCommitment, Cause> {
     let snapshot = tokens.next().unwrap().extract_snapshot();
 
     if let Some(TokenDeclaration::ArgumentOpen(_)) = tokens.next() {
