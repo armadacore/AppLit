@@ -1,14 +1,15 @@
+use crate::core::tokenizer::entities::declaration::TokenDeclaration;
+use crate::core::tokenizer::lib::string_utils::split_line;
+use crate::core::tokenizer::lib::token_mapper::match_token;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 use std::iter::Peekable;
 use std::path::Path;
 use std::vec::IntoIter;
 
-mod entities;
-pub use entities::{declaration::*, snapshot::*};
+pub mod entities;
 
-mod lib;
-pub use lib::{error_conversion::snapshot_error, string_utils::literal_to_cleaned_string};
+pub mod lib;
 
 pub type Tokens = Peekable<IntoIter<TokenDeclaration>>;
 
@@ -27,7 +28,7 @@ fn create_token_declarations(reader: impl BufRead) -> Vec<TokenDeclaration> {
 
     for line_result in lines {
         let line_data = line_result.expect("Error reading line");
-        let mut tokens = lib::string_utils::split_line(line_data.as_str());
+        let mut tokens = split_line(line_data.as_str());
 
         for current_token in &mut tokens {
             if current_token.trim().is_empty() {
@@ -37,7 +38,7 @@ fn create_token_declarations(reader: impl BufRead) -> Vec<TokenDeclaration> {
 
             let end_count = start_count + current_token.len();
             let match_result =
-                lib::token_mapper::match_token(current_token, line_count, start_count, end_count);
+                match_token(current_token, line_count, start_count, end_count);
 
             result.push(match_result);
             start_count = end_count;
@@ -52,6 +53,7 @@ fn create_token_declarations(reader: impl BufRead) -> Vec<TokenDeclaration> {
 #[cfg(test)]
 pub mod tests {
     use super::*;
+    use crate::core::tokenizer::entities::snapshot::{TokenLocation, TokenSnapshot};
     use std::io::Cursor;
 
     pub fn create_token_declarations(reader: impl BufRead) -> Vec<TokenDeclaration> {

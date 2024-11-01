@@ -1,10 +1,10 @@
 use crate::bin::constants;
+use crate::core::applit::entities::bundle::AppLit;
 use crate::core::feedback::error::Cause;
-use crate::core::parser::node::main::AstMainNode;
+use crate::core::parser::node::main::statement_parser::AstMainNode;
 use crate::core::parser::node::module::AstModuleNode;
 use crate::core::parser::statements::import::ImportStatement;
-use crate::core::tokenizer::literal_to_cleaned_string;
-use crate::AppLit;
+use crate::core::tokenizer::lib::string_utils::literal_to_cleaned_string;
 use crossbeam_channel::unbounded;
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};

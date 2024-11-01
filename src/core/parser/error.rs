@@ -1,4 +1,4 @@
-use crate::core::tokenizer::TokenSnapshot;
+use crate::core::tokenizer::entities::snapshot::TokenSnapshot;
 use std::fmt;
 
 #[derive(Debug, Clone)]

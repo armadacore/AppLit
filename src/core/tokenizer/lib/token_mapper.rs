@@ -1,5 +1,6 @@
 use crate::bin::constants;
-use crate::core::tokenizer::{TokenDeclaration, TokenLocation, TokenSnapshot};
+use crate::core::tokenizer::entities::declaration::TokenDeclaration;
+use crate::core::tokenizer::entities::snapshot::{TokenLocation, TokenSnapshot};
 use regex::Regex;
 
 const LITERAL_REGEX: &str = r"'([^']*)'";

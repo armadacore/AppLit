@@ -1,7 +1,10 @@
 use crate::core::feedback::error::Cause;
 use crate::core::parser::statements::chained_property::{parse_chained_property, ChainedProperties};
 use crate::core::parser::statements::object_declaration::{parse_object_declaration, ObjectDeclaration};
-use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot, Tokens};
+use crate::core::tokenizer::entities::declaration::TokenDeclaration;
+use crate::core::tokenizer::entities::snapshot::TokenSnapshot;
+use crate::core::tokenizer::lib::error_conversion::snapshot_error;
+use crate::core::tokenizer::Tokens;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

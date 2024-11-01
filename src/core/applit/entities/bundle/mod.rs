@@ -3,8 +3,7 @@ use crate::core::applit::lib::directory::app_location_path;
 use crate::core::applit::lib::node::try_create_node_from_source;
 use crate::core::applit::lib::target::app_target_mode;
 use crate::core::feedback::error::Cause;
-use crate::core::parser::AstNode;
-use crate::mode::AppLitMode;
+use crate::core::parser::node::AstNode;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -14,6 +13,12 @@ mod ast;
 mod entry;
 mod mode;
 mod location;
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum AppLitMode {
+    SourceCode,
+    ByteCode,
+}
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct AppLitAst {

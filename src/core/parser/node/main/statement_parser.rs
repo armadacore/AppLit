@@ -12,7 +12,8 @@ use crate::core::parser::statements::import::{parse_import_statement, ImportStat
 use crate::core::parser::statements::link::{parse_link_commitment, LinkCommitment};
 use crate::core::parser::statements::name::{parse_name_commitment, NameCommitment};
 use crate::core::parser::statements::version::{parse_version_commitment, VersionCommitment};
-use crate::core::tokenizer::{TokenDeclaration, Tokens};
+use crate::core::tokenizer::entities::declaration::TokenDeclaration;
+use crate::core::tokenizer::Tokens;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

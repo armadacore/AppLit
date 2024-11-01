@@ -1,6 +1,6 @@
+use crate::core::applit::entities::bundle::{AppLit, AppLitAst};
 use crate::core::feedback::error::Cause;
-use crate::core::parser::AstNode;
-use crate::{AppLit, AppLitAst};
+use crate::core::parser::node::AstNode;
 use std::sync::{Arc, Mutex, MutexGuard};
 
 impl AppLitAst {

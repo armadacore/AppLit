@@ -1,5 +1,5 @@
+use crate::core::tokenizer::entities::snapshot::TokenSnapshot;
 use serde::{Deserialize, Serialize};
-use crate::core::tokenizer::TokenSnapshot;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct FunctionStatement {

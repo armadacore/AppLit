@@ -1,7 +1,10 @@
 use crate::bin::constants;
 use crate::core::feedback::error::Cause;
 use crate::core::parser::error::AstError;
-use crate::core::tokenizer::{snapshot_error, TokenDeclaration, TokenSnapshot, Tokens};
+use crate::core::tokenizer::entities::declaration::TokenDeclaration;
+use crate::core::tokenizer::entities::snapshot::TokenSnapshot;
+use crate::core::tokenizer::lib::error_conversion::snapshot_error;
+use crate::core::tokenizer::Tokens;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

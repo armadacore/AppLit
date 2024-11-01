@@ -1,6 +1,6 @@
 use crate::bin::constants;
+use crate::core::applit::entities::bundle::{AppLit, AppLitAst};
 use crate::core::feedback::error::Cause;
-use crate::{AppLit, AppLitAst};
 use bincode;
 use sha3::{Digest, Sha3_256};
 use std::fs::File;

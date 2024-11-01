@@ -1,6 +1,6 @@
 pub mod applit;
 
-mod feedback;
+pub mod feedback;
 
 mod parser;
 

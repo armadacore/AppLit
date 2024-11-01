@@ -1,6 +1,6 @@
 use crate::core::feedback::error::Cause;
 use crate::core::parser::error::AstError;
-use crate::core::tokenizer::TokenDeclaration;
+use crate::core::tokenizer::entities::declaration::TokenDeclaration;
 
 pub fn snapshot_error(token_declaration: Option<&TokenDeclaration>) -> Cause {
     if let Some(token_declaration) = token_declaration {

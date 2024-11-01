@@ -1,6 +1,6 @@
 use crate::bin::constants;
+use crate::core::applit::entities::bundle::AppLitMode;
 use crate::core::feedback::error::Cause;
-use crate::mode::AppLitMode;
 use std::path::{Path, PathBuf};
 
 pub fn app_target_mode(app_location: &Path) -> Result<(AppLitMode, PathBuf), Cause>{

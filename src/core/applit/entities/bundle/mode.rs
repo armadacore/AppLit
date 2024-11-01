@@ -1,5 +1,4 @@
-use crate::mode::AppLitMode;
-use crate::AppLit;
+use crate::core::applit::entities::bundle::{AppLit, AppLitMode};
 
 impl AppLit {
     pub fn get_mode(&self) -> AppLitMode {

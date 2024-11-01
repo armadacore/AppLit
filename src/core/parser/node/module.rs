@@ -4,7 +4,8 @@ use crate::core::parser::error::AstError;
 use crate::core::parser::node::AstNode;
 use crate::core::parser::statements::function::FunctionStatement;
 use crate::core::parser::statements::import::{parse_import_statement, ImportStatement};
-use crate::core::tokenizer::{TokenDeclaration, Tokens};
+use crate::core::tokenizer::entities::declaration::TokenDeclaration;
+use crate::core::tokenizer::Tokens;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

@@ -1,9 +1,8 @@
-mod statements;
+pub mod statements;
 
 pub mod error;
 
-mod node;
-pub use node::{AstNode, TreeBuilder};
+pub mod node;
 
 
 // #[cfg(test)]
