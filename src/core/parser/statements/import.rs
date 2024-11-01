@@ -22,7 +22,7 @@ pub fn parse_import_statement(tokens: &mut Tokens) -> Result<ImportStatement, Ca
     let reference = parse_reference(tokens)?;
 
     if let Some(TokenDeclaration::StatementEnd(_)) = tokens.next() {
-        Ok(ImportStatement{
+        Ok(ImportStatement {
             snapshot,
             namespace,
             identifiers,
@@ -41,9 +41,7 @@ fn parse_namespace(tokens: &mut Tokens) -> Result<Option<TokenSnapshot>, Cause> 
             if let TokenDeclaration::StatementAssignment(_) = token {
                 Ok(Some(name))
             } else {
-                Err(Cause::SyntaxError(AstError::UnexpectedToken(
-                    token.extract_snapshot(),
-                )))
+                Err(Cause::SyntaxError(AstError::UnexpectedToken(token.extract_snapshot())))
             }
         } else {
             Err(Cause::SyntaxError(AstError::UnexpectedError(None)))

@@ -3,7 +3,7 @@ use crate::core::applit::entities::bundle::AppLitMode;
 use crate::core::feedback::error::Cause;
 use std::path::{Path, PathBuf};
 
-pub fn app_target_mode(app_location: &Path) -> Result<(AppLitMode, PathBuf), Cause>{
+pub fn app_target_mode(app_location: &Path) -> Result<(AppLitMode, PathBuf), Cause> {
     let mut app_entry_path = app_location.join(constants::BINARY_CODE_FILE);
     let mut mode = AppLitMode::ByteCode;
 

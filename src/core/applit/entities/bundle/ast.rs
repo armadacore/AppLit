@@ -7,20 +7,20 @@ impl AppLitAst {
     pub fn exist_reference(&self, path: &str) -> bool {
         self.references.contains_key(path)
     }
-    
+
     pub fn insert_reference(&mut self, path: &str, index: usize) -> Option<usize> {
         self.references.insert(path.into(), index)
     }
-    
+
     pub fn push_ast_node(&mut self, ast_node: AstNode) -> usize {
         self.nodes.push(ast_node);
-        
+
         self.nodes.len() - 1
     }
 }
 
 impl AppLit {
-    pub fn clone_ast(&self) -> Option<Arc<Mutex<AppLitAst>>>{
+    pub fn clone_ast(&self) -> Option<Arc<Mutex<AppLitAst>>> {
         self.ast.clone()
     }
 
@@ -37,7 +37,7 @@ impl AppLit {
             let mut ast = ast.lock().unwrap();
 
             let index = ast.push_ast_node(ast_node);
-            
+
             ast.insert_reference(reference, index);
 
             return index;
@@ -49,7 +49,7 @@ impl AppLit {
     pub fn exist_ast_node_item(&self, reference: &str) -> bool {
         if let Some(ast) = &self.ast {
             let ast = ast.lock().unwrap();
-            
+
             return ast.exist_reference(reference);
         }
 

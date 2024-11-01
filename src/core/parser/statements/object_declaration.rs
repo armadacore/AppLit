@@ -1,7 +1,5 @@
 use crate::core::feedback::error::Cause;
-use crate::core::parser::statements::chained_property::{
-    parse_chained_property, ChainedProperties,
-};
+use crate::core::parser::statements::chained_property::{parse_chained_property, ChainedProperties};
 use crate::core::tokenizer::entities::declaration::TokenDeclaration;
 use crate::core::tokenizer::entities::snapshot::TokenSnapshot;
 use crate::core::tokenizer::lib::error_conversion::snapshot_error;
@@ -13,9 +11,7 @@ pub struct ObjectDeclaration {
     pub objects: Vec<(TokenSnapshot, ChainedProperties)>,
 }
 
-pub fn parse_object_declaration(
-    tokens: &mut Tokens,
-) -> Result<ObjectDeclaration, Cause> {
+pub fn parse_object_declaration(tokens: &mut Tokens) -> Result<ObjectDeclaration, Cause> {
     let mut objects: Vec<(TokenSnapshot, ChainedProperties)> = Vec::new();
 
     while tokens.peek().is_some() {
@@ -28,7 +24,6 @@ pub fn parse_object_declaration(
             continue;
         }
 
-        
         if is_declaration(tokens) {
             let identifier = tokens.next().unwrap().extract_snapshot();
 
@@ -46,7 +41,7 @@ pub fn parse_object_declaration(
 
         if let Some(TokenDeclaration::BlockClose(_)) = tokens.peek() {
             tokens.next();
-            return Ok(ObjectDeclaration{ objects });
+            return Ok(ObjectDeclaration { objects });
         }
 
         return Err(snapshot_error(tokens.peek()));
@@ -56,9 +51,12 @@ pub fn parse_object_declaration(
 }
 
 fn is_declaration(tokens: &mut Tokens) -> bool {
-    if matches!(tokens.peek(), Some(TokenDeclaration::Literal(_)) | Some(TokenDeclaration::Identifier(_))) {
+    if matches!(
+        tokens.peek(),
+        Some(TokenDeclaration::Literal(_)) | Some(TokenDeclaration::Identifier(_))
+    ) {
         return true;
     }
-    
+
     false
 }

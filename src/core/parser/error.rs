@@ -11,18 +11,26 @@ pub enum AstError {
 impl fmt::Display for AstError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            AstError::UnexpectedToken(snapshot    ) => {
-                write!(f, "Unexpected Error at {:#?} for {:#?}", snapshot.location, snapshot.token)
+            AstError::UnexpectedToken(snapshot) => {
+                write!(
+                    f,
+                    "Unexpected Error at {:#?} for {:#?}",
+                    snapshot.location, snapshot.token
+                )
             }
             AstError::UnexpectedError(snapshot) => {
                 if snapshot.is_some() {
                     let snapshot = snapshot.as_ref().unwrap();
-                    return write!(f, "Unexpected Error at {:#?} for {:#?}", snapshot.location, snapshot.token)
+                    return write!(
+                        f,
+                        "Unexpected Error at {:#?} for {:#?}",
+                        snapshot.location, snapshot.token
+                    );
                 }
 
                 write!(f, "Unexpected Error")
             }
-            AstError::UnexpectedEOF => write!(f, "Unexpected EOF")
+            AstError::UnexpectedEOF => write!(f, "Unexpected EOF"),
         }
     }
 }

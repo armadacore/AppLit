@@ -24,8 +24,8 @@ pub fn parse_id_commitment(tokens: &mut Tokens) -> Result<IdCommitment, Cause> {
                             return Ok(IdCommitment {
                                 snapshot,
                                 developer_id,
-                                application_id
-                            })
+                                application_id,
+                            });
                         }
                     }
                 }

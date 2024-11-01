@@ -11,8 +11,8 @@ use std::sync::{Arc, Mutex};
 
 mod ast;
 mod entry;
-mod mode;
 mod location;
+mod mode;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum AppLitMode {
@@ -57,10 +57,8 @@ impl AppLit {
                     Ok(ast) => {
                         // write_binary_file(self)?;
                         ast.into_inner().unwrap()
-                    },
-                    Err(e) => {
-                        return Err(Cause::MutexUnwrapError("For AppLit.ast".into()))
                     }
+                    Err(e) => return Err(Cause::MutexUnwrapError("For AppLit.ast".into())),
                 }
             }
         };

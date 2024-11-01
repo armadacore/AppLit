@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 pub enum AstModuleNode {
     Statements(Vec<AstModuleNode>),
     Import(ImportStatement),
-    Function(FunctionStatement)
+    Function(FunctionStatement),
 }
 
 pub fn parse_module_statements(tokens: &mut Tokens) -> Result<AstNode, Cause> {
@@ -38,9 +38,7 @@ fn parse_keywords(tokens: &mut Tokens) -> Result<Option<AstModuleNode>, Cause> {
         return Ok(Some(match snapshot.token.as_str() {
             constants::KEYWORD_IMPORT => AstModuleNode::Import(parse_import_statement(tokens)?),
             constants::KEYWORD_FUNCTION => todo!(),
-            unknown_token => return Err(Cause::SyntaxError(AstError::UnexpectedToken(
-                snapshot.clone(),
-            ))),
+            unknown_token => return Err(Cause::SyntaxError(AstError::UnexpectedToken(snapshot.clone()))),
         }));
     }
 

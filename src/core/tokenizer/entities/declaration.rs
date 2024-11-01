@@ -3,11 +3,11 @@ use crate::core::tokenizer::entities::snapshot::TokenSnapshot;
 #[derive(Debug, Clone, PartialEq)]
 pub enum TokenDeclaration {
     Commitment(TokenSnapshot),
-    
+
     Keyword(TokenSnapshot),
     Identifier(TokenSnapshot),
     Literal(TokenSnapshot),
-    
+
     Separator(TokenSnapshot),
 
     ArgumentOpen(TokenSnapshot),

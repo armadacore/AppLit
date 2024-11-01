@@ -16,7 +16,7 @@ pub struct DomainCommitment {
 
 pub fn parse_domain_commitment(tokens: &mut Tokens) -> Result<DomainCommitment, Cause> {
     let snapshot = tokens.next().unwrap().extract_snapshot();
-    
+
     if let Some(TokenDeclaration::ArgumentOpen(_)) = tokens.next() {
         let default = parse_chained_property(tokens)?;
 
@@ -24,7 +24,7 @@ pub fn parse_domain_commitment(tokens: &mut Tokens) -> Result<DomainCommitment, 
             return Ok(DomainCommitment {
                 snapshot,
                 default,
-                distribution: None
+                distribution: None,
             });
         }
 
@@ -35,12 +35,12 @@ pub fn parse_domain_commitment(tokens: &mut Tokens) -> Result<DomainCommitment, 
                 return Ok(DomainCommitment {
                     snapshot,
                     default,
-                    distribution
+                    distribution,
                 });
             }
         }
     }
-    
+
     Err(snapshot_error(tokens.peek()))
 }
 

@@ -14,10 +14,8 @@ pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenD
     let token_snapshot = TokenSnapshot::new(token_location, token.into());
 
     match token {
-        constants::KEYWORD_IMPORT | constants::KEYWORD_FROM => {
-            TokenDeclaration::Keyword(token_snapshot)
-        }
-        
+        constants::KEYWORD_IMPORT | constants::KEYWORD_FROM => TokenDeclaration::Keyword(token_snapshot),
+
         constants::SEPARATOR => TokenDeclaration::Separator(token_snapshot),
 
         constants::STATEMENT_ARGUMENT_OPEN => TokenDeclaration::ArgumentOpen(token_snapshot),
@@ -25,25 +23,19 @@ pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenD
 
         constants::STATEMENT_BLOCK_OPEN => TokenDeclaration::BlockOpen(token_snapshot),
         constants::STATEMENT_BLOCK_CLOSE => TokenDeclaration::BlockClose(token_snapshot),
-        
+
         constants::STATEMENT_INDICES_OPEN => TokenDeclaration::IndicesOpen(token_snapshot),
         constants::STATEMENT_INDICES_CLOSE => TokenDeclaration::IndicesClose(token_snapshot),
 
-        constants::STATEMENT_ASSIGNMENT => {
-            TokenDeclaration::StatementAssignment(token_snapshot)
-        }
+        constants::STATEMENT_ASSIGNMENT => TokenDeclaration::StatementAssignment(token_snapshot),
         constants::STATEMENT_DIVIDER => TokenDeclaration::StatementDivider(token_snapshot),
         constants::STATEMENT_END => TokenDeclaration::StatementEnd(token_snapshot),
-        
+
         commitment_token if commitment_token.starts_with(constants::COMMITMENT_IDENTIFIER) => {
             TokenDeclaration::Commitment(token_snapshot)
         }
-        literal_token if literal_regex.is_match(literal_token) => {
-            TokenDeclaration::Literal(token_snapshot)
-        }
-        identifier_token if identifier_regex.is_match(identifier_token) => {
-            TokenDeclaration::Identifier(token_snapshot)
-        }
+        literal_token if literal_regex.is_match(literal_token) => TokenDeclaration::Literal(token_snapshot),
+        identifier_token if identifier_regex.is_match(identifier_token) => TokenDeclaration::Identifier(token_snapshot),
 
         _ => TokenDeclaration::Unknown(token_snapshot),
     }
@@ -53,15 +45,19 @@ pub fn match_token(token: &str, line: usize, start: usize, end: usize) -> TokenD
 mod tests {
     use super::*;
 
-    fn create_snapshot(token: &str) -> TokenSnapshot{
+    fn create_snapshot(token: &str) -> TokenSnapshot {
         TokenSnapshot {
-            location: TokenLocation{line: 0, start: 0, end: 0},
+            location: TokenLocation {
+                line: 0,
+                start: 0,
+                end: 0,
+            },
             token: token.to_string(),
         }
     }
 
     #[test]
-    fn match_keyword_for_import(){
+    fn match_keyword_for_import() {
         let input = "import";
         let result = match_token(input, 0, 0, 0);
         let expected = TokenDeclaration::Keyword(create_snapshot(input));
@@ -70,7 +66,7 @@ mod tests {
     }
 
     #[test]
-    fn match_keyword_for_from(){
+    fn match_keyword_for_from() {
         let input = "from";
         let result = match_token(input, 0, 0, 0);
         let expected = TokenDeclaration::Keyword(create_snapshot(input));
@@ -79,7 +75,7 @@ mod tests {
     }
 
     #[test]
-    fn match_argument_open(){
+    fn match_argument_open() {
         let input = "(";
         let result = match_token(input, 0, 0, 0);
         let expected = TokenDeclaration::ArgumentOpen(create_snapshot(input));
@@ -88,7 +84,7 @@ mod tests {
     }
 
     #[test]
-    fn match_argument_close(){
+    fn match_argument_close() {
         let input = ")";
         let result = match_token(input, 0, 0, 0);
         let expected = TokenDeclaration::ArgumentClose(create_snapshot(input));
@@ -97,7 +93,7 @@ mod tests {
     }
 
     #[test]
-    fn match_block_open(){
+    fn match_block_open() {
         let input = "{";
         let result = match_token(input, 0, 0, 0);
         let expected = TokenDeclaration::BlockOpen(create_snapshot(input));
@@ -106,7 +102,7 @@ mod tests {
     }
 
     #[test]
-    fn match_block_close(){
+    fn match_block_close() {
         let input = "}";
         let result = match_token(input, 0, 0, 0);
         let expected = TokenDeclaration::BlockClose(create_snapshot(input));
@@ -115,7 +111,7 @@ mod tests {
     }
 
     #[test]
-    fn match_statement_assignment(){
+    fn match_statement_assignment() {
         let input = ":";
         let result = match_token(input, 0, 0, 0);
         let expected = TokenDeclaration::StatementAssignment(create_snapshot(input));
@@ -124,7 +120,7 @@ mod tests {
     }
 
     #[test]
-    fn match_statement_divider(){
+    fn match_statement_divider() {
         let input = ",";
         let result = match_token(input, 0, 0, 0);
         let expected = TokenDeclaration::StatementDivider(create_snapshot(input));
@@ -133,34 +129,34 @@ mod tests {
     }
 
     #[test]
-    fn match_statement_end(){
+    fn match_statement_end() {
         let input = ";";
         let result = match_token(input, 0, 0, 0);
         let expected = TokenDeclaration::StatementEnd(create_snapshot(input));
 
         assert_eq!(expected, result);
     }
-    
+
     #[test]
     #[ignore]
-    fn match_commitment(){
-        todo!()
-    }
-    
-    #[test]
-    #[ignore]
-    fn match_literal(){
+    fn match_commitment() {
         todo!()
     }
 
     #[test]
     #[ignore]
-    fn match_identifier(){
+    fn match_literal() {
         todo!()
     }
 
     #[test]
-    fn match_unknown(){
+    #[ignore]
+    fn match_identifier() {
+        todo!()
+    }
+
+    #[test]
+    fn match_unknown() {
         let input = "µ";
         let result = match_token(input, 0, 0, 0);
         let expected = TokenDeclaration::Unknown(create_snapshot(input));

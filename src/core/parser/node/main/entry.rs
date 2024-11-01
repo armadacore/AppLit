@@ -4,7 +4,7 @@ use crate::core::parser::node::{AstNode, TreeBuilder};
 use crate::core::parser::statements::import::ImportStatement;
 use crate::core::tokenizer::tokenize_file;
 
-impl<'a> TreeBuilder<'a>{
+impl<'a> TreeBuilder<'a> {
     pub fn parse_main(&mut self) -> Result<(), Cause> {
         let path = "/main";
         if self.app_lit.exist_ast_node_item(path) {
@@ -32,4 +32,4 @@ impl<'a> TreeBuilder<'a>{
 
         self.parse_modules(import_statements)
     }
-} 
+}

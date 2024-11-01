@@ -12,7 +12,7 @@ pub fn write_binary_file(app_lit: &AppLit) -> Result<(), Cause> {
         Some(path) => {
             let ast = app_lit.get_ast()?;
             let encoded = bincode::serialize(&*ast);
-            
+
             if encoded.is_err() {
                 return Err(Cause::CouldNotSerializeData("AstNode".into()));
             }
@@ -36,7 +36,7 @@ pub fn write_binary_file(app_lit: &AppLit) -> Result<(), Cause> {
             if write.is_err() {
                 return Err(Cause::CouldNotWriteFile(path.into()));
             }
-        },
+        }
         None => return Err(Cause::UnexpectedError("Could not convert path to string".into())),
     };
 
@@ -70,6 +70,6 @@ pub fn read_binary_file(app_lit: &AppLit) -> Result<AppLitAst, Cause> {
 
             Ok(result.unwrap())
         }
-        Err(_) => Err(Cause::CouldNotOpenFile(entry_path))
+        Err(_) => Err(Cause::CouldNotOpenFile(entry_path)),
     }
 }

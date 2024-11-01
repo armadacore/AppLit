@@ -2,9 +2,7 @@ use crate::bin::constants;
 use crate::core::feedback::error::Cause;
 use crate::core::parser::error::AstError;
 use crate::core::parser::node::AstNode;
-use crate::core::parser::statements::description::{
-    parse_description_commitment, DescriptionCommitment,
-};
+use crate::core::parser::statements::description::{parse_description_commitment, DescriptionCommitment};
 use crate::core::parser::statements::domain::{parse_domain_commitment, DomainCommitment};
 use crate::core::parser::statements::icon::{parse_icon_commitment, IconCommitment};
 use crate::core::parser::statements::id::{parse_id_commitment, IdCommitment};
@@ -33,7 +31,7 @@ pub enum AstMainNode {
     Domain(DomainCommitment),
 }
 
-pub fn parse_main_statements(tokens: &mut Tokens) -> Result<AstNode, Cause>{
+pub fn parse_main_statements(tokens: &mut Tokens) -> Result<AstNode, Cause> {
     let mut statements = Vec::<AstMainNode>::new();
 
     while tokens.peek().is_some() {
@@ -60,9 +58,7 @@ fn parse_keywords(tokens: &mut Tokens) -> Result<Option<AstMainNode>, Cause> {
     if let Some(TokenDeclaration::Keyword(snapshot)) = tokens.peek() {
         return Ok(Some(match snapshot.token.as_str() {
             constants::KEYWORD_IMPORT => AstMainNode::Import(parse_import_statement(tokens)?),
-            unknown_token => return Err(Cause::SyntaxError(AstError::UnexpectedToken(
-                snapshot.clone(),
-            ))),
+            unknown_token => return Err(Cause::SyntaxError(AstError::UnexpectedToken(snapshot.clone()))),
         }));
     }
 
@@ -79,9 +75,7 @@ fn parse_commitments(tokens: &mut Tokens) -> Result<Option<AstMainNode>, Cause> 
             constants::COMMITMENT_DESCRIPTION => AstMainNode::Description(parse_description_commitment(tokens)?),
             constants::COMMITMENT_LINK => AstMainNode::Link(parse_link_commitment(tokens)?),
             constants::COMMITMENT_DOMAIN => AstMainNode::Domain(parse_domain_commitment(tokens)?),
-            unknown_token =>  return Err(Cause::SyntaxError(AstError::UnexpectedToken(
-                snapshot.clone(),
-            ))),
+            unknown_token => return Err(Cause::SyntaxError(AstError::UnexpectedToken(snapshot.clone()))),
         }));
     }
 

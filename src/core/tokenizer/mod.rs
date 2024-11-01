@@ -37,8 +37,7 @@ fn create_token_declarations(reader: impl BufRead) -> Vec<TokenDeclaration> {
             }
 
             let end_count = start_count + current_token.len();
-            let match_result =
-                match_token(current_token, line_count, start_count, end_count);
+            let match_result = match_token(current_token, line_count, start_count, end_count);
 
             result.push(match_result);
             start_count = end_count;
