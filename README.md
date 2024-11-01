@@ -17,13 +17,13 @@ To install and run this project locally, please follow these steps:
 2. **Clone the Repository:**
    Clone this repository to your local system:
    ```bash
-   git clone <REPOSITORY_URL>
+   git clone https://github.com/armadacore/AppLit
    ```
 
 3. **Install Dependencies:**
    Navigate to the directory of the cloned repository and install the dependencies:
    ```bash
-   cd <REPOSITORY_DIRECTORY>
+   cd AppLit
    cargo build
    ```
 
