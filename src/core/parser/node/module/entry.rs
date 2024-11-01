@@ -1,8 +1,8 @@
 use crate::bin::constants;
 use crate::core::applit::entities::bundle::AppLitAst;
 use crate::core::feedback::error::Cause;
-use crate::core::parser::node::module::statement_parser::parse_module_statements;
-use crate::core::parser::node::TreeBuilder;
+use crate::core::parser::node::module::statement_parser::{parse_module_statements, AstModuleNode};
+use crate::core::parser::node::{AstNode, TreeBuilder};
 use crate::core::parser::statements::import::ImportStatement;
 use crate::core::tokenizer::lib::string_utils::literal_to_cleaned_string;
 use crate::core::tokenizer::tokenize_file;
@@ -12,21 +12,30 @@ use threadpool::ThreadPool;
 
 impl<'a> TreeBuilder<'a> {
     pub fn parse_modules(&mut self, import_statements: Vec<ImportStatement>) -> Result<(), Cause> {
+        if import_statements.is_empty() {
+            return Ok(());
+        }
+
         let (sender, receiver) = unbounded::<Result<usize, Cause>>();
         let arc_ast = self.app_lit.clone_ast().unwrap();
         let arc_sender = Arc::new(Mutex::new(sender));
-        
+
         self.tokenize_module_import_source(&arc_ast, &arc_sender, &receiver, import_statements);
 
         match receiver.try_recv() {
             Ok(message) => match message {
                 Ok(index) => {
-                    // parse import statements
-                    Ok(())
+                    let import_statements = self.get_module_import_statements(index)?;
+
+                    Ok(self.parse_modules(import_statements)?)
                 }
-                Err(error_cause) => Err(error_cause),
+                Err(error_cause) => {
+                    Err(error_cause)
+                },
             },
-            Err(_) => Err(Cause::UnexpectedChannelError("For parse module".into())),
+            Err(err) => {
+                Err(Cause::UnexpectedChannelError("For parse module".into()))
+            },
         }
     }
 
@@ -46,7 +55,7 @@ impl<'a> TreeBuilder<'a> {
         while let Some(import_statement) = import_statements.pop() {
             let arc_ast = Arc::clone(arc_ast);
             let arc_sender = Arc::clone(arc_sender);
-            
+
             if let Ok(Err(error_cause)) = arc_receiver.try_recv() {
                 break;
             }
@@ -60,25 +69,50 @@ impl<'a> TreeBuilder<'a> {
             }
 
             pool.execute(move || {
-                let mut ast = arc_ast.lock().unwrap();
-                let mut tokens = tokenize_file(&module_path);
                 let sender = arc_sender.lock().unwrap();
-                
-                match parse_module_statements(&mut tokens) {
-                    Ok(ast_node) => {
-                        let index = ast.push_ast_node(ast_node);
-                        ast.insert_reference(&path, index);
-                        let _ = sender.send(Ok(index));
-                    }
+
+                match tokenize_file(&module_path) { 
+                    Ok(mut tokens) => {
+                        match parse_module_statements(&mut tokens) {
+                            Ok(ast_node) => {
+                                let mut ast = arc_ast.lock().unwrap();
+                                let index = ast.push_ast_node(ast_node);
+                                ast.insert_reference(&path, index);
+                                let _ = sender.send(Ok(index));
+                            }
+                            Err(error_cause) => {
+                                let _ = sender.send(Err(error_cause));
+                            }
+                        }
+                    },
                     Err(error_cause) => {
                         let _ = sender.send(Err(error_cause));
                     }
                 }
+                
             });
         }
 
         pool.join();
     }
-    
-    
+
+    fn get_module_import_statements(&mut self, index: usize) -> Result<Vec<ImportStatement>, Cause> {
+        Ok(
+            if let Some(AstNode::Module(AstModuleNode::Statements(statements))) =
+                self.app_lit.get_ast()?.nodes.get(index)
+            {
+                statements
+                    .iter()
+                    .filter_map(|stmt| {
+                        if let AstModuleNode::Import(import_statement) = stmt {
+                            return Some(import_statement.clone());
+                        }
+                        None
+                    })
+                    .collect()
+            } else {
+                vec![]
+            },
+        )
+    }
 }
